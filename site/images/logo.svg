@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">ProTranslate</title>
+  <desc id="desc">ProTranslate logo with translation bubbles and globe lines.</desc>
+  <rect width="256" height="256" rx="48" fill="#0f172a"/>
+  <circle cx="132" cy="126" r="70" fill="#0f766e"/>
+  <path d="M68 126h128M132 56c18 20 28 43 28 70s-10 50-28 70M132 56c-18 20-28 43-28 70s10 50 28 70" fill="none" stroke="#ccfbf1" stroke-width="8" stroke-linecap="round"/>
+  <path d="M82 91h100M82 161h100" fill="none" stroke="#ccfbf1" stroke-width="8" stroke-linecap="round"/>
+  <path d="M62 54h62c11 0 20 9 20 20v30c0 11-9 20-20 20H94l-31 24v-24h-1c-11 0-20-9-20-20V74c0-11 9-20 20-20z" fill="#f8fafc"/>
+  <path d="M132 132h62c11 0 20 9 20 20v30c0 11-9 20-20 20h-1v24l-31-24h-30c-11 0-20-9-20-20v-30c0-11 9-20 20-20z" fill="#14b8a6"/>
+  <path d="M70 84h46M70 103h31" stroke="#0f172a" stroke-width="8" stroke-linecap="round"/>
+  <path d="M141 162h46M156 181h31" stroke="#ecfeff" stroke-width="8" stroke-linecap="round"/>
+</svg>
