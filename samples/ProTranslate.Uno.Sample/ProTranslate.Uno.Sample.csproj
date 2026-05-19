@@ -8,6 +8,10 @@
     <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOSPlatform('windows'))">win-x64</RuntimeIdentifier>
     <RuntimeIdentifiers Condition="'$(RuntimeIdentifiers)' == '' and $([MSBuild]::IsOSPlatform('windows'))">win-x64</RuntimeIdentifiers>
     <UseRidGraph Condition="$([MSBuild]::IsOSPlatform('windows'))">true</UseRidGraph>
+    <UseWinUI Condition="$([MSBuild]::IsOSPlatform('windows'))">true</UseWinUI>
+    <WindowsPackageType Condition="$([MSBuild]::IsOSPlatform('windows'))">None</WindowsPackageType>
+    <WindowsAppSDKSelfContained Condition="$([MSBuild]::IsOSPlatform('windows'))">true</WindowsAppSDKSelfContained>
+    <WindowsAppSdkBootstrapInitialize Condition="$([MSBuild]::IsOSPlatform('windows'))">false</WindowsAppSdkBootstrapInitialize>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
@@ -30,6 +34,6 @@
   </ItemGroup>
 
   <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
-    <Compile Remove="App.xaml.cs;MainWindow.xaml.cs;Program.cs" />
+    <Compile Remove="App.xaml.cs;MainWindow.xaml.cs" />
   </ItemGroup>
 </Project>
