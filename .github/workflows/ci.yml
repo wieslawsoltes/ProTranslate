@@ -83,6 +83,20 @@ jobs:
           - name: macOS Avalonia and MAUI samples
             os: macos-latest
             script: |
+              XCODE_ROOT="/Applications/Xcode.app"
+              if [ ! -d "$XCODE_ROOT" ]; then
+                XCODE_ROOT="$(find /Applications -maxdepth 1 -name 'Xcode*.app' -type d | sort | tail -n 1)"
+              fi
+              if [ -z "$XCODE_ROOT" ] || [ ! -d "$XCODE_ROOT" ]; then
+                echo "::error::No Xcode installation was found on the macOS runner."
+                exit 1
+              fi
+              export MD_APPLE_SDK_ROOT="$XCODE_ROOT"
+              export DEVELOPER_DIR="$XCODE_ROOT/Contents/Developer"
+              echo "MD_APPLE_SDK_ROOT=$MD_APPLE_SDK_ROOT" >> "$GITHUB_ENV"
+              echo "DEVELOPER_DIR=$DEVELOPER_DIR" >> "$GITHUB_ENV"
+              sudo xcode-select -s "$DEVELOPER_DIR"
+              xcodebuild -version
               dotnet workload install maui
               dotnet build samples/ProTranslate.Avalonia.Sample/ProTranslate.Avalonia.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true
               dotnet build samples/ProTranslate.Maui.Sample/ProTranslate.Maui.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true

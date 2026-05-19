@@ -30,6 +30,6 @@
   </ItemGroup>
 
   <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
-    <Compile Remove="App.xaml.cs;MainWindow.xaml.cs;Program.cs" />
+    <Compile Remove="App.xaml.cs;MainWindow.xaml.cs" />
   </ItemGroup>
 </Project>
