@@ -10,6 +10,8 @@ public static class TranslationService
         DefaultCultureService);
     private static TranslationBindingSource _source = new(DefaultTranslationService, DefaultCultureService);
 
+    internal static event EventHandler? SourceChanged;
+
     public static TranslationBindingSource Source => _source;
 
     public static CultureInfo Culture
@@ -38,7 +40,17 @@ public static class TranslationService
     public static void UseSource(TranslationBindingSource source)
     {
         ArgumentNullException.ThrowIfNull(source);
+
+        if (ReferenceEquals(_source, source))
+        {
+            _source.Refresh();
+            return;
+        }
+
+        TranslationBindingSource previous = _source;
         _source = source;
+        SourceChanged?.Invoke(null, EventArgs.Empty);
+        previous.Dispose();
         _source.Refresh();
     }
 }

@@ -111,7 +111,7 @@ public static class Translation
 
         if (GetAutoFlowDirection(element) && element is FrameworkElement flowElement)
         {
-            flowElement.FlowDirection = ToFlowDirection(culture);
+            ApplyAutoFlowDirection(flowElement, culture);
         }
     }
 
@@ -121,11 +121,18 @@ public static class Translation
         {
             frameworkElement.FlowDirection = ToFlowDirection(GetCulture(element) ?? TranslationService.Culture);
         }
+
+        UpdateAttachedSubscription(element);
     }
 
     private static void OnKeyChanged(DependencyObject element, DependencyPropertyChangedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(e.NewValue as string))
+        UpdateAttachedSubscription(element);
+    }
+
+    private static void UpdateAttachedSubscription(DependencyObject element)
+    {
+        if (!RequiresAttachedSubscription(element))
         {
             if (AttachedTargets.TryGetValue(element, out AttachedTranslationSubscription? subscription))
             {
@@ -133,17 +140,54 @@ public static class Translation
                 AttachedTargets.Remove(element);
             }
 
-            UpdateAttachedText(element);
+            RefreshAttachedTarget(element);
             return;
         }
 
         AttachedTargets.GetValue(element, static target => new AttachedTranslationSubscription(target));
-        UpdateAttachedText(element);
+        RefreshAttachedTarget(element);
     }
+
+    private static bool RequiresAttachedSubscription(DependencyObject element) =>
+        !string.IsNullOrWhiteSpace(GetKey(element)) || GetAutoFlowDirection(element);
 
     private static void OnAttachedTextOptionChanged(DependencyObject element, DependencyPropertyChangedEventArgs e)
     {
+        RefreshAttachedTarget(element);
+    }
+
+    private static void RefreshAttachedTarget(DependencyObject element)
+    {
         UpdateAttachedText(element);
+        ApplyAutoFlowDirection(element);
+    }
+
+    private static void ApplyAutoFlowDirection(DependencyObject element)
+    {
+        if (element is FrameworkElement frameworkElement)
+        {
+            ApplyAutoFlowDirection(frameworkElement, GetCulture(element) ?? TranslationService.Culture);
+        }
+    }
+
+    private static void ApplyAutoFlowDirection(FrameworkElement element, CultureInfo culture)
+    {
+        if (GetAutoFlowDirection(element))
+        {
+            element.FlowDirection = ToFlowDirection(culture);
+        }
+    }
+
+    private static void DispatchRefresh(DependencyObject element)
+    {
+        var dispatcherQueue = element.DispatcherQueue;
+        if (dispatcherQueue is null || dispatcherQueue.HasThreadAccess)
+        {
+            RefreshAttachedTarget(element);
+            return;
+        }
+
+        dispatcherQueue.TryEnqueue(() => RefreshAttachedTarget(element));
     }
 
     private static void UpdateAttachedText(DependencyObject element)
@@ -178,12 +222,15 @@ public static class Translation
     private sealed class AttachedTranslationSubscription : IDisposable
     {
         private readonly WeakReference<DependencyObject> _target;
+        private TranslationBindingSource _source;
         private bool _disposed;
 
         public AttachedTranslationSubscription(DependencyObject target)
         {
             _target = new WeakReference<DependencyObject>(target);
-            TranslationService.Source.PropertyChanged += OnSourcePropertyChanged;
+            _source = TranslationService.Source;
+            _source.PropertyChanged += OnSourcePropertyChanged;
+            TranslationService.SourceChanged += OnSourceChanged;
         }
 
         public void Dispose()
@@ -193,8 +240,25 @@ public static class Translation
                 return;
             }
 
-            TranslationService.Source.PropertyChanged -= OnSourcePropertyChanged;
+            _source.PropertyChanged -= OnSourcePropertyChanged;
+            TranslationService.SourceChanged -= OnSourceChanged;
             _disposed = true;
+        }
+
+        private void OnSourceChanged(object? sender, EventArgs e)
+        {
+            _source.PropertyChanged -= OnSourcePropertyChanged;
+            _source = TranslationService.Source;
+            _source.PropertyChanged += OnSourcePropertyChanged;
+
+            if (_target.TryGetTarget(out DependencyObject? target))
+            {
+                DispatchRefresh(target);
+            }
+            else
+            {
+                Dispose();
+            }
         }
 
         private void OnSourcePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -206,7 +270,7 @@ public static class Translation
 
             if (_target.TryGetTarget(out DependencyObject? target))
             {
-                UpdateAttachedText(target);
+                DispatchRefresh(target);
             }
             else
             {

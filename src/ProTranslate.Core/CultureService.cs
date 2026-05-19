@@ -39,7 +39,6 @@ public sealed class CultureService : ICultureService
         _options = options ?? throw new ArgumentNullException(nameof(options));
         _currentCulture = initialCulture;
         _currentUICulture = initialCulture;
-        ApplyCulture(initialCulture, initialCulture);
     }
 
     /// <inheritdoc />

@@ -172,6 +172,11 @@ public sealed class FormatExtension : MarkupExtension
                 return Binding.DoNothing;
             }
 
+            if (values.Length > 0 && ReferenceEquals(values[0], DependencyProperty.UnsetValue))
+            {
+                return DependencyProperty.UnsetValue;
+            }
+
             if (values.Length > 1 && ReferenceEquals(values[1], DependencyProperty.UnsetValue))
             {
                 return Binding.DoNothing;

@@ -86,7 +86,24 @@ public class FormatExtension : MarkupExtension
     protected override object ProvideValue(IXamlServiceProvider serviceProvider)
     {
         var key = Key ?? string.Empty;
-        object? value = Value is Binding ? null : Value;
+
+        if (Value is Binding valueBinding)
+        {
+            IValueConverter? valueConverter = valueBinding.Converter;
+            object? valueConverterParameter = valueBinding.ConverterParameter;
+            valueBinding.Converter = FormatValueConverter.Instance;
+            valueBinding.ConverterParameter = new FormatValueConverterParameter(
+                key,
+                null,
+                StringFormat,
+                UseBoundValue: true,
+                valueConverter,
+                valueConverterParameter);
+            valueBinding.FallbackValue = FallbackValue;
+            return valueBinding;
+        }
+
+        object? value = Value;
 
         return new Binding
         {
@@ -95,7 +112,7 @@ public class FormatExtension : MarkupExtension
             Mode = BindingMode.OneWay,
             FallbackValue = FallbackValue,
             Converter = value is null && StringFormat is null ? null : FormatValueConverter.Instance,
-            ConverterParameter = new FormatValueConverterParameter(key, value, StringFormat)
+            ConverterParameter = new FormatValueConverterParameter(key, value, StringFormat, UseBoundValue: false)
         };
     }
 }
@@ -130,7 +147,13 @@ internal sealed class StringFormatConverter : IValueConverter
     }
 }
 
-internal sealed record FormatValueConverterParameter(string Key, object? Value, string? StringFormat);
+internal sealed record FormatValueConverterParameter(
+    string Key,
+    object? Value,
+    string? StringFormat,
+    bool UseBoundValue,
+    IValueConverter? BoundValueConverter = null,
+    object? BoundValueConverterParameter = null);
 
 internal sealed class FormatValueConverter : IValueConverter
 {
@@ -143,13 +166,44 @@ internal sealed class FormatValueConverter : IValueConverter
             return value;
         }
 
-        object? result = formatParameter.Value is null
-            ? TranslationService.Source.Translate(formatParameter.Key)
-            : TranslationService.Source.Translate(formatParameter.Key, formatParameter.Value);
+        if (IsUnset(value))
+        {
+            return DependencyProperty.UnsetValue;
+        }
+
+        object? result;
+        if (formatParameter.UseBoundValue)
+        {
+            object? boundValue = formatParameter.BoundValueConverter is null
+                ? value
+                : formatParameter.BoundValueConverter.Convert(
+                    value,
+                    typeof(object),
+                    formatParameter.BoundValueConverterParameter,
+                    language);
+
+            if (IsUnset(boundValue))
+            {
+                return DependencyProperty.UnsetValue;
+            }
+
+            result = TranslationService.Source.Translate(formatParameter.Key, boundValue);
+        }
+        else
+        {
+            result = formatParameter.Value is null
+                ? TranslationService.Source.Translate(formatParameter.Key)
+                : TranslationService.Source.Translate(formatParameter.Key, formatParameter.Value);
+        }
 
         return formatParameter.StringFormat is null
             ? result
             : string.Format(TranslationService.Source.TranslationService.CurrentCulture, formatParameter.StringFormat, result);
+    }
+
+    private static bool IsUnset(object? value)
+    {
+        return ReferenceEquals(value, DependencyProperty.UnsetValue);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)

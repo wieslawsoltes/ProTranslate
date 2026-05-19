@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Globalization;
+using Avalonia;
 
 namespace ProTranslate.Avalonia;
 
@@ -29,7 +30,7 @@ public sealed class TranslationBindingSource : INotifyPropertyChanged, IDisposab
         set => _cultureService?.SetCulture(value);
     }
 
-    public string this[string key] => _translationService.GetString(key).Value;
+    public object? this[string key] => ToBindingValue(_translationService.GetString(key));
 
     public string Translate(string key, params object?[] arguments)
     {
@@ -84,4 +85,7 @@ public sealed class TranslationBindingSource : INotifyPropertyChanged, IDisposab
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Culture)));
         Refresh();
     }
+
+    private static object? ToBindingValue(global::ProTranslate.LocalizedString localized) =>
+        localized.ResourceNotFound ? AvaloniaProperty.UnsetValue : localized.Value;
 }

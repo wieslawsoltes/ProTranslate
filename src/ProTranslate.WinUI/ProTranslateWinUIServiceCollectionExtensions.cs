@@ -8,12 +8,20 @@ public static class ProTranslateWinUIServiceCollectionExtensions
     {
         services.AddSingleton(sp =>
         {
-            TranslationService.UseService(
-                sp.GetRequiredService<global::ProTranslate.ITranslationService>(),
-                sp.GetService<global::ProTranslate.ICultureService>());
+            sp.UseProTranslateWinUI();
             return TranslationService.Source;
         });
 
         return services;
+    }
+
+    public static IServiceProvider UseProTranslateWinUI(this IServiceProvider serviceProvider)
+    {
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+
+        TranslationService.UseService(
+            serviceProvider.GetRequiredService<global::ProTranslate.ITranslationService>(),
+            serviceProvider.GetService<global::ProTranslate.ICultureService>());
+        return serviceProvider;
     }
 }

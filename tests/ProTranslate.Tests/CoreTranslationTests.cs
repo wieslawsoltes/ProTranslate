@@ -181,6 +181,34 @@ public sealed class CoreTranslationTests
     }
 
     [Fact]
+    public void CultureServiceConstructionDoesNotMutateThreadCultures()
+    {
+        CultureInfo originalCulture = Thread.CurrentThread.CurrentCulture;
+        CultureInfo originalUICulture = Thread.CurrentThread.CurrentUICulture;
+        CultureInfo? originalDefaultCulture = CultureInfo.DefaultThreadCurrentCulture;
+        CultureInfo? originalDefaultUICulture = CultureInfo.DefaultThreadCurrentUICulture;
+
+        try
+        {
+            var cultures = new CultureService(CultureInfo.GetCultureInfo("fr-FR"));
+
+            Assert.Equal("fr-FR", cultures.CurrentCulture.Name);
+            Assert.Equal("fr-FR", cultures.CurrentUICulture.Name);
+            Assert.Equal(originalCulture, Thread.CurrentThread.CurrentCulture);
+            Assert.Equal(originalUICulture, Thread.CurrentThread.CurrentUICulture);
+            Assert.Equal(originalDefaultCulture, CultureInfo.DefaultThreadCurrentCulture);
+            Assert.Equal(originalDefaultUICulture, CultureInfo.DefaultThreadCurrentUICulture);
+        }
+        finally
+        {
+            Thread.CurrentThread.CurrentCulture = originalCulture;
+            Thread.CurrentThread.CurrentUICulture = originalUICulture;
+            CultureInfo.DefaultThreadCurrentCulture = originalDefaultCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = originalDefaultUICulture;
+        }
+    }
+
+    [Fact]
     public void CultureServiceCanUseSnapshotOnlyModeWithoutMutatingThreadCultures()
     {
         CultureInfo originalCulture = Thread.CurrentThread.CurrentCulture;

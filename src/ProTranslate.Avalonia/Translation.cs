@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Threading;
 
 namespace ProTranslate.Avalonia;
 
@@ -48,16 +49,17 @@ public sealed class Translation
             if (args.NewValue is CultureInfo culture)
             {
                 TranslationService.Culture = culture;
-
-                if (GetAutoFlowDirection(visual))
-                {
-                    Visual.SetFlowDirection(visual, ToFlowDirection(culture));
-                }
+                ApplyAutoFlowDirection(visual, culture);
             }
         });
+        AutoFlowDirectionProperty.Changed.AddClassHandler<Visual>((visual, _) =>
+        {
+            ApplyAutoFlowDirection(visual, GetCulture(visual) ?? TranslationService.Culture);
+            UpdateAttachedSubscription(visual);
+        });
         KeyProperty.Changed.AddClassHandler<AvaloniaObject>((element, _) => UpdateAttachedSubscription(element));
-        FallbackValueProperty.Changed.AddClassHandler<AvaloniaObject>((element, _) => UpdateAttachedText(element));
-        StringFormatProperty.Changed.AddClassHandler<AvaloniaObject>((element, _) => UpdateAttachedText(element));
+        FallbackValueProperty.Changed.AddClassHandler<AvaloniaObject>((element, _) => RefreshAttachedTarget(element));
+        StringFormatProperty.Changed.AddClassHandler<AvaloniaObject>((element, _) => RefreshAttachedTarget(element));
     }
 
     public static CultureInfo? GetCulture(Visual visual)
@@ -131,7 +133,7 @@ public sealed class Translation
 
     private static void UpdateAttachedSubscription(AvaloniaObject element)
     {
-        if (string.IsNullOrWhiteSpace(GetKey(element)))
+        if (!RequiresAttachedSubscription(element))
         {
             if (AttachedTargets.TryGetValue(element, out AttachedTranslationSubscription? subscription))
             {
@@ -139,12 +141,66 @@ public sealed class Translation
                 AttachedTargets.Remove(element);
             }
 
-            UpdateAttachedText(element);
+            RefreshAttachedTarget(element);
             return;
         }
 
         AttachedTargets.GetValue(element, static target => new AttachedTranslationSubscription(target));
+        RefreshAttachedTarget(element);
+    }
+
+    private static bool RequiresAttachedSubscription(AvaloniaObject element) =>
+        !string.IsNullOrWhiteSpace(GetKey(element))
+        || element is Visual visual && GetAutoFlowDirection(visual);
+
+    private static void RefreshAttachedTarget(AvaloniaObject element)
+    {
         UpdateAttachedText(element);
+        ApplyAutoFlowDirection(element);
+    }
+
+    private static void ApplyAutoFlowDirection(AvaloniaObject element)
+    {
+        if (element is Visual visual)
+        {
+            ApplyAutoFlowDirection(visual, GetCulture(visual) ?? TranslationService.Culture);
+        }
+    }
+
+    private static void ApplyAutoFlowDirection(Visual visual, CultureInfo culture)
+    {
+        if (GetAutoFlowDirection(visual))
+        {
+            Visual.SetFlowDirection(visual, ToFlowDirection(culture));
+        }
+    }
+
+    private static bool TryDispatchRefresh(AvaloniaObject element)
+    {
+        try
+        {
+            if (Dispatcher.UIThread.CheckAccess())
+            {
+                RefreshAttachedTarget(element);
+                return true;
+            }
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                try
+                {
+                    RefreshAttachedTarget(element);
+                }
+                catch (InvalidOperationException)
+                {
+                }
+            });
+            return true;
+        }
+        catch (InvalidOperationException)
+        {
+            return false;
+        }
     }
 
     private static void UpdateAttachedText(AvaloniaObject element)
@@ -182,12 +238,15 @@ public sealed class Translation
     private sealed class AttachedTranslationSubscription : IDisposable
     {
         private readonly WeakReference<AvaloniaObject> _target;
+        private TranslationBindingSource _source;
         private bool _disposed;
 
         public AttachedTranslationSubscription(AvaloniaObject target)
         {
             _target = new WeakReference<AvaloniaObject>(target);
-            TranslationService.Source.PropertyChanged += OnSourcePropertyChanged;
+            _source = TranslationService.Source;
+            _source.PropertyChanged += OnSourcePropertyChanged;
+            TranslationService.SourceChanged += OnSourceChanged;
         }
 
         public void Dispose()
@@ -197,8 +256,28 @@ public sealed class Translation
                 return;
             }
 
-            TranslationService.Source.PropertyChanged -= OnSourcePropertyChanged;
+            _source.PropertyChanged -= OnSourcePropertyChanged;
+            TranslationService.SourceChanged -= OnSourceChanged;
             _disposed = true;
+        }
+
+        private void OnSourceChanged(object? sender, EventArgs e)
+        {
+            _source.PropertyChanged -= OnSourcePropertyChanged;
+            _source = TranslationService.Source;
+            _source.PropertyChanged += OnSourcePropertyChanged;
+
+            if (_target.TryGetTarget(out AvaloniaObject? target))
+            {
+                if (!TryDispatchRefresh(target))
+                {
+                    Dispose();
+                }
+            }
+            else
+            {
+                Dispose();
+            }
         }
 
         private void OnSourcePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -210,7 +289,10 @@ public sealed class Translation
 
             if (_target.TryGetTarget(out AvaloniaObject? target))
             {
-                UpdateAttachedText(target);
+                if (!TryDispatchRefresh(target))
+                {
+                    Dispose();
+                }
             }
             else
             {

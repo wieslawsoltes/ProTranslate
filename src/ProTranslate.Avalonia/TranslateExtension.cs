@@ -141,6 +141,11 @@ public class FormatExtension
                 return AvaloniaProperty.UnsetValue;
             }
 
+            if (values.Count > 0 && IsUnset(values[0]))
+            {
+                return AvaloniaProperty.UnsetValue;
+            }
+
             if (values.Count > 1 && IsUnset(values[1]))
             {
                 return AvaloniaProperty.UnsetValue;

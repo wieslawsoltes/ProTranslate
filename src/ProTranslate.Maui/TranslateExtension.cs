@@ -121,6 +121,11 @@ public sealed class FormatExtension : IMarkupExtension<BindingBase>
                 return null;
             }
 
+            if (values.Length > 0 && ReferenceEquals(values[0], BindableProperty.UnsetValue))
+            {
+                return BindableProperty.UnsetValue;
+            }
+
             object? result = values.Length <= 1
                 ? TranslationService.Source.Translate(formatParameter.Key)
                 : TranslationService.Source.Translate(formatParameter.Key, values.Skip(1).ToArray());

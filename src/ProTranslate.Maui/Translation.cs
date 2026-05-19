@@ -114,7 +114,7 @@ public static class Translation
 
         if (GetAutoFlowDirection(element) && element is VisualElement visualElement)
         {
-            visualElement.FlowDirection = ToFlowDirection(culture);
+            ApplyAutoFlowDirection(visualElement, culture);
         }
     }
 
@@ -124,11 +124,18 @@ public static class Translation
         {
             visualElement.FlowDirection = ToFlowDirection(GetCulture(element) ?? TranslationService.Culture);
         }
+
+        UpdateAttachedSubscription(element);
     }
 
     private static void OnKeyChanged(BindableObject element, object oldValue, object newValue)
     {
-        if (string.IsNullOrWhiteSpace(newValue as string))
+        UpdateAttachedSubscription(element);
+    }
+
+    private static void UpdateAttachedSubscription(BindableObject element)
+    {
+        if (!RequiresAttachedSubscription(element))
         {
             if (AttachedTargets.TryGetValue(element, out AttachedTranslationSubscription? subscription))
             {
@@ -136,17 +143,54 @@ public static class Translation
                 AttachedTargets.Remove(element);
             }
 
-            UpdateAttachedText(element);
+            RefreshAttachedTarget(element);
             return;
         }
 
         AttachedTargets.GetValue(element, static target => new AttachedTranslationSubscription(target));
-        UpdateAttachedText(element);
+        RefreshAttachedTarget(element);
     }
+
+    private static bool RequiresAttachedSubscription(BindableObject element) =>
+        !string.IsNullOrWhiteSpace(GetKey(element)) || GetAutoFlowDirection(element);
 
     private static void OnAttachedTextOptionChanged(BindableObject element, object oldValue, object newValue)
     {
+        RefreshAttachedTarget(element);
+    }
+
+    private static void RefreshAttachedTarget(BindableObject element)
+    {
         UpdateAttachedText(element);
+        ApplyAutoFlowDirection(element);
+    }
+
+    private static void ApplyAutoFlowDirection(BindableObject element)
+    {
+        if (element is VisualElement visualElement)
+        {
+            ApplyAutoFlowDirection(visualElement, GetCulture(element) ?? TranslationService.Culture);
+        }
+    }
+
+    private static void ApplyAutoFlowDirection(VisualElement element, CultureInfo culture)
+    {
+        if (GetAutoFlowDirection(element))
+        {
+            element.FlowDirection = ToFlowDirection(culture);
+        }
+    }
+
+    private static void DispatchRefresh(BindableObject element)
+    {
+        var dispatcher = element.Dispatcher;
+        if (dispatcher is null || !dispatcher.IsDispatchRequired)
+        {
+            RefreshAttachedTarget(element);
+            return;
+        }
+
+        dispatcher.Dispatch(() => RefreshAttachedTarget(element));
     }
 
     private static void UpdateAttachedText(BindableObject element)
@@ -190,12 +234,15 @@ public static class Translation
     private sealed class AttachedTranslationSubscription : IDisposable
     {
         private readonly WeakReference<BindableObject> _target;
+        private TranslationBindingSource _source;
         private bool _disposed;
 
         public AttachedTranslationSubscription(BindableObject target)
         {
             _target = new WeakReference<BindableObject>(target);
-            TranslationService.Source.PropertyChanged += OnSourcePropertyChanged;
+            _source = TranslationService.Source;
+            _source.PropertyChanged += OnSourcePropertyChanged;
+            TranslationService.SourceChanged += OnSourceChanged;
         }
 
         public void Dispose()
@@ -205,8 +252,25 @@ public static class Translation
                 return;
             }
 
-            TranslationService.Source.PropertyChanged -= OnSourcePropertyChanged;
+            _source.PropertyChanged -= OnSourcePropertyChanged;
+            TranslationService.SourceChanged -= OnSourceChanged;
             _disposed = true;
+        }
+
+        private void OnSourceChanged(object? sender, EventArgs e)
+        {
+            _source.PropertyChanged -= OnSourcePropertyChanged;
+            _source = TranslationService.Source;
+            _source.PropertyChanged += OnSourcePropertyChanged;
+
+            if (_target.TryGetTarget(out BindableObject? target))
+            {
+                DispatchRefresh(target);
+            }
+            else
+            {
+                Dispose();
+            }
         }
 
         private void OnSourcePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -218,7 +282,7 @@ public static class Translation
 
             if (_target.TryGetTarget(out BindableObject? target))
             {
-                UpdateAttachedText(target);
+                DispatchRefresh(target);
             }
             else
             {

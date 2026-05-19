@@ -137,6 +137,100 @@ public sealed class AvaloniaRuntimeUiTests
         }, CancellationToken.None);
     }
 
+    [Fact]
+    public async Task AutoFlowDirectionRefreshesWhenSourceCultureChanges()
+    {
+        using var session = HeadlessUnitTestSession.StartNew(typeof(TestApplication));
+
+        await session.Dispatch(() =>
+        {
+            var cultures = UseTranslations(("en-US", "Shell.Title", "Orders"));
+            var grid = new Grid();
+
+            Translation.SetAutoFlowDirection(grid, true);
+            WithWindow(grid, () =>
+            {
+                DrainUi();
+                Assert.Equal(FlowDirection.LeftToRight, grid.GetValue(Visual.FlowDirectionProperty));
+
+                cultures.SetCulture(CultureInfo.GetCultureInfo("ar-SA"));
+                DrainUi();
+
+                Assert.Equal(FlowDirection.RightToLeft, grid.GetValue(Visual.FlowDirectionProperty));
+            });
+
+            return Task.CompletedTask;
+        }, CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task AttachedTargetFollowsReplacementTranslationSource()
+    {
+        using var session = HeadlessUnitTestSession.StartNew(typeof(TestApplication));
+
+        await session.Dispatch(() =>
+        {
+            UseTranslations(("en-US", "Shell.Title", "First"));
+            var textBlock = new TextBlock();
+
+            Translation.SetKey(textBlock, "Shell.Title");
+
+            WithWindow(textBlock, () =>
+            {
+                DrainUi();
+                Assert.Equal("First", textBlock.Text);
+
+                UseTranslations(("en-US", "Shell.Title", "Second"));
+                DrainUi();
+
+                Assert.Equal("Second", textBlock.Text);
+            });
+
+            return Task.CompletedTask;
+        }, CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task AttachedTargetRefreshesWhenCultureChangesOffUiThread()
+    {
+        using var session = HeadlessUnitTestSession.StartNew(typeof(TestApplication));
+
+        await session.Dispatch(async () =>
+        {
+            var cultures = UseTranslations(
+                ("en-US", "Shell.Title", "Orders"),
+                ("pl-PL", "Shell.Title", "Zamowienia"));
+            var textBlock = new TextBlock();
+
+            Translation.SetKey(textBlock, "Shell.Title");
+            var window = new Window
+            {
+                Width = 360,
+                Height = 160,
+                Content = textBlock
+            };
+
+            try
+            {
+                window.Show();
+                DrainUi();
+                Assert.Equal("Orders", textBlock.Text);
+
+                await Task.Run(() => cultures.SetCulture(CultureInfo.GetCultureInfo("pl-PL")));
+                DrainUi();
+
+                Assert.Equal("Zamowienia", textBlock.Text);
+            }
+            finally
+            {
+                Translation.SetKey(textBlock, null);
+                window.Content = null;
+                window.Close();
+                DrainUi();
+            }
+        }, CancellationToken.None);
+    }
+
     private static CultureService UseTranslations(params (string Culture, string Key, string Value)[] values)
     {
         var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
