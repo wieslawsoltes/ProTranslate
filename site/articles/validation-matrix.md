@@ -181,7 +181,7 @@ Framework-specific validation:
 - WPF: default presentation namespace mapping and `XmlLanguage`.
 - MAUI: shared ProTranslate URI and bindable property behavior.
 - WinUI: `using:ProTranslate.WinUI` and `x:Bind` sample path.
-- Uno: WinUI-compatible syntax and Windows-hosted sample build using the modern `win-x64` Windows App SDK RID.
+- Uno: WinUI-compatible syntax and Windows-hosted sample build using the modern `win-x64` Windows App SDK RID plus the centrally managed Windows App SDK package.
 
 ## Documentation Validation
 

@@ -5,12 +5,16 @@
     <OutputType Condition="$([MSBuild]::IsOSPlatform('windows'))">WinExe</OutputType>
     <OutputType Condition="!$([MSBuild]::IsOSPlatform('windows'))">Library</OutputType>
     <EnableWindowsTargeting Condition="$([MSBuild]::IsOSPlatform('windows'))">true</EnableWindowsTargeting>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOSPlatform('windows'))">win-x64</RuntimeIdentifier>
+    <RuntimeIdentifiers Condition="'$(RuntimeIdentifiers)' == '' and $([MSBuild]::IsOSPlatform('windows'))">win-x64</RuntimeIdentifiers>
+    <UseRidGraph Condition="$([MSBuild]::IsOSPlatform('windows'))">true</UseRidGraph>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
+    <PackageReference Include="Microsoft.WindowsAppSDK" />
     <PackageReference Include="Uno.WinUI" />
     <ProjectReference Include="../../src/ProTranslate.Formats/ProTranslate.Formats.csproj" />
     <ProjectReference Include="../../src/ProTranslate.Uno/ProTranslate.Uno.csproj" />
