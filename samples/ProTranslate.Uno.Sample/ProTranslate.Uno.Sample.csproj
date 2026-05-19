@@ -1,39 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Uno.Sdk/6.5.33">
   <PropertyGroup>
-    <TargetFramework Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-windows10.0.19041.0</TargetFramework>
-    <TargetFramework Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0</TargetFramework>
-    <OutputType Condition="$([MSBuild]::IsOSPlatform('windows'))">WinExe</OutputType>
-    <OutputType Condition="!$([MSBuild]::IsOSPlatform('windows'))">Library</OutputType>
-    <EnableWindowsTargeting Condition="$([MSBuild]::IsOSPlatform('windows'))">true</EnableWindowsTargeting>
-    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOSPlatform('windows'))">win-x64</RuntimeIdentifier>
-    <RuntimeIdentifiers Condition="'$(RuntimeIdentifiers)' == '' and $([MSBuild]::IsOSPlatform('windows'))">win-x64</RuntimeIdentifiers>
-    <UseRidGraph Condition="$([MSBuild]::IsOSPlatform('windows'))">true</UseRidGraph>
-    <UseWinUI Condition="$([MSBuild]::IsOSPlatform('windows'))">true</UseWinUI>
-    <WindowsPackageType Condition="$([MSBuild]::IsOSPlatform('windows'))">None</WindowsPackageType>
-    <WindowsAppSDKSelfContained Condition="$([MSBuild]::IsOSPlatform('windows'))">true</WindowsAppSDKSelfContained>
-    <WindowsAppSdkBootstrapInitialize Condition="$([MSBuild]::IsOSPlatform('windows'))">false</WindowsAppSdkBootstrapInitialize>
+    <TargetFramework>net10.0-desktop</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <UnoSingleProject>true</UnoSingleProject>
+    <UnoFeatures>SkiaRenderer;</UnoFeatures>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
-    <PackageReference Include="Microsoft.WindowsAppSDK" />
-    <PackageReference Include="Uno.WinUI" />
+  <ItemGroup>
     <ProjectReference Include="../../src/ProTranslate.Uno/ProTranslate.Uno.csproj" />
     <ProjectReference Include="../../src/ProTranslate.SourceGenerator/ProTranslate.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all" />
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
+  <ItemGroup>
     <Compile Include="../ProTranslate.Samples.Shared/*.cs" Link="Shared/%(Filename)%(Extension)" />
     <AdditionalFiles Include="../ProTranslate.Samples.Shared/Resources/Strings.*.json" Link="Resources/%(Filename)%(Extension)" />
-  </ItemGroup>
-
-  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
-    <Compile Remove="NonWindowsSampleStub.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
-    <Compile Remove="App.xaml.cs;MainWindow.xaml.cs" />
   </ItemGroup>
 </Project>

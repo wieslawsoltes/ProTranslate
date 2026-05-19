@@ -105,9 +105,9 @@ Avalonia, WPF, MAUI, WinUI, and Uno packages provide:
 - Rich provider trace and cache hit/miss diagnostics are not implemented.
 - Broad WPF, MAUI, WinUI, and Uno runtime UI automation is not implemented.
 - Full fidelity and round-trip validation for every industry format construct remains hardening work.
-- The Uno Translation Studio sample needs documented build validation and UI smoke coverage before release notes claim full authoring workflow validation.
+- The Uno Translation Studio sample has build validation; deeper UI smoke coverage is still required before release notes claim full authoring workflow validation.
 - Deeper dispatcher and retained-target stress tests beyond current Avalonia coverage are not implemented.
-- WinUI and Uno runtime paths are Windows-oriented in CI.
+- WinUI runtime paths are Windows-oriented in CI; Uno samples use `Uno.Sdk` desktop heads, with Windows CI validation and non-Windows developer builds supported.
 - WinUI does not support assembly-level `XmlnsDefinitionAttribute`; WinUI examples use `using:ProTranslate.WinUI`.
 
 ## Validation For This Preview

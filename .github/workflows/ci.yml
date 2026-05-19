@@ -87,12 +87,13 @@ jobs:
               dotnet build samples/ProTranslate.Avalonia.Sample/ProTranslate.Avalonia.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true
               dotnet build src/ProTranslate.Maui/ProTranslate.Maui.csproj -c Release -p:ContinuousIntegrationBuild=true
               dotnet restore samples/ProTranslate.Maui.Sample/ProTranslate.Maui.Sample.csproj
-          - name: Windows WPF, WinUI, and Uno samples
+          - name: Windows WPF, WinUI, Uno, and Translation Studio samples
             os: windows-latest
             script: |
               dotnet build samples/ProTranslate.Wpf.Sample/ProTranslate.Wpf.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true
               dotnet build samples/ProTranslate.WinUI.Sample/ProTranslate.WinUI.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true
               dotnet build samples/ProTranslate.Uno.Sample/ProTranslate.Uno.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true
+              dotnet build samples/ProTranslate.Uno.TranslationStudio/ProTranslate.Uno.TranslationStudio.csproj -c Release -p:ContinuousIntegrationBuild=true
 
     steps:
       - uses: actions/checkout@v4

@@ -1,16 +1,16 @@
-using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using ProTranslate.Samples.Shared;
 
 namespace ProTranslate.Uno.Sample;
 
-public sealed partial class MainWindow : Window
+public sealed partial class MainPage : Page
 {
-    public MainWindow()
+    public MainPage()
         : this(SampleTranslations.Create())
     {
     }
 
-    public MainWindow(SampleTranslationHost host)
+    public MainPage(SampleTranslationHost host)
     {
         ProTranslate.Uno.TranslationService.UseService(host.Translations, host.Cultures);
         ViewModel = new TranslationDemoViewModel(host);

@@ -123,6 +123,6 @@ Use the same `AdditionalFiles` catalog items that feed the source generator. The
 - The repository targets .NET 10.
 - MAUI builds require MAUI workloads.
 - WPF and WinUI real app paths require Windows for normal CI validation.
-- Uno sample validation is Windows-oriented in the current preview.
+- Uno samples use `Uno.Sdk` desktop heads; Windows CI validates them and non-Windows developer builds are supported.
 
 See [Testing](testing.md) and [CI And Release](ci-release.md) for validation commands.

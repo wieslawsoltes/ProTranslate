@@ -68,13 +68,13 @@ The Uno adapter mirrors the WinUI adapter shape. Static `Value` formatting is av
 
 ## Validation
 
-Uno sample builds are Windows CI validated:
+Uno sample builds use `Uno.Sdk` desktop heads and are validated by the Windows sample job:
 
 ```bash
 dotnet build samples/ProTranslate.Uno.Sample/ProTranslate.Uno.Sample.csproj -c Release
 ```
 
-Skia, WebAssembly, mobile, and native runtime validation are planned beyond the current preview sample build.
+The desktop build path is intentionally cross-platform. WebAssembly, mobile, and deeper runtime UI automation are planned beyond the current preview sample build.
 
 ## Translation Studio
 

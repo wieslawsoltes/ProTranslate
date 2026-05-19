@@ -1,7 +1,7 @@
-<Window x:Class="ProTranslate.Uno.Sample.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:pt="using:ProTranslate.Uno">
+<Page x:Class="ProTranslate.Uno.Sample.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:pt="using:ProTranslate.Uno">
   <ScrollViewer>
     <StackPanel Padding="24"
                 Spacing="14"
@@ -25,4 +25,4 @@
       <TextBlock Text="{x:Bind ViewModel.TemperatureText, Mode=OneWay}" TextWrapping="Wrap" />
     </StackPanel>
   </ScrollViewer>
-</Window>
+</Page>

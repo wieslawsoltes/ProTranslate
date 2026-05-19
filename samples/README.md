@@ -24,8 +24,8 @@ All framework samples use shared view-model and generated catalog code from `Pro
 | `ProTranslate.Maui.Sample` | Build locally with MAUI workloads installed: `dotnet build samples/ProTranslate.Maui.Sample/ProTranslate.Maui.Sample.csproj -c Release` | macOS CI builds `ProTranslate.Maui` and restores the sample project | Uses the shared `https://github.com/protranslate/xaml` URI because MAUI protects its default namespace. Full app packaging remains a local/platform validation step because hosted runner MacCatalyst SDK detection is toolchain-sensitive. |
 | `ProTranslate.Wpf.Sample` | Inspectable on non-Windows; real app path requires Windows | Windows sample job | Validates WPF prefix-free markup extensions, dependency properties, `Language`, and flow-direction sample path. |
 | `ProTranslate.WinUI.Sample` | Non-Windows project stub only | Windows sample job | Validates WinUI `x:Bind` view-model paths and attached `Translation.Key` on Windows. |
-| `ProTranslate.Uno.Sample` | Non-Windows project stub only | Windows sample job | Validates Windows-hosted Uno `x:Bind` and attached `Translation.Key` paths with the modern `win-x64` Windows App SDK RID, explicit Windows App SDK package reference, WinUI XAML toolchain, and generated WinUI entry point. The adapter emits a shared URI mapping, while the sample keeps WinUI-compatible `using:` syntax. Skia/WebAssembly runtime validation is planned. |
-| `ProTranslate.Uno.TranslationStudio` | Non-Windows project stub only | Windows build validation required | Professional Uno authoring sample for catalog review workflows. It uses the same `win-x64` Windows App SDK head defaults, WinUI XAML toolchain, and generated entry-point model as the Uno runtime sample. Broader UI smoke coverage remains validation hardening work. |
+| `ProTranslate.Uno.Sample` | Build locally with `dotnet build samples/ProTranslate.Uno.Sample/ProTranslate.Uno.Sample.csproj -c Release` | Windows sample job | Uses `Uno.Sdk`, `net10.0-desktop`, Skia desktop hosting, `x:Bind`, and attached `Translation.Key`. The adapter emits a shared URI mapping, while the sample keeps WinUI-compatible `using:` syntax. WebAssembly and mobile runtime validation is planned. |
+| `ProTranslate.Uno.TranslationStudio` | Build locally with `dotnet build samples/ProTranslate.Uno.TranslationStudio/ProTranslate.Uno.TranslationStudio.csproj -c Release` | Windows sample job | Professional Uno authoring sample for catalog review workflows. It uses the same `Uno.Sdk` desktop head model as the Uno runtime sample. Deeper UI smoke coverage remains validation hardening work. |
 
 ## Uno Translation Studio
 
@@ -61,7 +61,7 @@ MAUI sample on macOS with workloads installed:
 dotnet build samples/ProTranslate.Maui.Sample/ProTranslate.Maui.Sample.csproj -c Release
 ```
 
-Windows-hosted Uno Translation Studio sample:
+Uno Translation Studio desktop sample:
 
 ```bash
 dotnet build samples/ProTranslate.Uno.TranslationStudio/ProTranslate.Uno.TranslationStudio.csproj -c Release
@@ -74,4 +74,4 @@ dotnet build samples/ProTranslate.Uno.TranslationStudio/ProTranslate.Uno.Transla
 - Samples validate prefix-free XML namespace usage for Avalonia and WPF, and the shared ProTranslate URI for MAUI.
 - Samples use `DefaultUnitConversionService` and `DefaultLocalizedUnitFormatter` for distance and temperature display.
 - Avalonia runtime UI automation and release-only leak tests live in `tests/ProTranslate.Avalonia.Tests`; non-Avalonia runtime automation remains platform-specific hardening work.
-- The Uno Translation Studio build and deeper UI smoke tests remain validation hardening work.
+- Deeper Uno Translation Studio UI smoke tests remain validation hardening work.

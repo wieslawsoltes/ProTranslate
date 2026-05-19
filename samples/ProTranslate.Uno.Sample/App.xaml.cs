@@ -17,7 +17,10 @@ public partial class App : Application
         SampleTranslationHost host = SampleTranslations.Create();
         ProTranslate.Uno.TranslationService.UseService(host.Translations, host.Cultures);
 
-        _window = new MainWindow(host);
+        _window = new Window
+        {
+            Content = new MainPage(host),
+        };
         _window.Activate();
     }
 }

@@ -25,7 +25,7 @@ Test results are uploaded as short-retention artifacts for each operating system
 
 The `docs-build` job runs `./build-docs.sh` on Ubuntu.
 
-The `sample-builds` job waits for build/test and docs. It validates the Avalonia sample plus the MAUI adapter and sample restore on macOS, installing the MAUI workload first, and validates WPF, WinUI, and the Windows-hosted Uno sample on Windows. Uno heads pin the modern `win-x64` Windows App SDK RID, reference the centrally managed Windows App SDK version, enable the WinUI XAML toolchain, and let the generated WinUI entry point own startup so .NET 10 does not fall back to legacy `win10-*` runtime identifiers, old XAML compiler tasks, or missing `InitializeComponent` output during CI restore/build.
+The `sample-builds` job waits for build/test and docs. It validates the Avalonia sample plus the MAUI adapter and sample restore on macOS, installing the MAUI workload first, and validates WPF, WinUI, the Uno runtime sample, and Uno Translation Studio on Windows. Uno heads use `Uno.Sdk`, `net10.0-desktop`, Skia desktop hosting, and explicit desktop `Program.Main` entry points so the Uno XAML generator owns `InitializeComponent` output consistently instead of depending on Windows App SDK project side effects.
 
 The `pack-preview` job runs on macOS after build/test and sample builds. It installs the MAUI workload, runs `./pack.sh 0.1.0-ci.<run_number>`, and uploads `artifacts/packages` as `nuget-preview-packages`.
 

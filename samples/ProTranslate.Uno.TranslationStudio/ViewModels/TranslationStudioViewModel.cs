@@ -12,7 +12,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
 {
     private readonly ITranslationCatalogGateway _catalogGateway;
     private readonly CultureService _cultureService;
-    private readonly TranslationService _translationService;
+    private readonly global::ProTranslate.TranslationService _translationService;
     private readonly RelayCommand _approveSelectedCommand;
     private readonly RelayCommand _markReviewCommand;
     private readonly RelayCommand _exportCatalogCommand;
@@ -90,7 +90,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
             DefaultCulture = CultureInfo.GetCultureInfo("en-US")
         };
         options.FallbackCultures.Add(CultureInfo.GetCultureInfo("en-US"));
-        _translationService = new TranslationService(provider, _cultureService, options);
+        _translationService = new global::ProTranslate.TranslationService(provider, _cultureService, options);
         Strings = new ProTranslateStrings(_translationService);
         Strings.PropertyChanged += OnStringsChanged;
 

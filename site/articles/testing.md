@@ -49,7 +49,7 @@ MAUI sample on macOS with MAUI workloads installed:
 dotnet build samples/ProTranslate.Maui.Sample/ProTranslate.Maui.Sample.csproj -c Release
 ```
 
-Windows samples on Windows:
+Windows samples on Windows, plus Uno desktop samples on any machine with the .NET SDK and restored Uno packages:
 
 ```bash
 dotnet build samples/ProTranslate.Wpf.Sample/ProTranslate.Wpf.Sample.csproj -c Release
@@ -58,7 +58,7 @@ dotnet build samples/ProTranslate.Uno.Sample/ProTranslate.Uno.Sample.csproj -c R
 dotnet build samples/ProTranslate.Uno.TranslationStudio/ProTranslate.Uno.TranslationStudio.csproj -c Release
 ```
 
-WinUI and Uno sample projects include non-Windows stubs so the repository can restore and inspect on macOS or Linux, but their real XAML app paths are validated on Windows CI.
+WinUI remains a Windows-only sample path. Uno samples use `Uno.Sdk` desktop heads and can be built on non-Windows developer machines, while Windows CI keeps them in the hosted sample matrix.
 
 ## Package Build
 
@@ -83,8 +83,8 @@ Packages are written to `artifacts/packages` by default. The script discovers pa
 | MAUI sample | macOS with MAUI workload | macOS CI builds the MAUI adapter and restores the sample project; full app packaging is local/platform validation |
 | WPF sample | Windows only for real app path | Windows sample job |
 | WinUI sample | Windows only for real app path | Windows sample job |
-| Uno sample | Windows-hosted sample path | Windows sample job |
-| Uno Translation Studio sample | Windows-hosted sample path; non-Windows stub validates project shape only | Windows sample job or explicit release validation |
+| Uno sample | `Uno.Sdk` desktop sample build | Windows sample job; local non-Windows build supported |
+| Uno Translation Studio sample | `Uno.Sdk` desktop sample build; UI smoke validation planned | Windows sample job |
 | Packages | `./pack.sh <version>`; MAUI requires workload | macOS preview and release jobs |
 
 ## What To Validate For Feature Work

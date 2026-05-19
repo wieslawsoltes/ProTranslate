@@ -13,10 +13,10 @@
 | MAUI adapter and sample restore | `src/ProTranslate.Maui` build and `samples/ProTranslate.Maui.Sample` restore | macOS CI with MAUI workload | Implemented; full sample app packaging remains local/platform validation |
 | WPF sample | `samples/ProTranslate.Wpf.Sample` build | Windows CI | Implemented |
 | WinUI sample | `samples/ProTranslate.WinUI.Sample` build | Windows CI | Implemented |
-| Uno sample | `samples/ProTranslate.Uno.Sample` build with `win-x64` Windows App SDK RID, explicit Windows App SDK package reference, WinUI XAML toolchain, and generated entry point | Windows CI | Implemented |
+| Uno sample | `samples/ProTranslate.Uno.Sample` build with `Uno.Sdk`, `net10.0-desktop`, Skia desktop hosting, `x:Bind`, and attached `Translation.Key` | local macOS validation and Windows CI | Implemented |
 | Package artifacts | `./pack.sh <version>` | release workflow and local validation | Implemented for portable packages; MAUI package requires MAUI workload |
 | Translation format tooling | Parser/writer, round-trip, loss diagnostics, placeholder/plural mapping, and source-generator compile tests | Future tooling CI | Initial surface exists; validation hardening planned |
-| Uno Translation Studio | Build and UI smoke tests for import preview, editing, diagnostics, and export preview | Future Uno app CI | Initial sample exists; validation hardening planned |
+| Uno Translation Studio | `samples/ProTranslate.Uno.TranslationStudio` build with `Uno.Sdk` desktop head plus planned UI smoke tests for import preview, editing, diagnostics, and export preview | local macOS validation and Windows CI | Build implemented; deeper UI smoke validation planned |
 
 Not yet validated by automated tests:
 - full round-trip validation for XLIFF, PO/POT, RESX, Android, Apple, ARB, i18next JSON, and CSV/TSV
@@ -107,7 +107,7 @@ Validate:
 | WPF | sample build on Windows CI, prefix-free default namespace sample syntax, dependency-property key/culture/flow-direction path in sample; UI automation planned |
 | MAUI | adapter build and sample restore on macOS CI, local Mac Catalyst sample build, shared ProTranslate URI syntax, bindable key/culture/flow-direction path in sample; mobile lifecycle tests planned |
 | WinUI | sample build on Windows CI, `x:Bind` view-model path and attached `Translation.Key` sample path; UI automation planned |
-| Uno | sample build on Windows CI, WinUI-compatible `x:Bind`, attached `Translation.Key`, explicit namespace syntax, WinUI XAML toolchain, and generated WinUI entry point; Skia/WebAssembly runtime validation planned |
+| Uno | sample build with `Uno.Sdk` desktop head on local macOS and Windows CI, WinUI-compatible `x:Bind`, attached `Translation.Key`, explicit namespace syntax, and generated XAML partials; WebAssembly/mobile runtime validation planned |
 
 ## Compiled Binding And `x:Bind`
 

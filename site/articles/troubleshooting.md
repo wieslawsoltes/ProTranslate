@@ -110,7 +110,7 @@ dotnet test tests/ProTranslate.Analyzers.Tests/ProTranslate.Analyzers.Tests.cspr
 dotnet test tests/ProTranslate.Avalonia.Tests/ProTranslate.Avalonia.Tests.csproj -c Release --no-build
 ```
 
-WPF and WinUI require Windows targeting. The repository enables Windows targeting where needed, but real WPF, WinUI, and Windows-hosted Uno sample validation belongs on Windows. Non-Windows stubs allow inspection and portable restore paths; they do not prove the real XAML app path.
+WPF and WinUI require Windows targeting. The repository enables Windows targeting where needed, and real WPF/WinUI sample validation belongs on Windows. Uno samples use `Uno.Sdk` desktop heads, so build failures there should be investigated as regular Uno XAML generator or desktop host issues rather than treated as non-Windows stubs.
 
 MAUI builds require the MAUI workload. Install it before building the MAUI sample or expecting `pack.sh` to produce `ProTranslate.Maui`:
 
