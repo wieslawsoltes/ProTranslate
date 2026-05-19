@@ -121,7 +121,7 @@ public sealed class FormatExtension : IMarkupExtension<BindingBase>
                 return null;
             }
 
-            if (values.Length > 0 && ReferenceEquals(values[0], BindableProperty.UnsetValue))
+            if (values.Any(IsUnset))
             {
                 return BindableProperty.UnsetValue;
             }
@@ -138,6 +138,12 @@ public sealed class FormatExtension : IMarkupExtension<BindingBase>
         public object?[] ConvertBack(object? value, Type[] targetTypes, object? parameter, CultureInfo culture)
         {
             return targetTypes.Select(_ => Binding.DoNothing).ToArray();
+        }
+
+        private static bool IsUnset(object? value)
+        {
+            return ReferenceEquals(value, BindableProperty.UnsetValue) ||
+                   ReferenceEquals(value, Binding.DoNothing);
         }
     }
 }
