@@ -4,6 +4,7 @@
     <TargetFramework Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0</TargetFramework>
     <OutputType Condition="$([MSBuild]::IsOSPlatform('windows'))">WinExe</OutputType>
     <OutputType Condition="!$([MSBuild]::IsOSPlatform('windows'))">Library</OutputType>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOSPlatform('windows'))">win-x64</RuntimeIdentifier>
     <EnableWindowsTargeting Condition="$([MSBuild]::IsOSPlatform('windows'))">true</EnableWindowsTargeting>
     <UseWinUI Condition="$([MSBuild]::IsOSPlatform('windows'))">true</UseWinUI>
     <WindowsPackageType Condition="$([MSBuild]::IsOSPlatform('windows'))">None</WindowsPackageType>

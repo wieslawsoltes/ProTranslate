@@ -91,15 +91,19 @@ jobs:
                 echo "::error::No Xcode installation was found on the macOS runner."
                 exit 1
               fi
+              export HOME="${HOME:-/Users/runner}"
+              export DOTNET_CLI_HOME="$HOME"
+              mkdir -p "$HOME/Library/Preferences/maui" "$HOME/Library/Preferences/Xamarin"
               export MD_APPLE_SDK_ROOT="$XCODE_ROOT"
               export DEVELOPER_DIR="$XCODE_ROOT/Contents/Developer"
               echo "MD_APPLE_SDK_ROOT=$MD_APPLE_SDK_ROOT" >> "$GITHUB_ENV"
               echo "DEVELOPER_DIR=$DEVELOPER_DIR" >> "$GITHUB_ENV"
-              sudo xcode-select -s "$DEVELOPER_DIR"
+              sudo xcode-select --switch "$XCODE_ROOT"
+              xcode-select -p
               xcodebuild -version
               dotnet workload install maui
               dotnet build samples/ProTranslate.Avalonia.Sample/ProTranslate.Avalonia.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true
-              dotnet build samples/ProTranslate.Maui.Sample/ProTranslate.Maui.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true
+              dotnet build samples/ProTranslate.Maui.Sample/ProTranslate.Maui.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true -p:XcodeLocation="$XCODE_ROOT"
           - name: Windows WPF, WinUI, and Uno samples
             os: windows-latest
             script: |
