@@ -148,7 +148,7 @@ Use:
 ./pack.sh 0.1.0-preview.local
 ```
 
-Package artifacts are written to `artifacts/packages`. The script discovers packable projects under `src`, requires `.nupkg` and `.snupkg` outputs, validates README inclusion, and checks analyzer/source-generator layout. Release publishing requires `NUGET_API_KEY` in GitHub Actions. Tag releases must use `v*` tags, and manual release runs publish to NuGet only when `publish_nuget` is true.
+Package artifacts are written to `artifacts/packages`. The script discovers packable projects under `src`, requires `.nupkg` outputs and runtime `.snupkg` outputs, validates README inclusion, and checks analyzer/source-generator layout. Release publishing requires `NUGET_API_KEY` in GitHub Actions. Tag releases must use `v*` tags, and manual release runs publish to NuGet only when `publish_nuget` is true.
 
 ## Known Preview Limitations
 

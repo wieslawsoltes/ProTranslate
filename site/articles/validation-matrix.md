@@ -200,7 +200,7 @@ Before release:
 - CI is green on Linux, macOS, and Windows.
 - Docs workflow builds.
 - Sample builds pass on the appropriate OS.
-- Package artifacts include expected `.nupkg` and `.snupkg` files.
+- Package artifacts include expected `.nupkg` files and runtime `.snupkg` files.
 - Package metadata is correct.
 - Release notes list only shipped behavior.
 - Known preview limitations are explicit.

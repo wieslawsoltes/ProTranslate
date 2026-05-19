@@ -57,7 +57,7 @@ The release job runs on macOS, installs the MAUI workload, resolves the version,
 
 It uploads package artifacts as `nuget-packages-<version>`. Publishing to NuGet happens for tags or when `publish_nuget` is true. Publishing requires `NUGET_API_KEY`; the workflow fails explicitly when the secret is missing.
 
-For tag builds, the workflow also creates a GitHub release with generated release notes and attaches `.nupkg` and `.snupkg` files.
+For tag builds, the workflow also creates a GitHub release with generated release notes and attaches `.nupkg` files plus available runtime `.snupkg` files.
 
 ## Local Release Preparation
 
@@ -98,7 +98,7 @@ The preview package set is:
 - `ProTranslate.WinUI`
 - `ProTranslate.Uno`
 
-After packing, inspect `artifacts/packages` for every intended `.nupkg` and `.snupkg`. `pack.sh` discovers packable projects under `src`, validates README inclusion, and checks analyzer/source-generator packages for `analyzers/dotnet/cs` delivery without runtime `lib` DLLs or package dependencies.
+After packing, inspect `artifacts/packages` for every intended `.nupkg` and runtime `.snupkg`. `pack.sh` discovers packable projects under `src`, validates README inclusion, and checks analyzer/source-generator packages for `analyzers/dotnet/cs` delivery without runtime `lib` DLLs or package dependencies.
 
 ## Release Rules
 

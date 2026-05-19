@@ -40,7 +40,7 @@ Use:
 ./pack.sh 0.1.0-preview.local
 ```
 
-The output goes to `artifacts/packages`. `pack.sh` discovers packable projects under `src`, requires `.nupkg` and `.snupkg` outputs, and validates analyzer/source-generator package layout.
+The output goes to `artifacts/packages`. `pack.sh` discovers packable projects under `src`, requires `.nupkg` outputs and runtime `.snupkg` outputs, and validates analyzer/source-generator package layout.
 
 ## Which XAML namespace should I use?
 

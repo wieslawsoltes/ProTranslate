@@ -68,7 +68,7 @@ Create local package artifacts with an explicit preview version:
 ./pack.sh 0.1.0-preview.local
 ```
 
-Packages are written to `artifacts/packages` by default. The script discovers packable projects under `src`, packs each package, requires matching `.nupkg` and `.snupkg` artifacts, checks README inclusion, and validates Roslyn analyzer/source-generator package layout under `analyzers/dotnet/cs`.
+Packages are written to `artifacts/packages` by default. The script discovers packable projects under `src`, packs each package, requires `.nupkg` artifacts and runtime `.snupkg` artifacts, checks README inclusion, and validates Roslyn analyzer/source-generator package layout under `analyzers/dotnet/cs`.
 
 ## Platform Validation Split
 

@@ -125,8 +125,14 @@ for project in "${package_projects[@]}"; do
 done
 
 for project in "${package_projects[@]}"; do
+  package_id="$(get_package_id "${project}")"
   dotnet restore "${project}"
-  dotnet pack "${project}" -c Release --no-restore -o "${OUTPUT}" -p:Version="${VERSION}"
+
+  if is_analyzer_package "${project}" "${package_id}"; then
+    dotnet pack "${project}" -c Release --no-restore -o "${OUTPUT}" -p:Version="${VERSION}" -p:IncludeSymbols=false
+  else
+    dotnet pack "${project}" -c Release --no-restore -o "${OUTPUT}" -p:Version="${VERSION}"
+  fi
 done
 
 echo "Validating package artifacts..."
@@ -136,11 +142,12 @@ for project in "${package_projects[@]}"; do
   snupkg="${OUTPUT}/${package_id}.${VERSION}.snupkg"
 
   require_file "${nupkg}"
-  require_file "${snupkg}"
   require_package_entry "${nupkg}" "README.md"
 
   if is_analyzer_package "${project}" "${package_id}"; then
     validate_analyzer_package "${project}" "${package_id}" "${nupkg}"
+  else
+    require_file "${snupkg}"
   fi
 done
 

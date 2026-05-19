@@ -12,7 +12,7 @@ Use this checklist for preview package releases. Keep it aligned with the implem
 
 ## Outputs
 
-- `.nupkg` and `.snupkg` artifacts under `artifacts/packages`
+- `.nupkg` artifacts and runtime `.snupkg` artifacts under `artifacts/packages`
 - GitHub Actions release artifact or GitHub release for tags
 - package notes that list implemented packages and known limitations
 - migration guide updates when public usage changes
