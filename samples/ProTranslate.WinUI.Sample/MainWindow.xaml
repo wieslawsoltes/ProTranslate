@@ -10,7 +10,7 @@
       <TextBlock Text="{x:Bind ViewModel.Strings.AppTitle, Mode=OneWay}" FontSize="26" FontWeight="SemiBold" />
       <TextBlock Text="{x:Bind ViewModel.Strings.FrameworkSubtitle, Mode=OneWay}" TextWrapping="Wrap" />
       <TextBlock Text="{x:Bind ViewModel.Strings.MarkupExtensionLabel, Mode=OneWay}" FontWeight="SemiBold" />
-      <TextBlock Text="{pt:T AppTitle}" TextWrapping="Wrap" />
+      <TextBlock pt:Translation.Key="AppTitle" TextWrapping="Wrap" />
       <ComboBox ItemsSource="{x:Bind ViewModel.CultureChoices}" SelectedItem="{x:Bind ViewModel.SelectedCultureChoice, Mode=TwoWay}" DisplayMemberPath="DisplayName" />
       <ComboBox ItemsSource="{x:Bind ViewModel.RegionChoices}" SelectedItem="{x:Bind ViewModel.SelectedRegionChoice, Mode=TwoWay}" DisplayMemberPath="DisplayName" />
       <StackPanel Orientation="Horizontal" Spacing="8">

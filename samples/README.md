@@ -23,8 +23,8 @@ All framework samples use shared view-model and generated catalog code from `Pro
 | `ProTranslate.Avalonia.Sample` | Build locally with `dotnet build samples/ProTranslate.Avalonia.Sample/ProTranslate.Avalonia.Sample.csproj -c Release` | macOS sample job | Uses Avalonia compiled binding and prefix-free `Translate`/`Translation.*` through default XML namespace mapping. |
 | `ProTranslate.Maui.Sample` | Build locally with MAUI workloads installed: `dotnet build samples/ProTranslate.Maui.Sample/ProTranslate.Maui.Sample.csproj -c Release` | macOS sample job | Uses the shared `https://github.com/protranslate/xaml` URI because MAUI protects its default namespace. |
 | `ProTranslate.Wpf.Sample` | Inspectable on non-Windows; real app path requires Windows | Windows sample job | Validates WPF prefix-free markup extensions, dependency properties, `Language`, and flow-direction sample path. |
-| `ProTranslate.WinUI.Sample` | Non-Windows project stub only | Windows sample job | Validates WinUI `x:Bind` view-model paths and `pt:T` on Windows. |
-| `ProTranslate.Uno.Sample` | Non-Windows project stub only | Windows sample job | Validates Windows-hosted Uno sample path. The adapter emits a shared URI mapping, while the sample keeps WinUI-compatible `using:` syntax. Skia/WebAssembly runtime validation is planned. |
+| `ProTranslate.WinUI.Sample` | Non-Windows project stub only | Windows sample job | Validates WinUI `x:Bind` view-model paths and attached `Translation.Key` on Windows. |
+| `ProTranslate.Uno.Sample` | Non-Windows project stub only | Windows sample job | Validates Windows-hosted Uno `x:Bind` and attached `Translation.Key` paths. The adapter emits a shared URI mapping, while the sample keeps WinUI-compatible `using:` syntax. Skia/WebAssembly runtime validation is planned. |
 | `ProTranslate.Uno.TranslationStudio` | Non-Windows project stub only | Windows build validation required | Professional Uno authoring sample for catalog review workflows. Broader UI smoke coverage remains validation hardening work. |
 
 ## Uno Translation Studio

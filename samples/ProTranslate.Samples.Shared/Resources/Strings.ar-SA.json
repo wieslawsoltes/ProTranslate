@@ -9,7 +9,7 @@
   "ImperialUnits": "إمبراطوري",
   "OrderTitle": "ملخص الطلب",
   "GeneratedProxyLabel": "نصوص مولدة قوية النوع",
-  "MarkupExtensionLabel": "امتداد ترميز XAML الأصلي",
+  "MarkupExtensionLabel": "واجهة ترجمة XAML الأصلية",
   "SampleNote": "يستخدم هذا العرض ProTranslateStrings المولدة وخصائص MVVM حتى ترى compiled binding و x:Bind أعضاء قوية النوع.",
   "FlowLabel": "اتجاه النص التلقائي",
   "CultureLabel": "الثقافة",

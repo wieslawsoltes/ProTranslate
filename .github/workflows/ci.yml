@@ -81,7 +81,7 @@ jobs:
       matrix:
         include:
           - name: macOS Avalonia and MAUI samples
-            os: macos-latest
+            os: macos-26
             script: |
               XCODE_ROOT="/Applications/Xcode.app"
               if [ ! -d "$XCODE_ROOT" ]; then

@@ -9,7 +9,7 @@
   "ImperialUnits": "Imperialne",
   "OrderTitle": "Podsumowanie zamówienia",
   "GeneratedProxyLabel": "Wygenerowane typowane teksty",
-  "MarkupExtensionLabel": "Natywne rozszerzenie znaczników XAML",
+  "MarkupExtensionLabel": "Natywny interfejs tłumaczeń XAML",
   "SampleNote": "Widok używa wygenerowanych ProTranslateStrings i właściwości MVVM, więc compiled binding i x:Bind widzą silnie typowane elementy.",
   "FlowLabel": "Automatyczny kierunek tekstu",
   "CultureLabel": "Kultura",

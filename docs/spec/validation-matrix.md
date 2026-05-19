@@ -106,8 +106,8 @@ Validate:
 | Avalonia | `T`/`Translate` and `F`/`Format` binding creation, prefix-free default namespace sample syntax, binding-source refresh, attached key/fallback/string-format behavior, sample build, culture and flow-direction runtime tests, release-only leak tests |
 | WPF | sample build on Windows CI, prefix-free default namespace sample syntax, dependency-property key/culture/flow-direction path in sample; UI automation planned |
 | MAUI | sample build on macOS Mac Catalyst path, shared ProTranslate URI syntax, bindable key/culture/flow-direction path in sample; mobile lifecycle tests planned |
-| WinUI | sample build on Windows CI, `x:Bind` view-model path and `T`/`F` markup extensions in sample; UI automation planned |
-| Uno | sample build on Windows CI, WinUI-compatible adapter shape including `T`/`F` extensions and explicit namespace syntax; Skia/WebAssembly runtime validation planned |
+| WinUI | sample build on Windows CI, `x:Bind` view-model path and attached `Translation.Key` sample path; UI automation planned |
+| Uno | sample build on Windows CI, WinUI-compatible `x:Bind`, attached `Translation.Key`, and explicit namespace syntax; Skia/WebAssembly runtime validation planned |
 
 ## Compiled Binding And `x:Bind`
 

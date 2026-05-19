@@ -9,7 +9,7 @@
   "ImperialUnits": "Imperial",
   "OrderTitle": "Order summary",
   "GeneratedProxyLabel": "Generated typed strings",
-  "MarkupExtensionLabel": "Native XAML markup extension",
+  "MarkupExtensionLabel": "Native XAML translation API",
   "SampleNote": "This view binds through generated ProTranslateStrings and MVVM properties so compiled bindings and x:Bind see strongly typed members.",
   "FlowLabel": "Automatic flow direction",
   "CultureLabel": "Culture",
