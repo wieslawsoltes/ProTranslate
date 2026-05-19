@@ -1751,7 +1751,9 @@ public sealed class ProTranslateKeysGenerator : IIncrementalGenerator
             diagnostics.AddRange(file.Diagnostics);
             allKeys.AddRange(file.Keys.Select(key => key.Key));
 
-            foreach (IGrouping<string, KeyEntry> group in file.Keys.GroupBy(key => key.Key, StringComparer.Ordinal))
+            foreach (IGrouping<KeyCulturePair, KeyEntry> group in file.Keys.GroupBy(
+                key => new KeyCulturePair(key.Key, key.Culture),
+                KeyCulturePairComparer.Instance))
             {
                 KeyEntry[] duplicates = group.Skip(1).ToArray();
                 foreach (KeyEntry duplicate in duplicates)
@@ -1792,13 +1794,15 @@ public sealed class ProTranslateKeysGenerator : IIncrementalGenerator
             .OrderBy(static sourceFile => sourceFile, StringComparer.Ordinal)
             .ToImmutableArray();
 
+        int providerOrdinal = 0;
         ImmutableArray<ProviderEntry> providerEntries = files
+            .OrderBy(static file => file.Path, StringComparer.OrdinalIgnoreCase)
             .SelectMany(static file => file.Keys)
             .Where(static key => key.Value is not null)
-            .Select(static key => new ProviderEntry(key.Key, key.Culture, key.Value!))
+            .Select(key => new ProviderEntry(key.Key, key.Culture, key.Value!, providerOrdinal++))
             .OrderBy(static entry => entry.Key, StringComparer.Ordinal)
             .ThenBy(static entry => entry.Culture ?? string.Empty, StringComparer.Ordinal)
-            .ThenBy(static entry => entry.Value, StringComparer.Ordinal)
+            .ThenBy(static entry => entry.Ordinal)
             .ToImmutableArray();
 
         return new CatalogModel(keys, manifestEntries, providerEntries, cultures, sourceFiles, diagnostics.ToImmutable());
@@ -2737,6 +2741,39 @@ public sealed class ProTranslateKeysGenerator : IIncrementalGenerator
         public string Name { get; }
     }
 
+    private readonly struct KeyCulturePair
+    {
+        public KeyCulturePair(string key, string? culture)
+        {
+            Key = key;
+            Culture = culture;
+        }
+
+        public string Key { get; }
+
+        public string? Culture { get; }
+    }
+
+    private sealed class KeyCulturePairComparer : IEqualityComparer<KeyCulturePair>
+    {
+        public static readonly KeyCulturePairComparer Instance = new();
+
+        public bool Equals(KeyCulturePair x, KeyCulturePair y) =>
+            string.Equals(x.Key, y.Key, StringComparison.Ordinal)
+            && string.Equals(x.Culture ?? string.Empty, y.Culture ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+
+        public int GetHashCode(KeyCulturePair obj)
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = (hash * 31) + StringComparer.Ordinal.GetHashCode(obj.Key);
+                hash = (hash * 31) + StringComparer.OrdinalIgnoreCase.GetHashCode(obj.Culture ?? string.Empty);
+                return hash;
+            }
+        }
+    }
+
     private readonly struct ManifestEntry
     {
         public ManifestEntry(string key, string? culture, string sourceFile, ImmutableArray<int> placeholderIndexes)
@@ -2773,11 +2810,12 @@ public sealed class ProTranslateKeysGenerator : IIncrementalGenerator
 
     private readonly struct ProviderEntry
     {
-        public ProviderEntry(string key, string? culture, string value)
+        public ProviderEntry(string key, string? culture, string value, int ordinal)
         {
             Key = key;
             Culture = culture;
             Value = value;
+            Ordinal = ordinal;
         }
 
         public string Key { get; }
@@ -2785,5 +2823,7 @@ public sealed class ProTranslateKeysGenerator : IIncrementalGenerator
         public string? Culture { get; }
 
         public string Value { get; }
+
+        public int Ordinal { get; }
     }
 }

@@ -386,6 +386,53 @@ public sealed class SourceGeneratorTests
     }
 
     [Fact]
+    public void KeyGeneratorAllowsSameDelimitedKeyForDifferentCultures()
+    {
+        GeneratorDriverRunResult result = RunGenerator(
+            new InMemoryAdditionalText(
+                "/translations/catalog.csv",
+                """
+                key,culture,value
+                Shell.Title,en-US,Title
+                Shell.Title,pl-PL,Tytul
+                """));
+
+        Assert.DoesNotContain(result.Diagnostics, static diagnostic => diagnostic.Id == "PTSG002");
+
+        string provider = GetGeneratedSource(result, "ProTranslateGeneratedTranslationProvider.g.cs");
+        Assert.Contains("new ProTranslateGeneratedTranslationEntry(\"Shell.Title\", \"en-US\", \"Title\")", provider, StringComparison.Ordinal);
+        Assert.Contains("new ProTranslateGeneratedTranslationEntry(\"Shell.Title\", \"pl-PL\", \"Tytul\")", provider, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GeneratedProviderKeepsDuplicateEntryPrecedenceIndependentOfValueText()
+    {
+        GeneratorDriverRunResult result = RunGenerator(
+            new InMemoryAdditionalText(
+                "/translations/A/Strings.en-US.json",
+                """
+                {
+                  "Shell.Title": "Zulu"
+                }
+                """),
+            new InMemoryAdditionalText(
+                "/translations/B/Strings.en-US.json",
+                """
+                {
+                  "Shell.Title": "Alpha"
+                }
+                """));
+
+        string provider = GetGeneratedSource(result, "ProTranslateGeneratedTranslationProvider.g.cs");
+        int baseIndex = provider.IndexOf("new ProTranslateGeneratedTranslationEntry(\"Shell.Title\", \"en-US\", \"Zulu\")", StringComparison.Ordinal);
+        int overrideIndex = provider.IndexOf("new ProTranslateGeneratedTranslationEntry(\"Shell.Title\", \"en-US\", \"Alpha\")", StringComparison.Ordinal);
+
+        Assert.True(baseIndex >= 0);
+        Assert.True(overrideIndex >= 0);
+        Assert.True(baseIndex < overrideIndex);
+    }
+
+    [Fact]
     public void KeyGeneratorReportsInvalidJsonCatalog()
     {
         GeneratorDriverRunResult result = RunGenerator(
