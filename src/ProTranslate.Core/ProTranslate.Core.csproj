@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <PackageId>ProTranslate.Core</PackageId>
+    <Title>ProTranslate.Core</Title>
+    <Description>Framework-neutral translation, culture switching, fallback, formatting, region, measurement, and flow-direction core for ProTranslate.</Description>
+    <PackageTags>Localization;Globalization;Translation;XAML;MVVM</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProTranslate.Abstractions\ProTranslate.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <PackageId>ProTranslate.MicrosoftExtensions</PackageId>
+    <Title>ProTranslate.MicrosoftExtensions</Title>
+    <Description>Microsoft.Extensions.DependencyInjection and IStringLocalizer integration for ProTranslate.</Description>
+    <PackageTags>Microsoft.Extensions;IStringLocalizer;Localization;Globalization;Translation</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProTranslate.Abstractions\ProTranslate.Abstractions.csproj" />
+    <ProjectReference Include="..\ProTranslate.Core\ProTranslate.Core.csproj" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Localization" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+  </ItemGroup>
+</Project>
