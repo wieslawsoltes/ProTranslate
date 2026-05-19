@@ -172,7 +172,7 @@ Sample expectations:
 
 Validation split:
 
-- macOS validates portable projects, Avalonia, and MAUI sample paths.
+- macOS validates portable projects, the Avalonia sample, and the MAUI adapter plus sample restore; full MAUI sample app packaging remains local/platform validation.
 - Windows CI validates WPF, WinUI, and Uno sample paths.
 
 ## Phase 8: Documentation

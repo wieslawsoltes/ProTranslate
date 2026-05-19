@@ -49,7 +49,7 @@ Use this checklist for preview package releases. Keep it aligned with the implem
 3. Let CI validate platform coverage:
    - portable solution on Linux, macOS, and Windows
    - docs build
-   - Avalonia and MAUI sample builds on macOS
+   - Avalonia sample build plus MAUI adapter build and sample restore on macOS
    - WPF, WinUI, and Uno sample builds on Windows
 
 4. Pack with an explicit version:

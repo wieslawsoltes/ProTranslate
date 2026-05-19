@@ -5,6 +5,7 @@
     <OutputType Condition="$([MSBuild]::IsOSPlatform('windows'))">WinExe</OutputType>
     <OutputType Condition="!$([MSBuild]::IsOSPlatform('windows'))">Library</OutputType>
     <EnableWindowsTargeting Condition="$([MSBuild]::IsOSPlatform('windows'))">true</EnableWindowsTargeting>
+    <UseRidGraph Condition="$([MSBuild]::IsOSPlatform('windows'))">true</UseRidGraph>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>

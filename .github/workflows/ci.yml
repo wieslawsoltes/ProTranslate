@@ -80,30 +80,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: macOS Avalonia and MAUI samples
+          - name: macOS Avalonia sample and MAUI adapter
             os: macos-26
             script: |
-              XCODE_ROOT="/Applications/Xcode.app"
-              if [ ! -d "$XCODE_ROOT" ]; then
-                XCODE_ROOT="$(find /Applications -maxdepth 1 -name 'Xcode*.app' -type d | sort | tail -n 1)"
-              fi
-              if [ -z "$XCODE_ROOT" ] || [ ! -d "$XCODE_ROOT" ]; then
-                echo "::error::No Xcode installation was found on the macOS runner."
-                exit 1
-              fi
-              export HOME="${HOME:-/Users/runner}"
-              export DOTNET_CLI_HOME="$HOME"
-              mkdir -p "$HOME/Library/Preferences/maui" "$HOME/Library/Preferences/Xamarin"
-              export MD_APPLE_SDK_ROOT="$XCODE_ROOT"
-              export DEVELOPER_DIR="$XCODE_ROOT/Contents/Developer"
-              echo "MD_APPLE_SDK_ROOT=$MD_APPLE_SDK_ROOT" >> "$GITHUB_ENV"
-              echo "DEVELOPER_DIR=$DEVELOPER_DIR" >> "$GITHUB_ENV"
-              sudo xcode-select --switch "$XCODE_ROOT"
-              xcode-select -p
-              xcodebuild -version
               dotnet workload install maui
               dotnet build samples/ProTranslate.Avalonia.Sample/ProTranslate.Avalonia.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true
-              dotnet build samples/ProTranslate.Maui.Sample/ProTranslate.Maui.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true -p:XcodeLocation="$XCODE_ROOT"
+              dotnet build src/ProTranslate.Maui/ProTranslate.Maui.csproj -c Release -p:ContinuousIntegrationBuild=true
+              dotnet restore samples/ProTranslate.Maui.Sample/ProTranslate.Maui.Sample.csproj
           - name: Windows WPF, WinUI, and Uno samples
             os: windows-latest
             script: |

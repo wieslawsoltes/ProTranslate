@@ -117,7 +117,7 @@ Avalonia, WPF, MAUI, WinUI, and Uno packages provide:
 - Analyzer tests run in `tests/ProTranslate.Analyzers.Tests`.
 - Avalonia adapter smoke, runtime, and leak tests run in `tests/ProTranslate.Avalonia.Tests`.
 - Docs build through Lunet.
-- Avalonia and MAUI sample builds are validated on macOS CI/local paths.
+- Avalonia sample build plus MAUI adapter build and sample restore are validated on macOS CI; full MAUI sample app packaging is validated locally on a configured Mac.
 - WPF, WinUI, and Uno sample builds are validated on Windows CI.
 
 ## Future Package Notes

@@ -32,7 +32,7 @@ Run package validation when public API, metadata, or project files change:
 | Analyzer package | `tests/ProTranslate.Analyzers.Tests` | Implemented. |
 | Avalonia adapter | `tests/ProTranslate.Avalonia.Tests` and sample build | Implemented smoke, runtime, and leak coverage. |
 | WPF adapter | Windows sample build | Implemented CI build coverage. |
-| MAUI adapter | macOS sample build with MAUI workload | Implemented build coverage. |
+| MAUI adapter | macOS adapter build and sample restore with MAUI workload | Implemented build coverage; full app packaging is local/platform validation. |
 | WinUI adapter | Windows sample build | Implemented CI build coverage. |
 | Uno adapter | Windows sample build | Implemented CI build coverage. |
 | Docs site | `./build-docs.sh` | Implemented. |

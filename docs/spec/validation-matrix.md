@@ -10,7 +10,7 @@
 | Avalonia adapter smoke/runtime/leak tests | `tests/ProTranslate.Avalonia.Tests` | macOS, Linux, Windows CI | Implemented |
 | Docs site | `./build-docs.sh` | docs workflow and local validation | Implemented |
 | Avalonia sample | `samples/ProTranslate.Avalonia.Sample` build | macOS local/CI path | Implemented |
-| MAUI sample | `samples/ProTranslate.Maui.Sample` Mac Catalyst build | macOS with MAUI workload | Implemented |
+| MAUI adapter and sample restore | `src/ProTranslate.Maui` build and `samples/ProTranslate.Maui.Sample` restore | macOS CI with MAUI workload | Implemented; full sample app packaging remains local/platform validation |
 | WPF sample | `samples/ProTranslate.Wpf.Sample` build | Windows CI | Implemented |
 | WinUI sample | `samples/ProTranslate.WinUI.Sample` build | Windows CI | Implemented |
 | Uno sample | `samples/ProTranslate.Uno.Sample` build | Windows CI | Implemented |
@@ -105,7 +105,7 @@ Validate:
 | --- | --- |
 | Avalonia | `T`/`Translate` and `F`/`Format` binding creation, prefix-free default namespace sample syntax, binding-source refresh, attached key/fallback/string-format behavior, sample build, culture and flow-direction runtime tests, release-only leak tests |
 | WPF | sample build on Windows CI, prefix-free default namespace sample syntax, dependency-property key/culture/flow-direction path in sample; UI automation planned |
-| MAUI | sample build on macOS Mac Catalyst path, shared ProTranslate URI syntax, bindable key/culture/flow-direction path in sample; mobile lifecycle tests planned |
+| MAUI | adapter build and sample restore on macOS CI, local Mac Catalyst sample build, shared ProTranslate URI syntax, bindable key/culture/flow-direction path in sample; mobile lifecycle tests planned |
 | WinUI | sample build on Windows CI, `x:Bind` view-model path and attached `Translation.Key` sample path; UI automation planned |
 | Uno | sample build on Windows CI, WinUI-compatible `x:Bind`, attached `Translation.Key`, and explicit namespace syntax; Skia/WebAssembly runtime validation planned |
 

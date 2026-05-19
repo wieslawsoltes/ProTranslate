@@ -204,7 +204,7 @@ Each feature should define inputs, outputs, constraints, edge cases, and validat
 
 ## Sample Validation
 
-Local macOS validation covers the portable solution, core tests, Avalonia adapter tests, docs build, Avalonia sample build, and MAUI Mac Catalyst sample build when MAUI workloads are installed.
+Local macOS validation covers the portable solution, core tests, Avalonia adapter tests, docs build, Avalonia sample build, and MAUI Mac Catalyst sample build when MAUI workloads are installed. CI builds the MAUI adapter and restores the MAUI sample project; full MAUI app packaging stays in local/platform validation because hosted runner MacCatalyst SDK detection is toolchain-sensitive.
 
 Windows CI validates WPF, WinUI, and Uno sample builds. WinUI and Uno sample projects include non-Windows stubs so the repository can restore and inspect on macOS/Linux, but their real XAML app paths are Windows CI validated.
 

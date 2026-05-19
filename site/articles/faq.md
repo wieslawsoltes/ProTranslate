@@ -30,7 +30,7 @@ Use:
 
 ## How are platform checks split?
 
-Portable projects and tests run on Linux, macOS, and Windows CI. Avalonia adapter tests also run across those operating systems. Avalonia and MAUI sample builds are validated on macOS CI, with MAUI requiring the MAUI workload. WPF, WinUI, and Uno sample builds are validated on Windows CI.
+Portable projects and tests run on Linux, macOS, and Windows CI. Avalonia adapter tests also run across those operating systems. The Avalonia sample build is validated on macOS CI. MAUI CI builds the adapter and restores the sample project with the MAUI workload; full MAUI app packaging remains local/platform validation. WPF, WinUI, and Uno sample builds are validated on Windows CI.
 
 ## How do I build packages locally?
 

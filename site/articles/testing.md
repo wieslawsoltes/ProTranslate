@@ -80,7 +80,7 @@ Packages are written to `artifacts/packages` by default. The script discovers pa
 | Avalonia adapter tests | `tests/ProTranslate.Avalonia.Tests` through `./build.sh` | Linux, macOS, and Windows |
 | Docs | `./build-docs.sh` | Ubuntu docs build |
 | Avalonia sample | local build where Avalonia SDK dependencies restore | macOS sample job |
-| MAUI sample | macOS with MAUI workload | macOS sample job with MAUI workload installed |
+| MAUI sample | macOS with MAUI workload | macOS CI builds the MAUI adapter and restores the sample project; full app packaging is local/platform validation |
 | WPF sample | Windows only for real app path | Windows sample job |
 | WinUI sample | Windows only for real app path | Windows sample job |
 | Uno sample | Windows-hosted sample path | Windows sample job |

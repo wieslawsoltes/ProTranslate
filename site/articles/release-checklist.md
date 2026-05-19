@@ -111,7 +111,7 @@ The `ci.yml` workflow must pass:
 - macOS portable build and tests.
 - Windows portable build and tests.
 - Docs build.
-- macOS Avalonia and MAUI sample builds.
+- macOS Avalonia sample build plus MAUI adapter build and sample restore.
 - Windows WPF, WinUI, and Uno sample builds.
 - Preview package creation.
 
