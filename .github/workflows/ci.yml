@@ -39,7 +39,7 @@ jobs:
         run: dotnet restore ProTranslate.CI.slnx
 
       - name: Build
-        run: dotnet build ProTranslate.CI.slnx -c Release --no-restore /p:ContinuousIntegrationBuild=true
+        run: dotnet build ProTranslate.CI.slnx -c Release --no-restore -p:ContinuousIntegrationBuild=true
 
       - name: Test core
         run: dotnet test tests/ProTranslate.Tests/ProTranslate.Tests.csproj -c Release --no-build --logger "trx;LogFileName=protranslate-tests.trx" --results-directory artifacts/test-results
@@ -84,14 +84,14 @@ jobs:
             os: macos-latest
             script: |
               dotnet workload install maui
-              dotnet build samples/ProTranslate.Avalonia.Sample/ProTranslate.Avalonia.Sample.csproj -c Release /p:ContinuousIntegrationBuild=true
-              dotnet build samples/ProTranslate.Maui.Sample/ProTranslate.Maui.Sample.csproj -c Release /p:ContinuousIntegrationBuild=true
+              dotnet build samples/ProTranslate.Avalonia.Sample/ProTranslate.Avalonia.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true
+              dotnet build samples/ProTranslate.Maui.Sample/ProTranslate.Maui.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true
           - name: Windows WPF, WinUI, and Uno samples
             os: windows-latest
             script: |
-              dotnet build samples/ProTranslate.Wpf.Sample/ProTranslate.Wpf.Sample.csproj -c Release /p:ContinuousIntegrationBuild=true
-              dotnet build samples/ProTranslate.WinUI.Sample/ProTranslate.WinUI.Sample.csproj -c Release /p:ContinuousIntegrationBuild=true
-              dotnet build samples/ProTranslate.Uno.Sample/ProTranslate.Uno.Sample.csproj -c Release /p:ContinuousIntegrationBuild=true
+              dotnet build samples/ProTranslate.Wpf.Sample/ProTranslate.Wpf.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true
+              dotnet build samples/ProTranslate.WinUI.Sample/ProTranslate.WinUI.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true
+              dotnet build samples/ProTranslate.Uno.Sample/ProTranslate.Uno.Sample.csproj -c Release -p:ContinuousIntegrationBuild=true
 
     steps:
       - uses: actions/checkout@v4

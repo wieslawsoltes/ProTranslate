@@ -126,7 +126,7 @@ done
 
 for project in "${package_projects[@]}"; do
   dotnet restore "${project}"
-  dotnet pack "${project}" -c Release --no-restore -o "${OUTPUT}" /p:Version="${VERSION}"
+  dotnet pack "${project}" -c Release --no-restore -o "${OUTPUT}" -p:Version="${VERSION}"
 done
 
 echo "Validating package artifacts..."

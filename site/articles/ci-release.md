@@ -15,7 +15,7 @@ The `build-test` job runs on `ubuntu-latest`, `macos-latest`, and `windows-lates
 
 ```bash
 dotnet restore ProTranslate.CI.slnx
-dotnet build ProTranslate.CI.slnx -c Release --no-restore /p:ContinuousIntegrationBuild=true
+dotnet build ProTranslate.CI.slnx -c Release --no-restore -p:ContinuousIntegrationBuild=true
 dotnet test tests/ProTranslate.Tests/ProTranslate.Tests.csproj -c Release --no-build
 dotnet test tests/ProTranslate.Analyzers.Tests/ProTranslate.Analyzers.Tests.csproj -c Release --no-build
 dotnet test tests/ProTranslate.Avalonia.Tests/ProTranslate.Avalonia.Tests.csproj -c Release --no-build
