@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0</TargetFramework>
+    <OutputType Condition="$([MSBuild]::IsOSPlatform('windows'))">WinExe</OutputType>
+    <OutputType Condition="!$([MSBuild]::IsOSPlatform('windows'))">Library</OutputType>
+    <EnableWindowsTargeting Condition="$([MSBuild]::IsOSPlatform('windows'))">true</EnableWindowsTargeting>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
+    <PackageReference Include="Uno.WinUI" />
+    <ProjectReference Include="../../src/ProTranslate.Uno/ProTranslate.Uno.csproj" />
+    <ProjectReference Include="../../src/ProTranslate.SourceGenerator/ProTranslate.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
+    <Compile Include="../ProTranslate.Samples.Shared/*.cs" Link="Shared/%(Filename)%(Extension)" />
+    <AdditionalFiles Include="../ProTranslate.Samples.Shared/Resources/Strings.*.json" Link="Resources/%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('windows'))">
+    <Compile Remove="NonWindowsSampleStub.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('windows'))">
+    <Compile Remove="App.xaml.cs;MainWindow.xaml.cs;Program.cs" />
+  </ItemGroup>
+</Project>

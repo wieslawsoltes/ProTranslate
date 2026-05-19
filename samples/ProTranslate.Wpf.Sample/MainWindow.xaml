@@ -1,0 +1,126 @@
+<Window x:Class="ProTranslate.Wpf.Sample.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shared="clr-namespace:ProTranslate.Samples.Shared"
+        Title="{Binding Strings.AppTitle}"
+        Width="1080"
+        Height="760"
+        MinWidth="860"
+        MinHeight="620"
+        Translation.Culture="{Binding Strings.Culture}"
+        Translation.AutoFlowDirection="True"
+        Background="#F4F7FB">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <Border Grid.Row="0" Background="White" BorderBrush="#D9E0EA" BorderThickness="0,0,0,1" Padding="24,18">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <StackPanel>
+          <TextBlock Style="{StaticResource TitleText}" Text="{Binding Strings.AppTitle}" />
+          <TextBlock Style="{StaticResource CaptionText}" Text="{Binding Strings.FrameworkSubtitle}" TextWrapping="Wrap" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+          <TextBlock Style="{StaticResource CaptionText}" Text="{Binding Strings.CurrentCultureDisplay}" />
+          <TextBlock Style="{StaticResource CaptionText}" Text="{Binding Strings.CurrentRegionDisplay}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="310" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <Border Grid.Column="0" Background="#FAFBFE" BorderBrush="#D9E0EA" BorderThickness="0,0,1,0" Padding="20">
+        <StackPanel>
+          <TextBlock Style="{StaticResource SectionText}" Text="{Binding Strings.LiveSwitchLabel}" Margin="0,0,0,8" />
+          <ComboBox ItemsSource="{Binding CultureChoices}" SelectedItem="{Binding SelectedCultureChoice}" Margin="0,0,0,18">
+            <ComboBox.ItemTemplate>
+              <DataTemplate DataType="{x:Type shared:CultureChoice}">
+                <TextBlock Text="{Binding DisplayName}" />
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+
+          <TextBlock Style="{StaticResource SectionText}" Text="{Binding Strings.RegionOverrideLabel}" Margin="0,0,0,8" />
+          <ComboBox ItemsSource="{Binding RegionChoices}" SelectedItem="{Binding SelectedRegionChoice}" Margin="0,0,0,18">
+            <ComboBox.ItemTemplate>
+              <DataTemplate DataType="{x:Type shared:RegionChoice}">
+                <TextBlock Text="{Binding DisplayName}" />
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+
+          <TextBlock Style="{StaticResource SectionText}" Text="{Binding Strings.UnitsLabel}" Margin="0,0,0,8" />
+          <UniformGrid Columns="2" Margin="0,0,0,8">
+            <Button Content="{Binding Strings.MetricUnits}" Command="{Binding SetMetricCommand}" Margin="0,0,4,0" MinHeight="34" />
+            <Button Content="{Binding Strings.ImperialUnits}" Command="{Binding SetImperialCommand}" Margin="4,0,0,0" MinHeight="34" />
+          </UniformGrid>
+          <TextBlock Style="{StaticResource CaptionText}" Text="{Binding UnitsDisplay}" Margin="0,0,0,18" />
+
+          <TextBlock Style="{StaticResource SectionText}" Text="{Binding Strings.FlowLabel}" Margin="0,0,0,8" />
+          <TextBlock Style="{StaticResource CaptionText}" Text="{Binding Strings.FlowDirectionDisplay}" />
+        </StackPanel>
+      </Border>
+
+      <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24">
+          <Border Style="{StaticResource PanelBorder}" Margin="0,0,0,18">
+            <StackPanel>
+              <TextBlock Style="{StaticResource SectionText}" Text="{Binding Strings.GeneratedProxyLabel}" />
+              <TextBlock Style="{StaticResource CaptionText}" Text="{Binding Strings.SampleNote}" TextWrapping="Wrap" Margin="0,8,0,0" />
+            </StackPanel>
+          </Border>
+
+          <Border Style="{StaticResource PanelBorder}" Margin="0,0,0,18">
+            <StackPanel>
+              <TextBlock Style="{StaticResource SectionText}" Text="{Binding Strings.MarkupExtensionLabel}" />
+              <TextBlock Style="{StaticResource CaptionText}" Text="{Translate AppTitle}" TextWrapping="Wrap" Margin="0,8,0,0" />
+            </StackPanel>
+          </Border>
+
+          <Border Style="{StaticResource PanelBorder}" Margin="0,0,0,18">
+            <StackPanel>
+              <TextBlock Style="{StaticResource SectionText}" Text="{Binding Strings.OrderTitle}" Margin="0,0,0,10" />
+              <TextBox Text="{Binding CustomerName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" />
+              <TextBlock FontSize="20" FontWeight="SemiBold" Text="{Binding GreetingText}" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentName}" />
+              <TextBlock Text="{Binding InvoiceTotalText}" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentName}" Margin="0,10,0,0" />
+              <TextBlock Text="{Binding FulfillmentText}" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentName}" Margin="0,8,0,0" />
+            </StackPanel>
+          </Border>
+
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="18" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" Style="{StaticResource PanelBorder}">
+              <StackPanel>
+                <TextBlock Style="{StaticResource SectionText}" Text="{Binding Strings.FormattedStringsLabel}" />
+                <TextBlock Text="{Binding DistanceText}" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentName}" Margin="0,10,0,0" />
+                <TextBlock Text="{Binding TemperatureText}" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentName}" Margin="0,8,0,0" />
+              </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2" Style="{StaticResource PanelBorder}">
+              <StackPanel>
+                <TextBlock Style="{StaticResource SectionText}" Text="{Binding Strings.FlowLabel}" />
+                <TextBlock FontSize="28" Text="Hello / Cześć / مرحبا" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentName}" Margin="0,10,0,0" />
+                <TextBlock Style="{StaticResource CaptionText}" Text="{Binding Strings.FlowDirectionDisplay}" Margin="0,8,0,0" />
+              </StackPanel>
+            </Border>
+          </Grid>
+        </StackPanel>
+      </ScrollViewer>
+    </Grid>
+  </Grid>
+</Window>

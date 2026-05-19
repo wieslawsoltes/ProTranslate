@@ -1,0 +1,28 @@
+<Window x:Class="ProTranslate.Uno.Sample.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:pt="using:ProTranslate.Uno">
+  <ScrollViewer>
+    <StackPanel Padding="24"
+                Spacing="14"
+                pt:Translation.Culture="{x:Bind ViewModel.Strings.Culture, Mode=OneWay}"
+                pt:Translation.AutoFlowDirection="True">
+      <TextBlock Text="{x:Bind ViewModel.Strings.AppTitle, Mode=OneWay}" FontSize="26" FontWeight="SemiBold" />
+      <TextBlock Text="{x:Bind ViewModel.Strings.FrameworkSubtitle, Mode=OneWay}" TextWrapping="Wrap" />
+      <TextBlock Text="{x:Bind ViewModel.Strings.MarkupExtensionLabel, Mode=OneWay}" FontWeight="SemiBold" />
+      <TextBlock Text="{pt:T AppTitle}" TextWrapping="Wrap" />
+      <ComboBox ItemsSource="{x:Bind ViewModel.CultureChoices}" SelectedItem="{x:Bind ViewModel.SelectedCultureChoice, Mode=TwoWay}" DisplayMemberPath="DisplayName" />
+      <ComboBox ItemsSource="{x:Bind ViewModel.RegionChoices}" SelectedItem="{x:Bind ViewModel.SelectedRegionChoice, Mode=TwoWay}" DisplayMemberPath="DisplayName" />
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <Button Content="{x:Bind ViewModel.Strings.MetricUnits, Mode=OneWay}" Command="{x:Bind ViewModel.SetMetricCommand}" />
+        <Button Content="{x:Bind ViewModel.Strings.ImperialUnits, Mode=OneWay}" Command="{x:Bind ViewModel.SetImperialCommand}" />
+      </StackPanel>
+      <TextBox Text="{x:Bind ViewModel.CustomerName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+      <TextBlock Text="{x:Bind ViewModel.GreetingText, Mode=OneWay}" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap" />
+      <TextBlock Text="{x:Bind ViewModel.InvoiceTotalText, Mode=OneWay}" TextWrapping="Wrap" />
+      <TextBlock Text="{x:Bind ViewModel.FulfillmentText, Mode=OneWay}" TextWrapping="Wrap" />
+      <TextBlock Text="{x:Bind ViewModel.DistanceText, Mode=OneWay}" TextWrapping="Wrap" />
+      <TextBlock Text="{x:Bind ViewModel.TemperatureText, Mode=OneWay}" TextWrapping="Wrap" />
+    </StackPanel>
+  </ScrollViewer>
+</Window>

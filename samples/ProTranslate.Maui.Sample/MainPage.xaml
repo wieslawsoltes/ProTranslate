@@ -1,0 +1,31 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pt="https://github.com/protranslate/xaml"
+             xmlns:shared="clr-namespace:ProTranslate.Samples.Shared"
+             x:Class="ProTranslate.Maui.Sample.MainPage"
+             x:DataType="shared:TranslationDemoViewModel"
+             Title="{Binding Strings.AppTitle}"
+             pt:Translation.Culture="{Binding Strings.Culture}"
+             pt:Translation.AutoFlowDirection="True">
+  <ScrollView>
+    <VerticalStackLayout Padding="24" Spacing="16">
+      <Label Text="{Binding Strings.AppTitle}" FontSize="26" FontAttributes="Bold" />
+      <Label Text="{Binding Strings.FrameworkSubtitle}" TextColor="#647086" />
+      <Label Text="{Binding Strings.MarkupExtensionLabel}" FontAttributes="Bold" />
+      <Label Text="{pt:T AppTitle}" TextColor="#647086" />
+      <Picker ItemsSource="{Binding CultureChoices}" SelectedItem="{Binding SelectedCultureChoice}" ItemDisplayBinding="{Binding DisplayName}" />
+      <Picker ItemsSource="{Binding RegionChoices}" SelectedItem="{Binding SelectedRegionChoice}" ItemDisplayBinding="{Binding DisplayName}" />
+      <HorizontalStackLayout Spacing="8">
+        <Button Text="{Binding Strings.MetricUnits}" Command="{Binding SetMetricCommand}" />
+        <Button Text="{Binding Strings.ImperialUnits}" Command="{Binding SetImperialCommand}" />
+      </HorizontalStackLayout>
+      <Entry Text="{Binding CustomerName}" />
+      <Label Text="{Binding GreetingText}" FontSize="20" FontAttributes="Bold" HorizontalTextAlignment="{Binding TextAlignmentName}" />
+      <Label Text="{Binding InvoiceTotalText}" HorizontalTextAlignment="{Binding TextAlignmentName}" />
+      <Label Text="{Binding FulfillmentText}" HorizontalTextAlignment="{Binding TextAlignmentName}" />
+      <Label Text="{Binding DistanceText}" HorizontalTextAlignment="{Binding TextAlignmentName}" />
+      <Label Text="{Binding TemperatureText}" HorizontalTextAlignment="{Binding TextAlignmentName}" />
+      <Label Text="{Binding Strings.FlowDirectionDisplay}" TextColor="#647086" />
+    </VerticalStackLayout>
+  </ScrollView>
+</ContentPage>
