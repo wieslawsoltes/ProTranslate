@@ -18,7 +18,9 @@ BenchmarkDotNet.Artifacts/
 *.coveragexml
 coverage/
 site/_output/
-site/.lunet/
+site/.lunet/*
+!site/.lunet/css/
+!site/.lunet/css/*.css
 _site/
 node_modules/
 .DS_Store

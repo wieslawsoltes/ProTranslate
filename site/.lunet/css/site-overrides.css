@@ -1,0 +1,51 @@
+:root {
+  --protranslate-accent: #0f766e;
+  --protranslate-accent-strong: #115e59;
+}
+
+.site-hero {
+  border-bottom: 1px solid var(--bs-border-color);
+  padding-bottom: 2rem;
+}
+
+.site-hero h1 {
+  letter-spacing: 0;
+}
+
+.protranslate-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 999px;
+  padding: .35rem .7rem;
+  font-size: .9rem;
+  color: var(--bs-secondary-color);
+  background: var(--bs-body-bg);
+}
+
+.protranslate-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+}
+
+.protranslate-feature {
+  border: 1px solid var(--bs-border-color);
+  border-radius: .5rem;
+  padding: 1rem;
+  background: var(--bs-body-bg);
+}
+
+.protranslate-feature h3 {
+  font-size: 1.05rem;
+  margin-bottom: .5rem;
+}
+
+.protranslate-feature p {
+  margin-bottom: 0;
+}
+
+.protranslate-layer-table code {
+  white-space: nowrap;
+}
