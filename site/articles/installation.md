@@ -63,10 +63,13 @@ services.AddProTranslate(
     });
 ```
 
-The adapter registration connects the static binding source used by XAML markup extensions:
+The adapter registration adds the framework binding source. After building the service provider, bootstrap the static XAML source once:
 
 ```csharp
 services.AddProTranslateAvalonia();
+
+using ServiceProvider serviceProvider = services.BuildServiceProvider();
+serviceProvider.UseProTranslateAvalonia();
 ```
 
 The current preview does not provide a fluent options builder for provider packages. Construct providers and `TranslationFallbackOptions` directly.
@@ -80,6 +83,8 @@ var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
 var translations = new TranslationService(provider, cultures);
 var globalization = new GlobalizationService(cultures, translations);
 ```
+
+The constructor keeps the initial culture inside the service. Thread and default-thread cultures are updated only when `SetCulture` is called and the corresponding `CultureServiceOptions` flags are enabled.
 
 Connect the adapter manually:
 

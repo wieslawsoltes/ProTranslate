@@ -110,9 +110,9 @@ In the current WinUI and Uno adapters:
 
 - `TranslateExtension` returns a one-way binding and can apply `StringFormat` through a converter.
 - `FormatExtension` can format a static `Value` supplied directly in XAML.
-- A bound `Value={Binding ...}` is not treated as a dynamic format argument by the adapter markup extension.
+- A bound `Value={Binding ...}` is preserved as the returned binding and receives a formatting converter, so the live bound value is passed into `Translate`.
 
-For dynamic formatted text in WinUI and Uno, prefer a view-model property, generated accessor, or `x:Bind` path that calls the core service:
+For complex dynamic formatted text in WinUI and Uno, prefer a view-model property, generated accessor, or `x:Bind` path that calls the core service:
 
 ```csharp
 public string TotalText => _translations.Format("Orders.Total", Total);

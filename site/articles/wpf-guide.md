@@ -25,6 +25,9 @@ With Microsoft.Extensions:
 
 ```csharp
 services.AddProTranslateWpf();
+
+using ServiceProvider serviceProvider = services.BuildServiceProvider();
+serviceProvider.UseProTranslateWpf();
 ```
 
 ## XAML Namespace

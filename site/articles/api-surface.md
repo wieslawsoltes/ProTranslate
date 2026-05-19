@@ -182,6 +182,7 @@ Each framework adapter exposes the same conceptual API:
 - Attached `Translation.Culture`.
 - Attached `Translation.AutoFlowDirection`.
 - `AddProTranslateAvalonia`, `AddProTranslateWpf`, `AddProTranslateMaui`, `AddProTranslateWinUI`, or `AddProTranslateUno`.
+- `UseProTranslateAvalonia`, `UseProTranslateWpf`, `UseProTranslateMaui`, `UseProTranslateWinUI`, or `UseProTranslateUno` for post-build DI bootstrap.
 
 Representative Avalonia or WPF syntax with default namespace mapping:
 

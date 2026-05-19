@@ -195,6 +195,7 @@ Each adapter exposes the same preview concepts using native framework types:
 - attached `Translation.Culture`
 - attached `Translation.AutoFlowDirection`
 - `AddProTranslate{Framework}` DI helper
+- `UseProTranslate{Framework}` post-build DI bootstrap helper
 
 XML namespace support:
 - Avalonia maps `ProTranslate.Avalonia` to `https://github.com/protranslate/xaml` and to Avalonia's default `https://github.com/avaloniaui` namespace.
@@ -223,7 +224,7 @@ Portable explicit form:
 </ContentPage>
 ```
 
-Avalonia, WPF, and MAUI `FormatExtension` support a bound `Value` through native multi-binding. WinUI and Uno expose static value formatting through their adapter markup extensions and keep dynamic formatting in `x:Bind`/view-model paths where native XAML multi-binding is unavailable.
+Avalonia, WPF, and MAUI `FormatExtension` support a bound `Value` through native multi-binding. WinUI and Uno preserve `Value={Binding ...}` by returning that binding with a formatting converter; `x:Bind`/view-model paths remain preferred for complex formatted workflows where native XAML multi-binding is unavailable.
 
 WinUI and Uno samples use `x:Bind` for strongly typed view-model properties and explicit `pt:` syntax for adapter markup-extension coverage.
 
@@ -397,11 +398,14 @@ services.AddProTranslateWpf();
 services.AddProTranslateMaui();
 services.AddProTranslateWinUI();
 services.AddProTranslateUno();
+
+using ServiceProvider serviceProvider = services.BuildServiceProvider();
+serviceProvider.UseProTranslateAvalonia();
 ```
 
 Constraints:
 - `ProTranslate.MicrosoftExtensions` owns Microsoft.Extensions dependencies
-- adapter DI helpers connect the static adapter binding source to the registered core services
+- adapter DI helpers register the binding source; post-build `UseProTranslate{Framework}` bootstraps the static XAML source to the registered core services
 - fluent `UseResourceManager`, `UseStringLocalizer`, and options-builder APIs remain future ergonomics work
 
 ## Analyzer Package

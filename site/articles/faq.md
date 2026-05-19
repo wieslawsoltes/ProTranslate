@@ -70,7 +70,7 @@ Yes for the implemented preview paths. Culture switching updates translated valu
 
 ## Does ProTranslate mutate thread cultures?
 
-By default, `CultureService` applies active cultures to `Thread.CurrentThread` and default thread cultures. Set `CultureServiceOptions.ApplyToCurrentThread` and `ApplyToDefaultThread` to `false` when a host needs isolation.
+`CultureService` construction only captures the initial culture snapshot. By default, explicit `SetCulture` calls apply active cultures to `Thread.CurrentThread` and default thread cultures. Set `CultureServiceOptions.ApplyToCurrentThread` and `ApplyToDefaultThread` to `false` when a host needs isolation.
 
 ## Which providers are supported?
 
@@ -86,7 +86,7 @@ Missing keys return the key by default, set `LocalizedString.ResourceNotFound`, 
 
 ## Does the source generator support compiled binding and `x:Bind` scenarios?
 
-Yes. `ProTranslate.SourceGenerator` emits key constants, get/value/format/observe accessors, `ProTranslateStrings` CLR properties, generated JSON provider code, and provider manifests from `*.protranslate.keys.txt`, `Strings.*.json`, and `*.protranslate.json`. WinUI and Uno samples keep dynamic formatting in strongly typed view-model or `x:Bind` paths where native XAML multi-binding is unavailable.
+Yes. `ProTranslate.SourceGenerator` emits key constants, get/value/format/observe accessors, `ProTranslateStrings` CLR properties, generated JSON provider code, and provider manifests from `*.protranslate.keys.txt`, `Strings.*.json`, and `*.protranslate.json`. WinUI and Uno samples keep complex dynamic formatting in strongly typed view-model or `x:Bind` paths where native XAML multi-binding is unavailable.
 
 ## Are analyzer diagnostics available?
 

@@ -167,7 +167,7 @@ Remaining hardening work:
 - Full Uno Translation Studio authoring workflow validation.
 - Deeper dispatcher and retained-target stress tests beyond current Avalonia coverage.
 
-By default, `CultureService` applies selected cultures to current and default thread cultures. Use `CultureServiceOptions` to opt out in tests and hosts that need strict culture isolation.
+`CultureService` construction captures the initial culture without mutating ambient thread state. Explicit `SetCulture` calls apply selected cultures to current and default thread cultures by default. Use `CultureServiceOptions` to opt out in tests and hosts that need strict culture isolation.
 
 Package notes should list only the formats that are implemented and validated. XLIFF should be positioned as the preferred CAT/TMS exchange format, and source-generated ProTranslate catalogs should remain the preferred runtime format for applications. Lossy or unsupported conversions must be surfaced through diagnostics.
 

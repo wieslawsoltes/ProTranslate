@@ -23,6 +23,9 @@ services.AddProTranslate(
     culture: CultureInfo.GetCultureInfo("en-US"));
 
 services.AddProTranslateMaui();
+
+using ServiceProvider serviceProvider = services.BuildServiceProvider();
+serviceProvider.UseProTranslateMaui();
 ```
 
 Or connect directly:

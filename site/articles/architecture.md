@@ -112,7 +112,7 @@ Region and measurement overrides are metadata changes rather than culture change
 - `FlowDirection`, derived from `CultureInfo.TextInfo.IsRightToLeft`.
 - `CultureChanged`, raised after a successful culture switch.
 
-By default, `CultureService` applies cultures to `Thread.CurrentThread`, `CultureInfo.DefaultThreadCurrentCulture`, and `CultureInfo.DefaultThreadCurrentUICulture`. Hosts can set `CultureServiceOptions.ApplyToCurrentThread` and `ApplyToDefaultThread` to `false` when they need culture isolation.
+`CultureService` construction captures the initial culture without mutating ambient process or thread culture. By default, explicit `SetCulture` calls apply cultures to `Thread.CurrentThread`, `CultureInfo.DefaultThreadCurrentCulture`, and `CultureInfo.DefaultThreadCurrentUICulture`. Hosts can set `CultureServiceOptions.ApplyToCurrentThread` and `ApplyToDefaultThread` to `false` when they need culture isolation.
 
 ## Translation Pipeline
 

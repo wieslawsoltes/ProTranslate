@@ -65,7 +65,14 @@ services.AddProTranslateWinUI();
 services.AddProTranslateUno();
 ```
 
-Call only the adapter method for the current UI project.
+Call only the adapter method for the current UI project, then bootstrap that adapter after building the service provider:
+
+```csharp
+using ServiceProvider serviceProvider = services.BuildServiceProvider();
+serviceProvider.UseProTranslateAvalonia();
+```
+
+Use the matching `UseProTranslateWpf`, `UseProTranslateMaui`, `UseProTranslateWinUI`, or `UseProTranslateUno` method for the active UI framework.
 
 ## Register Services Without DI
 

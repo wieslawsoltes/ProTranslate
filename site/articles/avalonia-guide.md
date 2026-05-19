@@ -25,6 +25,9 @@ If you use Microsoft.Extensions, call the adapter DI helper:
 
 ```csharp
 services.AddProTranslateAvalonia();
+
+using ServiceProvider serviceProvider = services.BuildServiceProvider();
+serviceProvider.UseProTranslateAvalonia();
 ```
 
 ## XAML Namespace

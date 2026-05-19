@@ -46,9 +46,12 @@ With dependency injection, register both the core and the framework adapter help
 ```csharp
 services.AddProTranslate(provider, CultureInfo.GetCultureInfo("en-US"));
 services.AddProTranslateAvalonia();
+
+using ServiceProvider serviceProvider = services.BuildServiceProvider();
+serviceProvider.UseProTranslateAvalonia();
 ```
 
-Use the matching `AddProTranslateWpf`, `AddProTranslateMaui`, `AddProTranslateWinUI`, or `AddProTranslateUno` helper for other frameworks.
+Use the matching `AddProTranslateWpf`, `AddProTranslateMaui`, `AddProTranslateWinUI`, or `AddProTranslateUno` helper and post-build `UseProTranslate...` bootstrap method for other frameworks.
 
 Without dependency injection, connect the static adapter binding source:
 
@@ -82,7 +85,7 @@ For `ResourceManager`, verify satellite assemblies, resource base names, culture
 
 `ITranslationService.Format` uses `string.Format(CurrentCulture, value, args)`. Invalid placeholders or mismatched arguments produce format-failure diagnostics. By default, the unformatted localized value is returned unless the host opts into throwing.
 
-For dynamic values in XAML, use view-model properties when native binding support is limited. Avalonia, WPF, and MAUI support bound `Value` formatting through native multi-binding. WinUI and Uno keep dynamic formatting in view-model or `x:Bind` paths.
+For dynamic values in XAML, use view-model properties when native binding support is limited. Avalonia, WPF, and MAUI support bound `Value` formatting through native multi-binding. WinUI and Uno preserve `Value={Binding ...}` through a formatting converter, while complex formatted workflows are still best kept in view-model or `x:Bind` paths.
 
 ## Source Generator Problems
 

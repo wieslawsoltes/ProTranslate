@@ -25,6 +25,9 @@ With Microsoft.Extensions:
 
 ```csharp
 services.AddProTranslateWinUI();
+
+using ServiceProvider serviceProvider = services.BuildServiceProvider();
+serviceProvider.UseProTranslateWinUI();
 ```
 
 ## XAML Namespace
@@ -60,7 +63,7 @@ Use `pt:T` for concise view-only labels. Prefer generated `ProTranslateStrings`,
 
 ## Formatting
 
-WinUI does not provide the same native `MultiBinding` surface as Avalonia, WPF, and MAUI. The adapter supports static `Value` formatting in `FormatExtension`, while dynamic formatted text should normally stay in `x:Bind` view-model properties:
+WinUI does not provide the same native `MultiBinding` surface as Avalonia, WPF, and MAUI. The adapter preserves `Value={Binding ...}` by returning that binding with a formatting converter, while larger formatted workflows should normally stay in `x:Bind` view-model properties:
 
 ```xml
 <TextBlock Text="{x:Bind ViewModel.InvoiceTotalText, Mode=OneWay}" />

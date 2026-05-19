@@ -51,6 +51,9 @@ Use the adapter DI helper where the application already uses Microsoft.Extension
 
 ```csharp
 services.AddProTranslateAvalonia();
+
+using ServiceProvider serviceProvider = services.BuildServiceProvider();
+serviceProvider.UseProTranslateAvalonia();
 ```
 
 For direct setup, connect the static adapter binding source:
@@ -112,7 +115,7 @@ For simple XAML-owned formatting, use `pt:F`/`pt:Format`:
 <TextBlock Text="{pt:F InvoiceTotalFormat, Value={Binding Total}}" />
 ```
 
-Avalonia, WPF, and MAUI support bound `Value` formatting through native multi-binding. WinUI and Uno support static markup-extension values and use view-model or `x:Bind` paths for dynamic values.
+Avalonia, WPF, and MAUI support bound `Value` formatting through native multi-binding. WinUI and Uno preserve `Value={Binding ...}` through a formatting converter, with view-model or `x:Bind` paths preferred for complex dynamic formatting.
 
 ## Step 6: Add Optional Key Constants
 

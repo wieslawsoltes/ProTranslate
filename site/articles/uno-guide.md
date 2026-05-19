@@ -27,6 +27,9 @@ With Microsoft.Extensions:
 
 ```csharp
 services.AddProTranslateUno();
+
+using ServiceProvider serviceProvider = services.BuildServiceProvider();
+serviceProvider.UseProTranslateUno();
 ```
 
 ## XAML Namespace
@@ -64,7 +67,7 @@ Use `pt:T` for simple view-only labels. Prefer generated `ProTranslateStrings`, 
 
 ## Formatting
 
-The Uno adapter mirrors the WinUI adapter shape. Static `Value` formatting is available through `FormatExtension`; dynamic formatted text is best represented as view-model properties consumed by `x:Bind`.
+The Uno adapter mirrors the WinUI adapter shape. `FormatExtension` preserves `Value={Binding ...}` by returning that binding with a formatting converter; view-model properties consumed by `x:Bind` remain the preferred path for complex formatted text.
 
 ## Validation
 

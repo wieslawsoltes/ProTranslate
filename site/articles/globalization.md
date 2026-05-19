@@ -35,7 +35,7 @@ cultures.SetCulture(
 
 Calling `SetCulture` with the same formatting culture and UI culture is idempotent and does not raise a change event.
 
-By default, `CultureService` applies active cultures to `CultureInfo.DefaultThreadCurrentCulture`, `CultureInfo.DefaultThreadCurrentUICulture`, `Thread.CurrentThread.CurrentCulture`, and `Thread.CurrentThread.CurrentUICulture`. Hosts that need culture isolation can opt out:
+`CultureService` construction captures the initial culture without changing ambient thread state. By default, explicit `SetCulture` calls apply active cultures to `CultureInfo.DefaultThreadCurrentCulture`, `CultureInfo.DefaultThreadCurrentUICulture`, `Thread.CurrentThread.CurrentCulture`, and `Thread.CurrentThread.CurrentUICulture`. Hosts that need culture isolation can opt out:
 
 ```csharp
 var cultures = new CultureService(

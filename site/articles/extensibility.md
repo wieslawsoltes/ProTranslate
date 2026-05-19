@@ -200,7 +200,7 @@ services.AddSingleton<IGlobalizationService>(sp => new GlobalizationService(
     sp.GetRequiredService<IMeasurementSystemResolver>()));
 ```
 
-Then register only the adapter package needed by the application, such as `AddProTranslateAvalonia`, `AddProTranslateWpf`, `AddProTranslateMaui`, `AddProTranslateWinUI`, or `AddProTranslateUno`.
+Then register only the adapter package needed by the application, such as `AddProTranslateAvalonia`, `AddProTranslateWpf`, `AddProTranslateMaui`, `AddProTranslateWinUI`, or `AddProTranslateUno`, and call the matching `UseProTranslate...` bootstrap method after the service provider is built.
 
 ## SOLID Boundaries
 

@@ -113,6 +113,8 @@ var translations = new TranslationService(provider, cultures);
 ProTranslate.Avalonia.TranslationService.UseService(translations, cultures);
 ```
 
+Constructing `CultureService` only captures the initial culture snapshot. Calls to `SetCulture` apply thread/default-thread culture according to `CultureServiceOptions`.
+
 ### 2. Use XAML translation markup
 
 Avalonia and WPF can use ProTranslate from the framework default XML namespace after the adapter assembly is referenced:
