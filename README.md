@@ -1,4 +1,4 @@
-# ProTranslate
+<img width="3824" height="2316" alt="image" src="https://github.com/user-attachments/assets/4a8138b0-0656-4daf-a607-5cf5d09eddcc" /># ProTranslate
 
 [![Docs](https://img.shields.io/badge/docs-github%20pages-0f766e)](https://wieslawsoltes.github.io/ProTranslate/)
 ![.NET](https://img.shields.io/badge/.NET-10-512BD4)
@@ -12,6 +12,8 @@ ProTranslate is organized around a framework-neutral core plus thin adapters for
 The framework is intended for MVVM and SOLID application architectures: view models can depend on small abstractions when they own text-producing behavior, while view-only labels and formatting stay in XAML. Adapters avoid framework cross-dependencies and keep the reusable globalization model in `ProTranslate.Core`.
 
 Documentation site: [wieslawsoltes.github.io/ProTranslate](https://wieslawsoltes.github.io/ProTranslate/)
+
+<img width="3824" height="2316" alt="image" src="https://github.com/user-attachments/assets/ef612d49-4a2f-4001-a6c0-544197f9fd65" />
 
 ## Current Status
 
