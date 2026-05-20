@@ -2,12 +2,90 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <Application.Resources>
-    <SolidColorBrush x:Key="StudioPageBackgroundBrush" Color="#F4F6F8" />
+    <!-- Core Brand Palette (Fluent & Vibrant Slate/Indigo/Violet Theme) -->
+    <SolidColorBrush x:Key="StudioPageBackgroundBrush" Color="#F1F5F9" />
     <SolidColorBrush x:Key="StudioSurfaceBrush" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="StudioBorderBrush" Color="#D6DCE3" />
-    <SolidColorBrush x:Key="StudioMutedTextBrush" Color="#5D6673" />
-    <SolidColorBrush x:Key="StudioAccentBrush" Color="#176B87" />
-    <SolidColorBrush x:Key="StudioGoodBrush" Color="#247A4D" />
-    <SolidColorBrush x:Key="StudioWarningBrush" Color="#A15C00" />
+    <SolidColorBrush x:Key="StudioBorderBrush" Color="#E2E8F0" />
+    <SolidColorBrush x:Key="StudioMutedTextBrush" Color="#64748B" />
+    <SolidColorBrush x:Key="StudioAccentBrush" Color="#4F46E5" />
+    <SolidColorBrush x:Key="StudioAccentHoverBrush" Color="#4338CA" />
+    <SolidColorBrush x:Key="StudioVioletBrush" Color="#7C3AED" />
+    
+    <!-- Premium Accent Gradients representing AI & Smart Translation -->
+    <LinearGradientBrush x:Key="StudioAccentGradient" StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#4F46E5" Offset="0.0" />
+      <GradientStop Color="#7C3AED" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="StudioGoodGradient" StartPoint="0,0" EndPoint="1,0">
+      <GradientStop Color="#10B981" Offset="0.0" />
+      <GradientStop Color="#059669" Offset="1.0" />
+    </LinearGradientBrush>
+    
+    <!-- State Semantic Brushes -->
+    <SolidColorBrush x:Key="StudioGoodBrush" Color="#10B981" />
+    <SolidColorBrush x:Key="StudioGoodBgBrush" Color="#ECFDF5" />
+    <SolidColorBrush x:Key="StudioWarningBrush" Color="#F59E0B" />
+    <SolidColorBrush x:Key="StudioWarningBgBrush" Color="#FFFBEB" />
+    <SolidColorBrush x:Key="StudioErrorBrush" Color="#EF4444" />
+    <SolidColorBrush x:Key="StudioErrorBgBrush" Color="#FEF2F2" />
+    
+    <!-- UI Interaction Tones -->
+    <SolidColorBrush x:Key="StudioHoverBrush" Color="#F8FAFC" />
+    <SolidColorBrush x:Key="StudioSelectedBrush" Color="#EEF2FF" />
+    <SolidColorBrush x:Key="StudioSelectedBorderBrush" Color="#6366F1" />
+    
+    <!-- Global Control Overrides & Premium Templates -->
+    <Style x:Key="StudioCardStyle" TargetType="Border">
+      <Setter Property="Background" Value="#FFFFFF" />
+      <Setter Property="BorderBrush" Value="#E2E8F0" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="16" />
+      <Setter Property="Padding" Value="20" />
+    </Style>
+
+    <Style x:Key="StudioSidebarCardStyle" TargetType="Border">
+      <Setter Property="Background" Value="#F8FAFC" />
+      <Setter Property="BorderBrush" Value="#E2E8F0" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="16" />
+      <Setter Property="Padding" Value="20" />
+    </Style>
+
+    <!-- ListViewItem Theme Resource Overrides to avoid harsh default blue selections -->
+    <SolidColorBrush x:Key="ListViewItemBackgroundSelected" Color="#F5F3FF" />
+    <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPointerOver" Color="#EDE9FE" />
+    <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="#F8FAFC" />
+    <SolidColorBrush x:Key="ListViewItemForegroundSelected" Color="#4C1D95" />
+    <SolidColorBrush x:Key="ListViewItemForegroundSelectedPointerOver" Color="#4C1D95" />
+    <SolidColorBrush x:Key="ListViewItemForegroundPointerOver" Color="#0F172A" />
+    <CornerRadius x:Key="ListViewItemCornerRadius">10</CornerRadius>
+
+    <!-- AI Translation Accent Brushes -->
+    <LinearGradientBrush x:Key="StudioAiGradient" StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#8B5CF6" Offset="0.0" />
+      <GradientStop Color="#EC4899" Offset="0.5" />
+      <GradientStop Color="#F59E0B" Offset="1.0" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="StudioAiSuggestionBgBrush" Color="#FDF4FF" />
+    <SolidColorBrush x:Key="StudioAiSuggestionBorderBrush" Color="#E9D5FF" />
+    <SolidColorBrush x:Key="StudioAiAccentBrush" Color="#8B5CF6" />
+
+    <!-- Settings Panel Brushes -->
+    <SolidColorBrush x:Key="StudioOverlayBrush" Color="#80000000" />
+    <SolidColorBrush x:Key="StudioPanelBgBrush" Color="#FFFFFF" />
+
+    <!-- Session/Dirty State Brushes -->
+    <SolidColorBrush x:Key="StudioDirtyDotBrush" Color="#F59E0B" />
+    <SolidColorBrush x:Key="StudioSavedDotBrush" Color="#10B981" />
+
+    <!-- Backup List Styles -->
+    <Style x:Key="StudioBackupItemStyle" TargetType="Border">
+      <Setter Property="Background" Value="#F8FAFC" />
+      <Setter Property="BorderBrush" Value="#E2E8F0" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="12,8" />
+    </Style>
   </Application.Resources>
 </Application>
