@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Package version. Defaults to 0.1.0.
+        description: Package version. Defaults to 0.1.0-ci.<run_number>.
         required: false
         type: string
       publish_nuget:
@@ -51,7 +51,7 @@ jobs:
           elif [ -n "${INPUT_VERSION}" ]; then
             version="${INPUT_VERSION}"
           else
-            version="0.1.0"
+            version="0.1.0-ci.${GITHUB_RUN_NUMBER}"
           fi
           echo "value=${version}" >> "${GITHUB_OUTPUT}"
 

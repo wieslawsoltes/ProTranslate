@@ -57,7 +57,7 @@ It uploads `site/.lunet/build/www` as the GitHub Pages artifact and deploys it t
 
 `.github/workflows/release.yml` runs for `v*` tags and manual dispatch. Manual runs accept:
 
-- `version`: package version, defaulting to `0.1.0` when omitted.
+- `version`: package version, defaulting to `0.1.0-ci.<run_number>` when omitted.
 - `publish_nuget`: whether to publish packages to NuGet from a manual run.
 
 The release job runs on macOS, installs the MAUI workload, resolves the version, runs:
