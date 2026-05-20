@@ -2,422 +2,872 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="using:ProTranslate.Uno.TranslationStudio">
+  
   <Grid Background="{StaticResource StudioPageBackgroundBrush}">
     <Grid.RowDefinitions>
-      <RowDefinition Height="68" />
+      <!-- Premium Sleek Workspace Title Bar -->
+      <RowDefinition Height="56" />
+      <!-- Unified Floating Workspace Layout -->
       <RowDefinition Height="*" />
+      <!-- Professional Systems Footer -->
       <RowDefinition Height="32" />
     </Grid.RowDefinitions>
 
+    <!-- ==================== TOP NAVIGATION HEADER ==================== -->
     <Border Grid.Row="0"
             Background="{StaticResource StudioSurfaceBrush}"
             BorderBrush="{StaticResource StudioBorderBrush}"
             BorderThickness="0,0,0,1">
-      <Grid Padding="18,8" ColumnSpacing="12">
+      <Grid Padding="16,0" ColumnSpacing="8">
         <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel VerticalAlignment="Center">
-          <TextBlock Text="{x:Bind ViewModel.Strings.AppTitle, Mode=OneWay}"
-                     FontSize="18"
-                     FontWeight="SemiBold" />
-          <TextBlock Text="{x:Bind ViewModel.Strings.AppSubtitle, Mode=OneWay}"
-                     FontSize="12"
-                     Foreground="{StaticResource StudioMutedTextBrush}" />
+        <!-- Brand -->
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
+          <Border CornerRadius="8" Width="32" Height="32"
+                  Background="{StaticResource StudioAccentGradient}">
+            <FontIcon Glyph="&#xE774;" Foreground="White" FontSize="15" />
+          </Border>
+          <StackPanel VerticalAlignment="Center" Spacing="0">
+            <TextBlock Text="{x:Bind ViewModel.Strings.AppTitle, Mode=OneWay}"
+                       FontSize="14" FontWeight="ExtraBold" Foreground="#0F172A" />
+            <TextBlock Text="{x:Bind ViewModel.Strings.AppSubtitle, Mode=OneWay}"
+                       FontSize="10" FontWeight="SemiBold"
+                       Foreground="{StaticResource StudioMutedTextBrush}" />
+          </StackPanel>
         </StackPanel>
 
-        <ComboBox Grid.Column="1"
-                  Width="142"
-                  Header="{x:Bind ViewModel.Strings.UiCultureLabel, Mode=OneWay}"
-                  ItemsSource="{x:Bind ViewModel.UiCultures}"
-                  SelectedItem="{x:Bind ViewModel.SelectedUiCulture, Mode=TwoWay}"
-                  DisplayMemberPath="DisplayName" />
+        <!-- Dirty indicator + Save -->
+        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
+          <TextBlock Text="{x:Bind ViewModel.DirtyIndicator, Mode=OneWay}"
+                     Foreground="{x:Bind local:MainPage.GetDirtyBrush(ViewModel.IsDirty), Mode=OneWay}"
+                     FontSize="16" FontWeight="Bold" VerticalAlignment="Center" />
+          <Button Command="{x:Bind ViewModel.SaveSessionCommand}" VerticalAlignment="Center"
+                  Height="30" CornerRadius="6" Background="Transparent" BorderThickness="1"
+                  BorderBrush="{StaticResource StudioBorderBrush}" ToolTipService.ToolTip="Save (Ctrl+S)">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+              <FontIcon Glyph="&#xE74E;" FontSize="12" Foreground="{StaticResource StudioAccentBrush}" />
+              <TextBlock Text="Save" FontSize="11" FontWeight="Bold" Foreground="#1E293B" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
 
-        <Button Grid.Column="2"
-                Command="{x:Bind ViewModel.ImportDemoCommand}"
-                VerticalAlignment="Bottom">
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <FontIcon Glyph="&#xE8B5;" FontSize="14" />
-            <TextBlock Text="{x:Bind ViewModel.Strings.ImportButton, Mode=OneWay}" />
+        <!-- Undo / Redo -->
+        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Spacing="2">
+          <Button Command="{x:Bind ViewModel.UndoCommand}" VerticalAlignment="Center"
+                  Height="30" Width="30" CornerRadius="6" Background="Transparent"
+                  BorderThickness="0" ToolTipService.ToolTip="Undo (Ctrl+Z)" Padding="0">
+            <FontIcon Glyph="&#xE7A7;" FontSize="13" Foreground="{StaticResource StudioMutedTextBrush}" />
+          </Button>
+          <Button Command="{x:Bind ViewModel.RedoCommand}" VerticalAlignment="Center"
+                  Height="30" Width="30" CornerRadius="6" Background="Transparent"
+                  BorderThickness="0" ToolTipService.ToolTip="Redo (Ctrl+Y)" Padding="0">
+            <FontIcon Glyph="&#xE7A6;" FontSize="13" Foreground="{StaticResource StudioMutedTextBrush}" />
+          </Button>
+        </StackPanel>
+
+        <!-- Separator -->
+        <Border Grid.Column="4" Width="1" Height="24" Background="{StaticResource StudioBorderBrush}" VerticalAlignment="Center" Margin="4,0" />
+
+        <!-- UI Culture -->
+        <StackPanel Grid.Column="5" Orientation="Horizontal" VerticalAlignment="Center" Spacing="6">
+          <FontIcon Glyph="&#xE775;" FontSize="12" Foreground="{StaticResource StudioMutedTextBrush}" />
+          <ComboBox Width="120"
+                    ItemsSource="{x:Bind ViewModel.UiCultures}"
+                    SelectedItem="{x:Bind ViewModel.SelectedUiCulture, Mode=TwoWay}"
+                    DisplayMemberPath="DisplayName"
+                    CornerRadius="6" Height="30"
+                    BorderBrush="{StaticResource StudioBorderBrush}" />
+        </StackPanel>
+
+        <!-- Import dropdown -->
+        <DropDownButton Grid.Column="6" VerticalAlignment="Center" Height="30" CornerRadius="6"
+                        Background="Transparent" BorderThickness="1"
+                        BorderBrush="{StaticResource StudioBorderBrush}">
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <FontIcon Glyph="&#xE8B5;" FontSize="12" Foreground="{StaticResource StudioAccentBrush}" />
+            <TextBlock Text="Import" FontWeight="Bold" FontSize="11" Foreground="#1E293B" />
           </StackPanel>
+          <DropDownButton.Flyout>
+            <MenuFlyout>
+              <MenuFlyoutItem Text="Import from File…" Click="OnImportFromFileClick">
+                <MenuFlyoutItem.Icon>
+                  <FontIcon Glyph="&#xE8E5;" />
+                </MenuFlyoutItem.Icon>
+              </MenuFlyoutItem>
+              <MenuFlyoutItem Text="Import from Clipboard" Command="{x:Bind ViewModel.ImportDemoCommand}">
+                <MenuFlyoutItem.Icon>
+                  <FontIcon Glyph="&#xE77F;" />
+                </MenuFlyoutItem.Icon>
+              </MenuFlyoutItem>
+            </MenuFlyout>
+          </DropDownButton.Flyout>
+        </DropDownButton>
+
+        <!-- Export dropdown -->
+        <DropDownButton Grid.Column="7" VerticalAlignment="Center" Height="30" CornerRadius="6"
+                        Background="{StaticResource StudioAccentBrush}" Foreground="White">
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <FontIcon Glyph="&#xE74E;" FontSize="12" Foreground="White" />
+            <TextBlock Text="Export" FontWeight="Bold" FontSize="11" />
+          </StackPanel>
+          <DropDownButton.Flyout>
+            <MenuFlyout>
+              <MenuFlyoutItem Text="Export to File…" Click="OnExportToFileClick">
+                <MenuFlyoutItem.Icon>
+                  <FontIcon Glyph="&#xE792;" />
+                </MenuFlyoutItem.Icon>
+              </MenuFlyoutItem>
+              <MenuFlyoutItem Text="Export to Clipboard" Command="{x:Bind ViewModel.ExportCatalogCommand}">
+                <MenuFlyoutItem.Icon>
+                  <FontIcon Glyph="&#xE8C8;" />
+                </MenuFlyoutItem.Icon>
+              </MenuFlyoutItem>
+            </MenuFlyout>
+          </DropDownButton.Flyout>
+        </DropDownButton>
+
+        <!-- Backup -->
+        <Button Grid.Column="8" Command="{x:Bind ViewModel.CreateBackupCommand}"
+                VerticalAlignment="Center" Height="30" CornerRadius="6"
+                Background="Transparent" BorderThickness="0"
+                ToolTipService.ToolTip="Create Backup" Padding="6,0">
+          <FontIcon Glyph="&#xE895;" FontSize="14" Foreground="{StaticResource StudioMutedTextBrush}" />
         </Button>
 
-        <Button Grid.Column="3"
-                Command="{x:Bind ViewModel.ExportCatalogCommand}"
-                VerticalAlignment="Bottom">
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <FontIcon Glyph="&#xE74E;" FontSize="14" />
-            <TextBlock Text="{x:Bind ViewModel.Strings.ExportButton, Mode=OneWay}" />
-          </StackPanel>
+        <!-- Settings -->
+        <Button Grid.Column="9" Click="OnOpenSettingsClick"
+                VerticalAlignment="Center" Height="30" CornerRadius="6"
+                Background="Transparent" BorderThickness="0"
+                ToolTipService.ToolTip="Settings" Padding="6,0">
+          <FontIcon Glyph="&#xE713;" FontSize="14" Foreground="{StaticResource StudioMutedTextBrush}" />
         </Button>
+
+        <!-- Last saved label -->
+        <TextBlock Grid.Column="10" Text="{x:Bind ViewModel.LastSavedLabel, Mode=OneWay}"
+                   VerticalAlignment="Center" FontSize="10" FontWeight="SemiBold"
+                   Foreground="{StaticResource StudioMutedTextBrush}" />
       </Grid>
     </Border>
 
-    <Grid Grid.Row="1" Padding="16" ColumnSpacing="12">
+    <!-- ==================== MAIN WORKSPACE ==================== -->
+    <Grid Grid.Row="1" Padding="16,12" ColumnSpacing="12">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="312" />
+        <ColumnDefinition Width="270" />
         <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="332" />
+        <ColumnDefinition Width="360" />
       </Grid.ColumnDefinitions>
 
-      <Border Grid.Column="0"
-              Background="{StaticResource StudioSurfaceBrush}"
-              BorderBrush="{StaticResource StudioBorderBrush}"
-              BorderThickness="1"
-              CornerRadius="6">
-        <ScrollViewer>
-          <StackPanel Padding="14" Spacing="14">
-            <TextBlock Text="{x:Bind ViewModel.Strings.CatalogLabel, Mode=OneWay}"
-                       FontSize="15"
-                       FontWeight="SemiBold" />
-
-            <ComboBox Header="{x:Bind ViewModel.Strings.ImportFormatLabel, Mode=OneWay}"
-                      ItemsSource="{x:Bind ViewModel.ImportFormats}"
-                      SelectedItem="{x:Bind ViewModel.SelectedImportFormat, Mode=TwoWay}">
-              <ComboBox.ItemTemplate>
-                <DataTemplate x:DataType="local:CatalogFormatChoice">
-                  <Grid ColumnSpacing="8">
-                    <Grid.ColumnDefinitions>
-                      <ColumnDefinition Width="*" />
-                      <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel>
-                      <TextBlock Text="{x:Bind Name}" FontWeight="SemiBold" />
-                      <TextBlock Text="{x:Bind Description}"
-                                 FontSize="11"
-                                 Foreground="{StaticResource StudioMutedTextBrush}"
-                                 TextTrimming="CharacterEllipsis" />
-                    </StackPanel>
-                    <TextBlock Grid.Column="1"
-                               Text="{x:Bind Extension}"
-                               FontFamily="Consolas"
-                               FontSize="11"
-                               Foreground="{StaticResource StudioMutedTextBrush}"
-                               VerticalAlignment="Center" />
-                  </Grid>
-                </DataTemplate>
-              </ComboBox.ItemTemplate>
-            </ComboBox>
-
-            <ComboBox Header="{x:Bind ViewModel.Strings.TargetCultureLabel, Mode=OneWay}"
-                      ItemsSource="{x:Bind ViewModel.TargetCultures}"
-                      SelectedItem="{x:Bind ViewModel.SelectedTargetCulture, Mode=TwoWay}"
-                      DisplayMemberPath="DisplayName" />
-
-            <ComboBox Header="{x:Bind ViewModel.Strings.ExportFormatLabel, Mode=OneWay}"
-                      ItemsSource="{x:Bind ViewModel.ExportFormats}"
-                      SelectedItem="{x:Bind ViewModel.SelectedExportFormat, Mode=TwoWay}">
-              <ComboBox.ItemTemplate>
-                <DataTemplate x:DataType="local:CatalogFormatChoice">
-                  <Grid ColumnSpacing="8">
-                    <Grid.ColumnDefinitions>
-                      <ColumnDefinition Width="*" />
-                      <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel>
-                      <TextBlock Text="{x:Bind Name}" FontWeight="SemiBold" />
-                      <TextBlock Text="{x:Bind Description}"
-                                 FontSize="11"
-                                 Foreground="{StaticResource StudioMutedTextBrush}"
-                                 TextTrimming="CharacterEllipsis" />
-                    </StackPanel>
-                    <TextBlock Grid.Column="1"
-                               Text="{x:Bind Extension}"
-                               FontFamily="Consolas"
-                               FontSize="11"
-                               Foreground="{StaticResource StudioMutedTextBrush}"
-                               VerticalAlignment="Center" />
-                  </Grid>
-                </DataTemplate>
-              </ComboBox.ItemTemplate>
-            </ComboBox>
-
-            <Grid RowSpacing="8">
-              <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-              </Grid.RowDefinitions>
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-              </Grid.ColumnDefinitions>
-
-              <TextBlock Text="{x:Bind ViewModel.Strings.EntriesLabel, Mode=OneWay}"
-                         Foreground="{StaticResource StudioMutedTextBrush}" />
-              <TextBlock Grid.Column="1"
-                         Text="{x:Bind ViewModel.TotalCount, Mode=OneWay}"
-                         FontWeight="SemiBold" />
-
-              <TextBlock Grid.Row="1"
-                         Text="{x:Bind ViewModel.Strings.ApprovedLabel, Mode=OneWay}"
-                         Foreground="{StaticResource StudioMutedTextBrush}" />
-              <TextBlock Grid.Row="1"
-                         Grid.Column="1"
-                         Text="{x:Bind ViewModel.ApprovedCount, Mode=OneWay}"
-                         FontWeight="SemiBold" />
-
-              <TextBlock Grid.Row="2"
-                         Text="{x:Bind ViewModel.Strings.ReviewLabel, Mode=OneWay}"
-                         Foreground="{StaticResource StudioMutedTextBrush}" />
-              <TextBlock Grid.Row="2"
-                         Grid.Column="1"
-                         Text="{x:Bind ViewModel.ReviewCount, Mode=OneWay}"
-                         FontWeight="SemiBold" />
-
-              <TextBlock Grid.Row="3"
-                         Text="{x:Bind ViewModel.Strings.MissingLabel, Mode=OneWay}"
-                         Foreground="{StaticResource StudioMutedTextBrush}" />
-              <TextBlock Grid.Row="3"
-                         Grid.Column="1"
-                         Text="{x:Bind ViewModel.MissingCount, Mode=OneWay}"
-                         FontWeight="SemiBold" />
-            </Grid>
-
-            <StackPanel Spacing="6">
-              <Grid>
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="*" />
-                  <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="{x:Bind ViewModel.Strings.CoverageLabel, Mode=OneWay}"
-                           FontWeight="SemiBold" />
-                <TextBlock Grid.Column="1"
-                           Text="{x:Bind ViewModel.CoverageLabel, Mode=OneWay}"
-                           Foreground="{StaticResource StudioAccentBrush}"
-                           FontWeight="SemiBold" />
-              </Grid>
-              <ProgressBar Minimum="0"
-                           Maximum="100"
-                           Value="{x:Bind ViewModel.CoveragePercent, Mode=OneWay}" />
-            </StackPanel>
-
-            <ListView ItemsSource="{x:Bind ViewModel.Coverage}"
-                      MaxHeight="160"
-                      SelectionMode="None">
-              <ListView.ItemTemplate>
-                <DataTemplate x:DataType="local:CultureCoverageViewModel">
-                  <Grid ColumnSpacing="8" Padding="0,4">
-                    <Grid.ColumnDefinitions>
-                      <ColumnDefinition Width="*" />
-                      <ColumnDefinition Width="54" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel>
-                      <TextBlock Text="{x:Bind DisplayName}" />
-                      <TextBlock Text="{x:Bind CultureName}"
-                                 FontSize="11"
-                                 Foreground="{StaticResource StudioMutedTextBrush}" />
-                    </StackPanel>
-                    <TextBlock Grid.Column="1"
-                               Text="{x:Bind CompletenessLabel}"
-                               HorizontalAlignment="Right"
-                               VerticalAlignment="Center"
-                               FontWeight="SemiBold" />
-                  </Grid>
-                </DataTemplate>
-              </ListView.ItemTemplate>
-            </ListView>
-
-            <Border BorderBrush="{StaticResource StudioBorderBrush}"
-                    BorderThickness="1"
-                    CornerRadius="6"
-                    Padding="10">
-              <StackPanel Spacing="6">
-                <TextBlock Text="{x:Bind ViewModel.Strings.GeneratorLabel, Mode=OneWay}"
-                           FontWeight="SemiBold" />
-                <TextBlock Text="{x:Bind ViewModel.Strings.GeneratorDescription, Mode=OneWay}"
-                           Foreground="{StaticResource StudioMutedTextBrush}"
-                           TextWrapping="Wrap" />
-              </StackPanel>
-            </Border>
-          </StackPanel>
-        </ScrollViewer>
-      </Border>
-
-      <Border Grid.Column="1"
-              Background="{StaticResource StudioSurfaceBrush}"
-              BorderBrush="{StaticResource StudioBorderBrush}"
-              BorderThickness="1"
-              CornerRadius="6">
-        <Grid RowSpacing="0">
+      <!-- ==================== LEFT SIDEBAR ==================== -->
+      <Border Grid.Column="0" Style="{StaticResource StudioSidebarCardStyle}">
+        <Grid RowSpacing="8">
           <Grid.RowDefinitions>
-            <RowDefinition Height="44" />
-            <RowDefinition Height="36" />
             <RowDefinition Height="*" />
           </Grid.RowDefinitions>
 
-          <Grid Padding="12,8" ColumnSpacing="12">
+          <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="12">
+
+              <!-- Catalog Details -->
+              <StackPanel Spacing="6">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <FontIcon Glyph="&#xE946;" FontSize="12" Foreground="{StaticResource StudioAccentBrush}" />
+                  <TextBlock Text="Catalog" FontSize="11" FontWeight="ExtraBold" CharacterSpacing="60" Foreground="#0F172A" />
+                </StackPanel>
+                <Grid RowSpacing="4" Padding="2">
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <TextBlock Text="File:" Foreground="{StaticResource StudioMutedTextBrush}" FontSize="10.5" FontWeight="SemiBold" />
+                  <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CatalogFileName, Mode=OneWay}" FontWeight="ExtraBold" FontSize="10.5" Foreground="#1E293B" TextTrimming="CharacterEllipsis" />
+                  <TextBlock Grid.Row="1" Text="Locales:" Foreground="{StaticResource StudioMutedTextBrush}" FontSize="10.5" FontWeight="SemiBold" />
+                  <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.CulturePair, Mode=OneWay}" FontWeight="ExtraBold" FontSize="10.5" Foreground="#1E293B" />
+                  <TextBlock Grid.Row="2" Text="Format:" Foreground="{StaticResource StudioMutedTextBrush}" FontSize="10.5" FontWeight="SemiBold" />
+                  <TextBlock Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.SourceFormat, Mode=OneWay}" FontWeight="ExtraBold" FontSize="10.5" Foreground="#1E293B" />
+                </Grid>
+                <Border BorderBrush="{StaticResource StudioBorderBrush}" BorderThickness="0,0,0,1" />
+              </StackPanel>
+
+              <!-- Completeness -->
+              <StackPanel Spacing="8">
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon Glyph="&#xE9D2;" FontSize="12" Foreground="{StaticResource StudioAccentBrush}" />
+                    <TextBlock Text="Coverage" FontSize="11" FontWeight="ExtraBold" CharacterSpacing="60" Foreground="#0F172A" />
+                  </StackPanel>
+                  <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.CoverageLabel, Mode=OneWay}" Foreground="{StaticResource StudioAccentBrush}" FontWeight="ExtraBold" FontSize="12" />
+                </Grid>
+                <ProgressBar Minimum="0" Maximum="100"
+                             Value="{x:Bind ViewModel.CoveragePercent, Mode=OneWay}"
+                             Height="5" Background="#EDE9FE"
+                             Foreground="{StaticResource StudioAccentGradient}" CornerRadius="3" />
+                <!-- Metric cards -->
+                <Grid ColumnSpacing="4">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <Border Grid.Column="0" Background="#ECFDF5" CornerRadius="8" Padding="4,6" BorderThickness="1" BorderBrush="#A7F3D0">
+                    <StackPanel HorizontalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{x:Bind ViewModel.ApprovedCount, Mode=OneWay}" FontSize="13" FontWeight="ExtraBold" Foreground="#047857" HorizontalAlignment="Center" />
+                      <TextBlock Text="OK" FontSize="8" FontWeight="ExtraBold" Foreground="#065F46" HorizontalAlignment="Center" />
+                    </StackPanel>
+                  </Border>
+                  <Border Grid.Column="1" Background="#FFFBEB" CornerRadius="8" Padding="4,6" BorderThickness="1" BorderBrush="#FDE68A">
+                    <StackPanel HorizontalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{x:Bind ViewModel.ReviewCount, Mode=OneWay}" FontSize="13" FontWeight="ExtraBold" Foreground="#B45309" HorizontalAlignment="Center" />
+                      <TextBlock Text="Rev" FontSize="8" FontWeight="ExtraBold" Foreground="#92400E" HorizontalAlignment="Center" />
+                    </StackPanel>
+                  </Border>
+                  <Border Grid.Column="2" Background="#FEF2F2" CornerRadius="8" Padding="4,6" BorderThickness="1" BorderBrush="#FCA5A5">
+                    <StackPanel HorizontalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{x:Bind ViewModel.MissingCount, Mode=OneWay}" FontSize="13" FontWeight="ExtraBold" Foreground="#B91C1C" HorizontalAlignment="Center" />
+                      <TextBlock Text="Miss" FontSize="8" FontWeight="ExtraBold" Foreground="#7F1D1D" HorizontalAlignment="Center" />
+                    </StackPanel>
+                  </Border>
+                </Grid>
+                <Border BorderBrush="{StaticResource StudioBorderBrush}" BorderThickness="0,0,0,1" />
+              </StackPanel>
+
+              <!-- Target Language -->
+              <StackPanel Spacing="6">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <FontIcon Glyph="&#xF2B7;" FontSize="12" Foreground="{StaticResource StudioAccentBrush}" />
+                  <TextBlock Text="Target" FontSize="11" FontWeight="ExtraBold" CharacterSpacing="60" Foreground="#0F172A" />
+                </StackPanel>
+                <ComboBox ItemsSource="{x:Bind ViewModel.TargetCultures}"
+                          SelectedItem="{x:Bind ViewModel.SelectedTargetCulture, Mode=TwoWay}"
+                          DisplayMemberPath="DisplayName"
+                          HorizontalAlignment="Stretch" CornerRadius="6" Height="30"
+                          BorderBrush="{StaticResource StudioBorderBrush}" />
+                <!-- Coverage list -->
+                <ItemsControl ItemsSource="{x:Bind ViewModel.Coverage}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="local:CultureCoverageViewModel">
+                      <Grid Margin="0,2" ColumnSpacing="6">
+                        <Grid.ColumnDefinitions>
+                          <ColumnDefinition Width="*" />
+                          <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{x:Bind DisplayName}" FontSize="10.5" FontWeight="SemiBold" Foreground="#334155" />
+                        <Border Grid.Column="1" Background="#EEF2FF" CornerRadius="6" Padding="6,2">
+                          <TextBlock Text="{x:Bind CompletenessLabel}" FontSize="9" FontWeight="ExtraBold" Foreground="{StaticResource StudioAccentBrush}" />
+                        </Border>
+                      </Grid>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Border BorderBrush="{StaticResource StudioBorderBrush}" BorderThickness="0,0,0,1" />
+              </StackPanel>
+
+              <!-- Enroll Culture -->
+              <StackPanel Spacing="6">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <FontIcon Glyph="&#xE710;" FontSize="12" Foreground="{StaticResource StudioAccentBrush}" />
+                  <TextBlock Text="Add Culture" FontSize="11" FontWeight="ExtraBold" CharacterSpacing="60" Foreground="#0F172A" />
+                </StackPanel>
+                <Grid ColumnSpacing="4">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+                  <TextBox Text="{x:Bind ViewModel.NewCultureCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                           PlaceholderText="ja-JP" Height="32" FontSize="11" CornerRadius="6" Padding="8,6" />
+                  <TextBox Grid.Column="1" Text="{x:Bind ViewModel.NewCultureName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                           PlaceholderText="Japanese" Height="32" FontSize="11" CornerRadius="6" Padding="8,6" />
+                  <Button Grid.Column="2" Command="{x:Bind ViewModel.AddCultureCommand}"
+                          Height="32" Width="32" CornerRadius="6" Padding="0"
+                          Background="{StaticResource StudioAccentBrush}">
+                    <FontIcon Glyph="&#xE710;" FontSize="10" Foreground="White" />
+                  </Button>
+                </Grid>
+                <Border BorderBrush="{StaticResource StudioBorderBrush}" BorderThickness="0,0,0,1" />
+              </StackPanel>
+
+              <!-- Backups -->
+              <StackPanel Spacing="6">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <FontIcon Glyph="&#xE895;" FontSize="12" Foreground="{StaticResource StudioAccentBrush}" />
+                  <TextBlock Text="Backups" FontSize="11" FontWeight="ExtraBold" CharacterSpacing="60" Foreground="#0F172A" />
+                </StackPanel>
+                <ItemsControl ItemsSource="{x:Bind ViewModel.Backups}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="local:BackupEntryViewModel">
+                      <Border Style="{StaticResource StudioBackupItemStyle}" Margin="0,2">
+                        <Grid>
+                          <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                          </Grid.ColumnDefinitions>
+                          <StackPanel Spacing="1">
+                            <TextBlock Text="{x:Bind CreatedAtLabel}" FontSize="10" FontWeight="ExtraBold" Foreground="#334155" />
+                            <TextBlock Text="{x:Bind SummaryLabel}" FontSize="9" Foreground="{StaticResource StudioMutedTextBrush}" />
+                          </StackPanel>
+                          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2">
+                            <Button Tag="{x:Bind FilePath}" Click="OnRestoreBackupClick"
+                                    Height="22" Width="22" Padding="0" CornerRadius="4"
+                                    Background="Transparent" BorderThickness="0"
+                                    ToolTipService.ToolTip="Restore">
+                              <FontIcon Glyph="&#xE777;" FontSize="10" Foreground="{StaticResource StudioAccentBrush}" />
+                            </Button>
+                            <Button Tag="{x:Bind FilePath}" Click="OnDeleteBackupClick"
+                                    Height="22" Width="22" Padding="0" CornerRadius="4"
+                                    Background="Transparent" BorderThickness="0"
+                                    ToolTipService.ToolTip="Delete">
+                              <FontIcon Glyph="&#xE74D;" FontSize="10" Foreground="{StaticResource StudioErrorBrush}" />
+                            </Button>
+                          </StackPanel>
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+
+              <!-- Format selectors -->
+              <StackPanel Spacing="6">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <FontIcon Glyph="&#xE8F1;" FontSize="12" Foreground="{StaticResource StudioAccentBrush}" />
+                  <TextBlock Text="Formats" FontSize="11" FontWeight="ExtraBold" CharacterSpacing="60" Foreground="#0F172A" />
+                </StackPanel>
+                <StackPanel Spacing="2">
+                  <TextBlock Text="Import Format" FontSize="9" FontWeight="SemiBold" Foreground="{StaticResource StudioMutedTextBrush}" />
+                  <ComboBox ItemsSource="{x:Bind ViewModel.ImportFormats}"
+                            SelectedItem="{x:Bind ViewModel.SelectedImportFormat, Mode=TwoWay}"
+                            DisplayMemberPath="Name" HorizontalAlignment="Stretch"
+                            CornerRadius="6" Height="28" BorderBrush="{StaticResource StudioBorderBrush}" />
+                </StackPanel>
+                <StackPanel Spacing="2">
+                  <TextBlock Text="Export Format" FontSize="9" FontWeight="SemiBold" Foreground="{StaticResource StudioMutedTextBrush}" />
+                  <ComboBox ItemsSource="{x:Bind ViewModel.ExportFormats}"
+                            SelectedItem="{x:Bind ViewModel.SelectedExportFormat, Mode=TwoWay}"
+                            DisplayMemberPath="Name" HorizontalAlignment="Stretch"
+                            CornerRadius="6" Height="28" BorderBrush="{StaticResource StudioBorderBrush}" />
+                </StackPanel>
+              </StackPanel>
+
+            </StackPanel>
+          </ScrollViewer>
+        </Grid>
+      </Border>
+
+      <!-- ==================== CENTER PANEL ==================== -->
+      <Border Grid.Column="1" Style="{StaticResource StudioCardStyle}">
+        <Grid RowSpacing="8">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <!-- Search + Filter toolbar -->
+          <Grid ColumnSpacing="8">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="*" />
               <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock Text="{x:Bind ViewModel.CatalogFileName, Mode=OneWay}"
-                       VerticalAlignment="Center"
-                       FontWeight="SemiBold" />
-            <TextBlock Grid.Column="1"
-                       Text="{x:Bind ViewModel.CulturePair, Mode=OneWay}"
-                       VerticalAlignment="Center"
-                       Foreground="{StaticResource StudioMutedTextBrush}" />
-            <TextBlock Grid.Column="2"
-                       Text="{x:Bind ViewModel.SourceFormat, Mode=OneWay}"
-                       VerticalAlignment="Center"
-                       Foreground="{StaticResource StudioMutedTextBrush}" />
+            <TextBox Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     PlaceholderText="Search keys, source, or target text…"
+                     Height="32" CornerRadius="8" FontSize="12" Padding="10,6" />
+            <ComboBox Grid.Column="1" Width="100" Height="32" CornerRadius="8"
+                      SelectedItem="{x:Bind ViewModel.SelectedStateFilter, Mode=TwoWay}"
+                      BorderBrush="{StaticResource StudioBorderBrush}">
+              <x:String>All</x:String>
+              <x:String>Approved</x:String>
+              <x:String>Review</x:String>
+              <x:String>Missing</x:String>
+            </ComboBox>
           </Grid>
 
-          <Grid Grid.Row="1"
-                Background="#EEF2F5"
-                Padding="10,8"
-                ColumnSpacing="8">
+          <!-- Column headers -->
+          <Grid Grid.Row="1" Padding="12,4" Opacity="0.7">
             <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="220" />
-              <ColumnDefinition Width="2*" />
-              <ColumnDefinition Width="2*" />
-              <ColumnDefinition Width="88" />
+              <ColumnDefinition Width="140" />
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="60" />
             </Grid.ColumnDefinitions>
-            <TextBlock Text="Key" FontWeight="SemiBold" />
-            <TextBlock Grid.Column="1"
-                       Text="{x:Bind ViewModel.Strings.SourceLabel, Mode=OneWay}"
-                       FontWeight="SemiBold" />
-            <TextBlock Grid.Column="2"
-                       Text="{x:Bind ViewModel.Strings.TargetLabel, Mode=OneWay}"
-                       FontWeight="SemiBold" />
-            <TextBlock Grid.Column="3"
-                       Text="{x:Bind ViewModel.Strings.StateLabel, Mode=OneWay}"
-                       FontWeight="SemiBold" />
+            <TextBlock Text="KEY" FontSize="9" FontWeight="ExtraBold" CharacterSpacing="80" Foreground="{StaticResource StudioMutedTextBrush}" />
+            <TextBlock Grid.Column="1" Text="SOURCE" FontSize="9" FontWeight="ExtraBold" CharacterSpacing="80" Foreground="{StaticResource StudioMutedTextBrush}" />
+            <TextBlock Grid.Column="2" Text="TARGET" FontSize="9" FontWeight="ExtraBold" CharacterSpacing="80" Foreground="{StaticResource StudioMutedTextBrush}" />
+            <TextBlock Grid.Column="3" Text="STATE" FontSize="9" FontWeight="ExtraBold" CharacterSpacing="80" Foreground="{StaticResource StudioMutedTextBrush}" HorizontalAlignment="Right" />
           </Grid>
 
+          <!-- Entries list -->
           <ListView Grid.Row="2"
-                    ItemsSource="{x:Bind ViewModel.Entries}"
+                    ItemsSource="{x:Bind ViewModel.FilteredEntries}"
                     SelectedItem="{x:Bind ViewModel.SelectedEntry, Mode=TwoWay}"
-                    SelectionMode="Single">
+                    SelectionMode="Single"
+                    Padding="0">
             <ListView.ItemTemplate>
               <DataTemplate x:DataType="local:CatalogEntryViewModel">
-                <Grid ColumnSpacing="8" Padding="10,7">
+                <Grid Padding="8,6" ColumnSpacing="6">
                   <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="220" />
-                    <ColumnDefinition Width="2*" />
-                    <ColumnDefinition Width="2*" />
-                    <ColumnDefinition Width="88" />
+                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="60" />
                   </Grid.ColumnDefinitions>
-                  <TextBlock Text="{x:Bind Key}"
-                             TextTrimming="CharacterEllipsis"
-                             FontFamily="Consolas" />
-                  <TextBlock Grid.Column="1"
-                             Text="{x:Bind SourceText}"
-                             TextTrimming="CharacterEllipsis" />
-                  <TextBlock Grid.Column="2"
-                             Text="{x:Bind TargetText, Mode=OneWay}"
-                             TextTrimming="CharacterEllipsis" />
-                  <TextBlock Grid.Column="3"
-                             Text="{x:Bind StateLabel, Mode=OneWay}"
-                             FontWeight="SemiBold" />
+                  <TextBlock Text="{x:Bind Key}" FontSize="10.5" FontFamily="Consolas"
+                             Foreground="{StaticResource StudioVioletBrush}" FontWeight="Bold"
+                             TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Text="{x:Bind SourceText}" FontSize="10.5"
+                             Foreground="{StaticResource StudioMutedTextBrush}"
+                             TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="2" Text="{x:Bind TargetText, Mode=OneWay}" FontSize="10.5"
+                             FontWeight="Bold" Foreground="#0F172A"
+                             TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                  <Border Grid.Column="3"
+                          Background="{x:Bind local:MainPage.GetStateBgBrush(State), Mode=OneWay}"
+                          CornerRadius="8" Padding="6,2" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock Text="{x:Bind StateLabel, Mode=OneWay}"
+                               Foreground="{x:Bind local:MainPage.GetStateBrush(State), Mode=OneWay}"
+                               FontSize="9" FontWeight="ExtraBold" />
+                  </Border>
                 </Grid>
               </DataTemplate>
             </ListView.ItemTemplate>
           </ListView>
+
+          <!-- Add/Delete key bar -->
+          <Grid Grid.Row="3" ColumnSpacing="4" Padding="0,4,0,0">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox Text="{x:Bind ViewModel.NewKeyName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     PlaceholderText="New key" Height="32" FontSize="11" CornerRadius="6" Padding="8,6" />
+            <TextBox Grid.Column="1" Text="{x:Bind ViewModel.NewKeySource, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     PlaceholderText="Source text" Height="32" FontSize="11" CornerRadius="6" Padding="8,6" />
+            <Button Grid.Column="2" Command="{x:Bind ViewModel.AddKeyCommand}"
+                    Height="32" CornerRadius="6" Background="{StaticResource StudioAccentBrush}" Padding="10,0">
+              <StackPanel Orientation="Horizontal" Spacing="4">
+                <FontIcon Glyph="&#xE710;" FontSize="10" Foreground="White" />
+                <TextBlock Text="Add" FontSize="10" FontWeight="Bold" Foreground="White" />
+              </StackPanel>
+            </Button>
+            <Button Grid.Column="3" Command="{x:Bind ViewModel.DeleteKeyCommand}"
+                    Height="32" CornerRadius="6" Background="Transparent"
+                    BorderThickness="1" BorderBrush="{StaticResource StudioErrorBrush}" Padding="10,0">
+              <FontIcon Glyph="&#xE74D;" FontSize="10" Foreground="{StaticResource StudioErrorBrush}" />
+            </Button>
+          </Grid>
         </Grid>
       </Border>
 
-      <Border Grid.Column="2"
-              Background="{StaticResource StudioSurfaceBrush}"
-              BorderBrush="{StaticResource StudioBorderBrush}"
-              BorderThickness="1"
-              CornerRadius="6">
-        <ScrollViewer>
-          <StackPanel Padding="14" Spacing="12">
-            <TextBlock Text="{x:Bind ViewModel.SelectedKey, Mode=OneWay}"
-                       FontSize="15"
-                       FontWeight="SemiBold"
-                       TextWrapping="Wrap" />
-            <TextBlock Text="{x:Bind ViewModel.SelectedStateLabel, Mode=OneWay}"
-                       Foreground="{StaticResource StudioAccentBrush}"
-                       FontWeight="SemiBold" />
+      <!-- ==================== RIGHT PANEL ==================== -->
+      <Border Grid.Column="2" Style="{StaticResource StudioCardStyle}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel Spacing="10">
 
-            <TextBox Header="{x:Bind ViewModel.Strings.SourceLabel, Mode=OneWay}"
-                     Text="{x:Bind ViewModel.SelectedSourceText, Mode=OneWay}"
-                     IsReadOnly="True"
-                     TextWrapping="Wrap"
-                     MinHeight="74" />
+            <!-- Key header -->
+            <Border Background="#F5F3FF" CornerRadius="10" Padding="12,8">
+              <TextBlock Text="{x:Bind ViewModel.SelectedKey, Mode=OneWay}"
+                         FontFamily="Consolas" FontSize="13" FontWeight="ExtraBold"
+                         Foreground="{StaticResource StudioVioletBrush}"
+                         TextWrapping="Wrap" />
+            </Border>
 
-            <TextBox Header="{x:Bind ViewModel.Strings.TargetLabel, Mode=OneWay}"
-                     Text="{x:Bind ViewModel.SelectedTargetText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     TextWrapping="Wrap"
-                     AcceptsReturn="True"
-                     MinHeight="86" />
+            <!-- State badge -->
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Border Background="{x:Bind local:MainPage.GetStateBgBrush(ViewModel.SelectedEntryState), Mode=OneWay}"
+                      CornerRadius="10" Padding="8,3">
+                <TextBlock Text="{x:Bind ViewModel.SelectedStateLabel, Mode=OneWay}"
+                           Foreground="{x:Bind local:MainPage.GetStateBrush(ViewModel.SelectedEntryState), Mode=OneWay}"
+                           FontSize="9" FontWeight="ExtraBold" />
+              </Border>
+            </StackPanel>
 
-            <TextBox Header="{x:Bind ViewModel.Strings.NotesLabel, Mode=OneWay}"
-                     Text="{x:Bind ViewModel.SelectedNotes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     TextWrapping="Wrap"
-                     AcceptsReturn="True"
-                     MinHeight="72" />
+            <!-- Source -->
+            <StackPanel Spacing="3">
+              <TextBlock Text="SOURCE" FontSize="9" FontWeight="ExtraBold" CharacterSpacing="80"
+                         Foreground="{StaticResource StudioMutedTextBrush}" />
+              <Border Background="#F8FAFC" CornerRadius="8" Padding="10,8"
+                      BorderBrush="{StaticResource StudioBorderBrush}" BorderThickness="1">
+                <TextBlock Text="{x:Bind ViewModel.SelectedSourceText, Mode=OneWay}"
+                           FontSize="12" Foreground="#334155" TextWrapping="Wrap" />
+              </Border>
+            </StackPanel>
 
-            <Grid ColumnSpacing="8">
+            <!-- Target edit -->
+            <StackPanel Spacing="3">
+              <TextBlock Text="TRANSLATION" FontSize="9" FontWeight="ExtraBold" CharacterSpacing="80"
+                         Foreground="{StaticResource StudioMutedTextBrush}" />
+              <TextBox Text="{x:Bind ViewModel.SelectedTargetText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                       AcceptsReturn="True" TextWrapping="Wrap"
+                       MinHeight="60" CornerRadius="8" FontSize="12" Padding="10,8" />
+            </StackPanel>
+
+            <!-- Notes -->
+            <StackPanel Spacing="3">
+              <TextBlock Text="NOTES" FontSize="9" FontWeight="ExtraBold" CharacterSpacing="80"
+                         Foreground="{StaticResource StudioMutedTextBrush}" />
+              <TextBox Text="{x:Bind ViewModel.SelectedNotes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                       AcceptsReturn="True" TextWrapping="Wrap"
+                       MinHeight="40" CornerRadius="8" FontSize="11" Padding="10,6" />
+            </StackPanel>
+
+            <!-- Diagnostics -->
+            <Border Visibility="{x:Bind local:MainPage.VisibleIf(ViewModel.SelectedEntryHasDiagnostics), Mode=OneWay}"
+                    Background="#FFFBEB" CornerRadius="8" Padding="10,8"
+                    BorderBrush="#FDE68A" BorderThickness="1">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <FontIcon Glyph="&#xE7BA;" FontSize="12" Foreground="#B45309" />
+                <TextBlock Text="{x:Bind ViewModel.SelectedDiagnostics, Mode=OneWay}"
+                           FontSize="10.5" Foreground="#92400E" TextWrapping="Wrap" />
+              </StackPanel>
+            </Border>
+
+            <!-- Action buttons -->
+            <Grid ColumnSpacing="6" RowSpacing="6">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
               </Grid.ColumnDefinitions>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+              </Grid.RowDefinitions>
               <Button Command="{x:Bind ViewModel.ApproveSelectedCommand}"
-                      HorizontalAlignment="Stretch">
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                  <FontIcon Glyph="&#xE73E;" FontSize="14" />
-                  <TextBlock Text="{x:Bind ViewModel.Strings.ApproveButton, Mode=OneWay}" />
+                      HorizontalAlignment="Stretch" Height="32" CornerRadius="8"
+                      Background="#ECFDF5" BorderThickness="1" BorderBrush="#A7F3D0">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <FontIcon Glyph="&#xE73E;" FontSize="11" Foreground="#047857" />
+                  <TextBlock Text="Approve" FontSize="10.5" FontWeight="Bold" Foreground="#047857" />
                 </StackPanel>
               </Button>
-              <Button Grid.Column="1"
-                      Command="{x:Bind ViewModel.MarkReviewCommand}"
-                      HorizontalAlignment="Stretch">
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                  <FontIcon Glyph="&#xE7BA;" FontSize="14" />
-                  <TextBlock Text="{x:Bind ViewModel.Strings.ReviewButton, Mode=OneWay}" />
+              <Button Grid.Column="1" Command="{x:Bind ViewModel.MarkReviewCommand}"
+                      HorizontalAlignment="Stretch" Height="32" CornerRadius="8"
+                      Background="#FFFBEB" BorderThickness="1" BorderBrush="#FDE68A">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <FontIcon Glyph="&#xE7BA;" FontSize="11" Foreground="#B45309" />
+                  <TextBlock Text="Review" FontSize="10.5" FontWeight="Bold" Foreground="#B45309" />
+                </StackPanel>
+              </Button>
+              <Button Grid.Row="1" Command="{x:Bind ViewModel.AutoTranslateSelectedCommand}"
+                      HorizontalAlignment="Stretch" Height="32" CornerRadius="8"
+                      Background="{StaticResource StudioAccentGradient}">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <FontIcon Glyph="&#xE8C1;" FontSize="11" Foreground="White" />
+                  <TextBlock Text="Auto" FontSize="10.5" FontWeight="Bold" Foreground="White" />
+                </StackPanel>
+              </Button>
+              <Button Grid.Row="1" Grid.Column="1" Command="{x:Bind ViewModel.AutoTranslateAllCommand}"
+                      HorizontalAlignment="Stretch" Height="32" CornerRadius="8"
+                      Background="Transparent" BorderThickness="1"
+                      BorderBrush="{StaticResource StudioAccentBrush}">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <FontIcon Glyph="&#xE8C1;" FontSize="11" Foreground="{StaticResource StudioAccentBrush}" />
+                  <TextBlock Text="All" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource StudioAccentBrush}" />
                 </StackPanel>
               </Button>
             </Grid>
 
-            <Border BorderBrush="{StaticResource StudioBorderBrush}"
-                    BorderThickness="1"
-                    CornerRadius="6"
-                    Padding="10">
-              <StackPanel Spacing="6">
-                <TextBlock Text="{x:Bind ViewModel.Strings.DiagnosticsLabel, Mode=OneWay}"
-                           FontWeight="SemiBold" />
-                <TextBlock Text="{x:Bind ViewModel.SelectedDiagnostics, Mode=OneWay}"
-                           Foreground="{StaticResource StudioMutedTextBrush}"
-                           TextWrapping="Wrap" />
-              </StackPanel>
-            </Border>
+            <!-- Separator -->
+            <Border BorderBrush="{StaticResource StudioBorderBrush}" BorderThickness="0,0,0,1" Margin="0,2" />
 
-            <Border BorderBrush="{StaticResource StudioBorderBrush}"
-                    BorderThickness="1"
-                    CornerRadius="6"
-                    Padding="10">
-              <StackPanel Spacing="6">
-                <TextBlock Text="{x:Bind ViewModel.Strings.ServiceBoundaryLabel, Mode=OneWay}"
-                           FontWeight="SemiBold" />
-                <TextBlock Text="{x:Bind ViewModel.Strings.ServiceBoundaryDescription, Mode=OneWay}"
-                           Foreground="{StaticResource StudioMutedTextBrush}"
-                           TextWrapping="Wrap" />
+            <!-- ==================== AI TRANSLATION ==================== -->
+            <StackPanel Spacing="8">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <FontIcon Glyph="&#xE945;" FontSize="13" Foreground="{StaticResource StudioAiAccentBrush}" />
+                <TextBlock Text="AI TRANSLATE" FontSize="11" FontWeight="ExtraBold" CharacterSpacing="60" Foreground="#0F172A" />
               </StackPanel>
-            </Border>
+
+              <!-- Provider selector -->
+              <Grid ColumnSpacing="6">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ComboBox ItemsSource="{x:Bind ViewModel.AvailableAiProviders}"
+                          SelectedItem="{x:Bind ViewModel.SelectedAiProvider, Mode=TwoWay}"
+                          HorizontalAlignment="Stretch" CornerRadius="6" Height="30"
+                          BorderBrush="{StaticResource StudioAiSuggestionBorderBrush}" />
+                <Button Grid.Column="1" Command="{x:Bind ViewModel.AiTranslateSelectedCommand}"
+                        Height="30" CornerRadius="6"
+                        Background="{StaticResource StudioAiAccentBrush}" Padding="10,0">
+                  <StackPanel Orientation="Horizontal" Spacing="4">
+                    <FontIcon Glyph="&#xE945;" FontSize="10" Foreground="White" />
+                    <TextBlock Text="1" FontSize="10" FontWeight="Bold" Foreground="White" />
+                  </StackPanel>
+                </Button>
+                <Button Grid.Column="2" Command="{x:Bind ViewModel.AiTranslateAllMissingCommand}"
+                        Height="30" CornerRadius="6"
+                        Background="Transparent" BorderThickness="1"
+                        BorderBrush="{StaticResource StudioAiAccentBrush}" Padding="10,0">
+                  <StackPanel Orientation="Horizontal" Spacing="4">
+                    <FontIcon Glyph="&#xE945;" FontSize="10" Foreground="{StaticResource StudioAiAccentBrush}" />
+                    <TextBlock Text="All" FontSize="10" FontWeight="Bold" Foreground="{StaticResource StudioAiAccentBrush}" />
+                  </StackPanel>
+                </Button>
+              </Grid>
+
+              <!-- Progress bar (visible during batch) -->
+              <ProgressBar Visibility="{x:Bind local:MainPage.VisibleIf(ViewModel.IsAiTranslating), Mode=OneWay}"
+                           Minimum="0" Maximum="100"
+                           Value="{x:Bind ViewModel.AiTranslationProgress, Mode=OneWay}"
+                           Height="4" Background="#EDE9FE"
+                           Foreground="{StaticResource StudioAiAccentBrush}" CornerRadius="2" />
+
+              <!-- Status message -->
+              <TextBlock Text="{x:Bind ViewModel.AiStatusMessage, Mode=OneWay}"
+                         FontSize="10" Foreground="{StaticResource StudioMutedTextBrush}"
+                         TextWrapping="Wrap"
+                         Visibility="{x:Bind local:MainPage.CollapsedIf(ViewModel.IsAiTranslating), Mode=OneWay}" />
+
+              <!-- AI Suggestion Card -->
+              <Border Visibility="{x:Bind local:MainPage.VisibleIf(ViewModel.HasAiSuggestion), Mode=OneWay}"
+                      Background="{StaticResource StudioAiSuggestionBgBrush}"
+                      BorderBrush="{StaticResource StudioAiSuggestionBorderBrush}"
+                      BorderThickness="1" CornerRadius="10" Padding="12,10">
+                <StackPanel Spacing="6">
+                  <!-- Provider badge -->
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <Border Background="{StaticResource StudioAiAccentBrush}" CornerRadius="6" Padding="6,2">
+                      <TextBlock Text="{x:Bind ViewModel.AiSuggestionProvider, Mode=OneWay}"
+                                 FontSize="9" FontWeight="ExtraBold" Foreground="White" />
+                    </Border>
+                    <TextBlock Text="{x:Bind ViewModel.AiSuggestionModel, Mode=OneWay}"
+                               FontSize="9" Foreground="{StaticResource StudioMutedTextBrush}" VerticalAlignment="Center" />
+                  </StackPanel>
+                  <!-- Suggested text -->
+                  <TextBlock Text="{x:Bind ViewModel.AiSuggestion, Mode=OneWay}"
+                             FontSize="12" FontWeight="SemiBold" Foreground="#1E293B"
+                             TextWrapping="Wrap" />
+                  <!-- Metrics -->
+                  <TextBlock FontSize="9" Foreground="{StaticResource StudioMutedTextBrush}">
+                    <Run Text="Tokens:" /><Run Text=" " /><Run Text="{x:Bind ViewModel.AiSuggestionTokens, Mode=OneWay}" />
+                    <Run Text=" · " />
+                    <Run Text="{x:Bind ViewModel.AiSuggestionDurationMs, Mode=OneWay}" /><Run Text="ms" />
+                  </TextBlock>
+                  <!-- Accept / Reject -->
+                  <Grid ColumnSpacing="6">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="*" />
+                      <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Command="{x:Bind ViewModel.AcceptAiSuggestionCommand}"
+                            HorizontalAlignment="Stretch" Height="28" CornerRadius="6"
+                            Background="#ECFDF5" BorderThickness="1" BorderBrush="#A7F3D0">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <FontIcon Glyph="&#xE73E;" FontSize="10" Foreground="#047857" />
+                        <TextBlock Text="Accept" FontSize="10" FontWeight="Bold" Foreground="#047857" />
+                      </StackPanel>
+                    </Button>
+                    <Button Grid.Column="1" Command="{x:Bind ViewModel.RejectAiSuggestionCommand}"
+                            HorizontalAlignment="Stretch" Height="28" CornerRadius="6"
+                            Background="#FEF2F2" BorderThickness="1" BorderBrush="#FCA5A5">
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <FontIcon Glyph="&#xE711;" FontSize="10" Foreground="#B91C1C" />
+                        <TextBlock Text="Reject" FontSize="10" FontWeight="Bold" Foreground="#B91C1C" />
+                      </StackPanel>
+                    </Button>
+                  </Grid>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+
           </StackPanel>
         </ScrollViewer>
       </Border>
     </Grid>
 
+    <!-- ==================== FOOTER STATUS BAR ==================== -->
     <Border Grid.Row="2"
             Background="{StaticResource StudioSurfaceBrush}"
             BorderBrush="{StaticResource StudioBorderBrush}"
             BorderThickness="0,1,0,0">
       <Grid Padding="16,0">
-        <TextBlock Text="{x:Bind ViewModel.LastExportSummary, Mode=OneWay}"
-                   VerticalAlignment="Center"
-                   Foreground="{StaticResource StudioMutedTextBrush}" />
+        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+          <FontIcon Glyph="&#xE946;" FontSize="10" Foreground="{StaticResource StudioMutedTextBrush}" />
+          <TextBlock Text="{x:Bind ViewModel.LastExportSummary, Mode=OneWay}"
+                     FontSize="10" FontWeight="SemiBold"
+                     Foreground="{StaticResource StudioMutedTextBrush}"
+                     TextTrimming="CharacterEllipsis" />
+        </StackPanel>
       </Grid>
     </Border>
+
+    <!-- ==================== SETTINGS OVERLAY ==================== -->
+    <Grid Grid.RowSpan="3"
+          Visibility="{x:Bind local:MainPage.VisibleIf(ViewModel.SettingsVM.IsVisible), Mode=OneWay}">
+      <!-- Backdrop -->
+      <Border Background="{StaticResource StudioOverlayBrush}" />
+      <!-- Panel -->
+      <Border HorizontalAlignment="Right" Width="420"
+              Background="{StaticResource StudioPanelBgBrush}"
+              BorderBrush="{StaticResource StudioBorderBrush}" BorderThickness="1,0,0,0">
+        <Grid RowSpacing="12">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+
+          <!-- Settings header -->
+          <Border Background="{StaticResource StudioSurfaceBrush}"
+                  BorderBrush="{StaticResource StudioBorderBrush}" BorderThickness="0,0,0,1"
+                  Padding="20,12">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <FontIcon Glyph="&#xE713;" FontSize="16" Foreground="{StaticResource StudioAccentBrush}" />
+                <TextBlock Text="Settings" FontSize="16" FontWeight="ExtraBold" Foreground="#0F172A" />
+              </StackPanel>
+              <Button Grid.Column="1" Click="OnCloseSettingsClick"
+                      Height="28" Width="28" Padding="0" CornerRadius="6"
+                      Background="Transparent" BorderThickness="0">
+                <FontIcon Glyph="&#xE711;" FontSize="12" Foreground="{StaticResource StudioMutedTextBrush}" />
+              </Button>
+            </Grid>
+          </Border>
+
+          <!-- Settings content -->
+          <ScrollViewer Grid.Row="1" Padding="20,0,20,20">
+            <StackPanel Spacing="16">
+
+              <!-- General -->
+              <StackPanel Spacing="8">
+                <TextBlock Text="GENERAL" FontSize="10" FontWeight="ExtraBold" CharacterSpacing="80" Foreground="{StaticResource StudioMutedTextBrush}" />
+                <ToggleSwitch Header="Auto-save"
+                              IsOn="{x:Bind ViewModel.SettingsVM.AutoSaveEnabled, Mode=TwoWay}"
+                              OnContent="Enabled" OffContent="Disabled" />
+                <StackPanel Spacing="2">
+                  <TextBlock Text="Auto-save interval (seconds)" FontSize="10.5" FontWeight="SemiBold" />
+                  <NumberBox Value="{x:Bind ViewModel.SettingsVM.AutoSaveIntervalSeconds, Mode=TwoWay}"
+                             Minimum="10" Maximum="300" SpinButtonPlacementMode="Inline"
+                             CornerRadius="6" />
+                </StackPanel>
+                <ToggleSwitch Header="Auto-backup on save"
+                              IsOn="{x:Bind ViewModel.SettingsVM.AutoBackupEnabled, Mode=TwoWay}"
+                              OnContent="Enabled" OffContent="Disabled" />
+                <StackPanel Spacing="2">
+                  <TextBlock Text="Maximum backups" FontSize="10.5" FontWeight="SemiBold" />
+                  <NumberBox Value="{x:Bind ViewModel.SettingsVM.MaxBackupCount, Mode=TwoWay}"
+                             Minimum="1" Maximum="50" SpinButtonPlacementMode="Inline"
+                             CornerRadius="6" />
+                </StackPanel>
+                <StackPanel Spacing="2">
+                  <TextBlock Text="AI Translation Context" FontSize="10.5" FontWeight="SemiBold" />
+                  <TextBox Text="{x:Bind ViewModel.SettingsVM.AiTranslationContext, Mode=TwoWay}"
+                           PlaceholderText="e.g., Software UI, E-commerce, Legal…"
+                           CornerRadius="6" FontSize="11" MinHeight="34" Padding="8,6" />
+                </StackPanel>
+              </StackPanel>
+
+              <Border BorderBrush="{StaticResource StudioBorderBrush}" BorderThickness="0,0,0,1" />
+
+              <!-- AI Providers -->
+              <StackPanel Spacing="8">
+                <TextBlock Text="AI PROVIDERS" FontSize="10" FontWeight="ExtraBold" CharacterSpacing="80" Foreground="{StaticResource StudioMutedTextBrush}" />
+                <ItemsControl ItemsSource="{x:Bind ViewModel.SettingsVM.ProviderConfigs}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="local:AiProviderConfigViewModel">
+                      <Border Background="#F8FAFC" CornerRadius="10" Padding="14,10" Margin="0,4"
+                              BorderBrush="{StaticResource StudioBorderBrush}" BorderThickness="1">
+                        <StackPanel Spacing="6">
+                          <Grid>
+                            <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="*" />
+                              <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{x:Bind ProviderName}" FontSize="13" FontWeight="ExtraBold" Foreground="#0F172A" />
+                            <ToggleSwitch Grid.Column="1" IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
+                                          OnContent="" OffContent="" MinWidth="0" />
+                          </Grid>
+                          <StackPanel Spacing="2">
+                            <TextBlock Text="API Key" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource StudioMutedTextBrush}" />
+                            <PasswordBox Password="{x:Bind ApiKey, Mode=TwoWay}"
+                                         PlaceholderText="Enter API key…"
+                                         CornerRadius="6" Height="34" />
+                          </StackPanel>
+                          <Grid ColumnSpacing="6">
+                            <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="*" />
+                              <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="2">
+                              <TextBlock Text="Model" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource StudioMutedTextBrush}" />
+                              <ComboBox ItemsSource="{x:Bind AvailableModels}"
+                                        SelectedItem="{x:Bind ModelId, Mode=TwoWay}"
+                                        HorizontalAlignment="Stretch" CornerRadius="6" Height="34" />
+                            </StackPanel>
+                            <Button Grid.Column="1" VerticalAlignment="Bottom" Height="34" CornerRadius="6"
+                                    Command="{x:Bind DiscoverModelsCommand}" Padding="8,0"
+                                    Background="Transparent" BorderThickness="1" BorderBrush="{StaticResource StudioBorderBrush}">
+                              <StackPanel Orientation="Horizontal" Spacing="4">
+                                <FontIcon Glyph="&#xE72C;" FontSize="11" Foreground="{StaticResource StudioAccentBrush}" />
+                                <TextBlock Text="Discover" FontSize="10.5" FontWeight="SemiBold" Foreground="#1E293B" />
+                              </StackPanel>
+                            </Button>
+                          </Grid>
+                          <!-- Discovery progress/status -->
+                          <ProgressBar IsIndeterminate="True" Height="2" Margin="0,2,0,0"
+                                       Visibility="{x:Bind local:MainPage.VisibleIf(IsDiscovering), Mode=OneWay}"
+                                       Foreground="{StaticResource StudioAccentBrush}" Background="Transparent" />
+                          <TextBlock Text="{x:Bind StatusMessage, Mode=OneWay}" FontSize="10" FontWeight="SemiBold"
+                                     Foreground="{StaticResource StudioAccentBrush}" Margin="0,2,0,0"
+                                     Visibility="{x:Bind local:MainPage.VisibleIfNotEmpty(StatusMessage), Mode=OneWay}" />
+                        </StackPanel>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+
+              <!-- Save/Cancel -->
+              <Grid ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Command="{x:Bind ViewModel.SettingsVM.SaveCommand}"
+                        HorizontalAlignment="Stretch" Height="36" CornerRadius="8"
+                        Background="{StaticResource StudioAccentBrush}">
+                  <TextBlock Text="Save Settings" FontSize="12" FontWeight="Bold" Foreground="White" />
+                </Button>
+                <Button Grid.Column="1" Command="{x:Bind ViewModel.SettingsVM.CancelCommand}"
+                        HorizontalAlignment="Stretch" Height="36" CornerRadius="8"
+                        Background="Transparent" BorderThickness="1"
+                        BorderBrush="{StaticResource StudioBorderBrush}">
+                  <TextBlock Text="Cancel" FontSize="12" FontWeight="Bold" Foreground="#64748B" />
+                </Button>
+              </Grid>
+
+            </StackPanel>
+          </ScrollViewer>
+        </Grid>
+      </Border>
+    </Grid>
+
   </Grid>
 </Page>
