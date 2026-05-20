@@ -1,4 +1,3 @@
-<img width="3824" height="2316" alt="image" src="https://github.com/user-attachments/assets/4a8138b0-0656-4daf-a607-5cf5d09eddcc" /># ProTranslate
 
 [![Docs](https://img.shields.io/badge/docs-github%20pages-0f766e)](https://wieslawsoltes.github.io/ProTranslate/)
 ![.NET](https://img.shields.io/badge/.NET-10-512BD4)
