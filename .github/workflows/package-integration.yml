@@ -1,0 +1,608 @@
+name: NuGet Package Integration
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - '.github/workflows/package-integration.yml'
+      - 'Directory.Build.props'
+      - 'Directory.Packages.props'
+      - 'README.md'
+      - 'pack.sh'
+      - 'src/**'
+      - 'tests/**'
+      - 'samples/**'
+      - 'docs/spec/release-checklist.md'
+      - 'docs/spec/validation-matrix.md'
+      - 'site/articles/ci-release.md'
+      - 'site/articles/release-checklist.md'
+      - 'site/articles/testing.md'
+      - 'site/articles/validation-matrix.md'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/package-integration.yml'
+      - 'Directory.Build.props'
+      - 'Directory.Packages.props'
+      - 'README.md'
+      - 'pack.sh'
+      - 'src/**'
+      - 'tests/**'
+      - 'samples/**'
+      - 'docs/spec/release-checklist.md'
+      - 'docs/spec/validation-matrix.md'
+      - 'site/articles/ci-release.md'
+      - 'site/articles/release-checklist.md'
+      - 'site/articles/testing.md'
+      - 'site/articles/validation-matrix.md'
+  workflow_dispatch:
+
+concurrency:
+  group: package-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  PACKAGE_VERSION: 0.1.0-integration.${{ github.run_number }}
+
+jobs:
+  pack:
+    name: Pack NuGet Packages
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Pack packages
+        run: ./pack.sh "${PACKAGE_VERSION}"
+
+      - name: Upload package feed
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package-feed
+          path: artifacts/packages/
+          if-no-files-found: error
+          retention-days: 7
+
+  portable:
+    name: Portable Package Consumer
+    runs-on: ubuntu-latest
+    needs: pack
+    steps:
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Download package feed
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package-feed
+          path: artifacts/packages
+
+      - name: Build and run portable package consumer
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          package_source="${PWD}/artifacts/packages"
+          if command -v cygpath >/dev/null 2>&1; then
+            package_source="$(cygpath -w "${package_source}")"
+          fi
+          work="$(mktemp -d)"
+          cd "${work}"
+
+          cat > NuGet.config <<EOF
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <packageSources>
+              <clear />
+              <add key="local" value="${package_source}" />
+              <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+            </packageSources>
+          </configuration>
+          EOF
+
+          mkdir -p PortableConsumer/Resources
+          cat > PortableConsumer/PortableConsumer.csproj <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <OutputType>Exe</OutputType>
+              <TargetFramework>net10.0</TargetFramework>
+              <Nullable>enable</Nullable>
+              <ImplicitUsings>enable</ImplicitUsings>
+              <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+            </PropertyGroup>
+            <ItemGroup>
+              <PackageReference Include="ProTranslate.Abstractions" Version="${PACKAGE_VERSION}" />
+              <PackageReference Include="ProTranslate.Core" Version="${PACKAGE_VERSION}" />
+              <PackageReference Include="ProTranslate.ResourceManager" Version="${PACKAGE_VERSION}" />
+              <PackageReference Include="ProTranslate.MicrosoftExtensions" Version="${PACKAGE_VERSION}" />
+              <PackageReference Include="ProTranslate.Formats" Version="${PACKAGE_VERSION}" />
+              <PackageReference Include="ProTranslate.SourceGenerator" Version="${PACKAGE_VERSION}" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+              <PackageReference Include="ProTranslate.Analyzers" Version="${PACKAGE_VERSION}" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+            </ItemGroup>
+            <ItemGroup>
+              <AdditionalFiles Include="Resources/Strings.en-US.json" />
+              <AdditionalFiles Include="Resources/Strings.pl-PL.json" />
+            </ItemGroup>
+          </Project>
+          EOF
+
+          cat > PortableConsumer/Resources/Strings.en-US.json <<'EOF'
+          {
+            "Shell.Title": "ProTranslate",
+            "Orders.Total": "Total: {0:C}"
+          }
+          EOF
+
+          cat > PortableConsumer/Resources/Strings.pl-PL.json <<'EOF'
+          {
+            "Shell.Title": "ProTranslate",
+            "Orders.Total": "Razem: {0:C}"
+          }
+          EOF
+
+          cat > PortableConsumer/Program.cs <<'EOF'
+          using System.Globalization;
+          using System.Reflection;
+          using System.Resources;
+          using Microsoft.Extensions.DependencyInjection;
+          using ProTranslate;
+          using ProTranslate.Formats;
+          using ProTranslate.Generated;
+
+          var cultureOptions = new CultureServiceOptions
+          {
+              ApplyToCurrentThread = false,
+              ApplyToDefaultThread = false
+          };
+          var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"), cultureOptions);
+          var generatedProvider = new ProTranslateGeneratedTranslationProvider("Generated");
+          var memoryProvider = new InMemoryTranslationProvider()
+              .Add(CultureInfo.GetCultureInfo("en-US"), "Fallback.Key", "Fallback");
+          var resourceProvider = new ResourceManagerTranslationProvider(
+              new ResourceManager("Missing.Resources", Assembly.GetExecutingAssembly()),
+              "MissingResourceManager");
+          var provider = new CompositeTranslationProvider(generatedProvider, memoryProvider, resourceProvider);
+          using var translations = new TranslationService(provider, cultures);
+
+          if (translations.Value_ShellTitle() != "ProTranslate")
+          {
+              throw new InvalidOperationException("Generated accessor did not resolve the expected value.");
+          }
+
+          if (translations.Format_OrdersTotal(12m) != string.Format(CultureInfo.GetCultureInfo("en-US"), "Total: {0:C}", 12m))
+          {
+              throw new InvalidOperationException("Generated format accessor did not format through the core service.");
+          }
+
+          using var strings = new ProTranslateStrings(translations);
+          if (strings.ShellTitle != "ProTranslate")
+          {
+              throw new InvalidOperationException("Generated bindable string surface did not resolve.");
+          }
+
+          ITranslationProvider abstractionProvider = provider;
+          if (abstractionProvider.GetString("Fallback.Key", CultureInfo.GetCultureInfo("en-US")).Value != "Fallback")
+          {
+              throw new InvalidOperationException("Abstraction/provider package chain did not resolve.");
+          }
+
+          var services = new ServiceCollection();
+          services.AddProTranslate(provider, CultureInfo.GetCultureInfo("en-US"), cultureOptions: cultureOptions);
+          if (!services.Any(static descriptor => descriptor.ServiceType == typeof(ITranslationService)))
+          {
+              throw new InvalidOperationException("Microsoft.Extensions registration did not add the translation service.");
+          }
+
+          TranslationFormatResult import = TranslationCatalogConverter.Import(
+              "key,culture,value\nShell.Title,en-US,ProTranslate\n",
+              TranslationFileFormat.Csv);
+          if (import.Catalog.Entries.Count != 1)
+          {
+              throw new InvalidOperationException("Formats package did not import CSV content.");
+          }
+
+          Console.WriteLine("Portable NuGet package consumer passed.");
+          EOF
+
+          dotnet run --project PortableConsumer/PortableConsumer.csproj -c Release
+
+      - name: Verify analyzer package reports diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          package_source="${PWD}/artifacts/packages"
+          if command -v cygpath >/dev/null 2>&1; then
+            package_source="$(cygpath -w "${package_source}")"
+          fi
+          work="$(mktemp -d)"
+          cd "${work}"
+
+          cat > NuGet.config <<EOF
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <packageSources>
+              <clear />
+              <add key="local" value="${package_source}" />
+              <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+            </packageSources>
+          </configuration>
+          EOF
+
+          mkdir -p AnalyzerConsumer/Resources
+          cat > AnalyzerConsumer/AnalyzerConsumer.csproj <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <TargetFramework>net10.0</TargetFramework>
+              <Nullable>enable</Nullable>
+              <ImplicitUsings>enable</ImplicitUsings>
+            </PropertyGroup>
+            <ItemGroup>
+              <PackageReference Include="ProTranslate.Core" Version="${PACKAGE_VERSION}" />
+              <PackageReference Include="ProTranslate.Analyzers" Version="${PACKAGE_VERSION}" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+            </ItemGroup>
+            <ItemGroup>
+              <AdditionalFiles Include="Resources/Strings.en-US.json" />
+            </ItemGroup>
+          </Project>
+          EOF
+
+          cat > AnalyzerConsumer/Resources/Strings.en-US.json <<'EOF'
+          {
+            "Shell.Title": "ProTranslate"
+          }
+          EOF
+
+          cat > AnalyzerConsumer/Class1.cs <<'EOF'
+          using ProTranslate;
+
+          public sealed class AnalyzerConsumer
+          {
+              public string Read(ITranslationService translations) =>
+                  translations.GetString("Missing.Key").Value;
+          }
+          EOF
+
+          set +e
+          dotnet build AnalyzerConsumer/AnalyzerConsumer.csproj -c Release -warnaserror:PTA001 > analyzer.log 2>&1
+          exit_code=$?
+          set -e
+          cat analyzer.log
+
+          if [ "${exit_code}" -eq 0 ]; then
+            echo "Expected analyzer package to report PTA001 as an error."
+            exit 1
+          fi
+
+          grep -q "PTA001" analyzer.log
+
+  avalonia:
+    name: Avalonia Package Consumer
+    runs-on: ubuntu-latest
+    needs: pack
+    steps:
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Download package feed
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package-feed
+          path: artifacts/packages
+
+      - name: Build Avalonia package consumer
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          package_source="${PWD}/artifacts/packages"
+          if command -v cygpath >/dev/null 2>&1; then
+            package_source="$(cygpath -w "${package_source}")"
+          fi
+          work="$(mktemp -d)"
+          cd "${work}"
+
+          cat > NuGet.config <<EOF
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <packageSources>
+              <clear />
+              <add key="local" value="${package_source}" />
+              <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+            </packageSources>
+          </configuration>
+          EOF
+
+          mkdir AvaloniaConsumer
+          cat > AvaloniaConsumer/AvaloniaConsumer.csproj <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <TargetFramework>net10.0</TargetFramework>
+              <Nullable>enable</Nullable>
+              <ImplicitUsings>enable</ImplicitUsings>
+              <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+            </PropertyGroup>
+            <ItemGroup>
+              <PackageReference Include="ProTranslate.Avalonia" Version="${PACKAGE_VERSION}" />
+            </ItemGroup>
+          </Project>
+          EOF
+
+          cat > AvaloniaConsumer/Class1.cs <<'EOF'
+          using System.Globalization;
+          using Avalonia.Data;
+          using ProTranslate;
+          using ProTranslate.Avalonia;
+
+          public static class AvaloniaPackageSmoke
+          {
+              public static Binding CreateBinding()
+              {
+                  var provider = new InMemoryTranslationProvider()
+                      .Add(CultureInfo.GetCultureInfo("en-US"), "Shell.Title", "ProTranslate");
+                  var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
+                  var translations = new ProTranslate.TranslationService(provider, cultures);
+                  ProTranslate.Avalonia.TranslationService.UseService(translations, cultures);
+                  return (Binding)new TranslateExtension("Shell.Title").ProvideValue(new EmptyServiceProvider());
+              }
+
+              private sealed class EmptyServiceProvider : IServiceProvider
+              {
+                  public object? GetService(Type serviceType) => null;
+              }
+          }
+          EOF
+
+          dotnet build AvaloniaConsumer/AvaloniaConsumer.csproj -c Release
+
+  maui:
+    name: MAUI Package Consumer
+    runs-on: macos-26
+    needs: pack
+    steps:
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Download package feed
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package-feed
+          path: artifacts/packages
+
+      - name: Build MAUI package consumer
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          package_source="${PWD}/artifacts/packages"
+          if command -v cygpath >/dev/null 2>&1; then
+            package_source="$(cygpath -w "${package_source}")"
+          fi
+          work="$(mktemp -d)"
+          cd "${work}"
+
+          cat > NuGet.config <<EOF
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <packageSources>
+              <clear />
+              <add key="local" value="${package_source}" />
+              <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+            </packageSources>
+          </configuration>
+          EOF
+
+          mkdir MauiConsumer
+          cat > MauiConsumer/MauiConsumer.csproj <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <TargetFramework>net10.0-maccatalyst</TargetFramework>
+              <UseMaui>true</UseMaui>
+              <SupportedOSPlatformVersion>26.0</SupportedOSPlatformVersion>
+              <SkipValidateMauiImplicitPackageReferences>true</SkipValidateMauiImplicitPackageReferences>
+              <Nullable>enable</Nullable>
+              <ImplicitUsings>enable</ImplicitUsings>
+              <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+            </PropertyGroup>
+            <ItemGroup>
+              <PackageReference Include="ProTranslate.Maui" Version="${PACKAGE_VERSION}" />
+            </ItemGroup>
+          </Project>
+          EOF
+
+          cat > MauiConsumer/Class1.cs <<'EOF'
+          using System.Globalization;
+          using Microsoft.Maui.Controls;
+          using ProTranslate;
+          using ProTranslate.Maui;
+
+          public static class MauiPackageSmoke
+          {
+              public static BindingBase CreateBinding()
+              {
+                  var provider = new InMemoryTranslationProvider()
+                      .Add(CultureInfo.GetCultureInfo("en-US"), "Shell.Title", "ProTranslate");
+                  var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
+                  var translations = new ProTranslate.TranslationService(provider, cultures);
+                  ProTranslate.Maui.TranslationService.UseService(translations, cultures);
+                  return new TranslateExtension("Shell.Title").ProvideValue(new EmptyServiceProvider());
+              }
+
+              private sealed class EmptyServiceProvider : IServiceProvider
+              {
+                  public object? GetService(Type serviceType) => null;
+              }
+          }
+          EOF
+
+          dotnet build MauiConsumer/MauiConsumer.csproj -c Release
+
+  windows:
+    name: Windows UI Package Consumers
+    runs-on: windows-latest
+    needs: pack
+    steps:
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Download package feed
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package-feed
+          path: artifacts/packages
+
+      - name: Build WPF, WinUI, and Uno package consumers
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          package_source="${PWD}/artifacts/packages"
+          if command -v cygpath >/dev/null 2>&1; then
+            package_source="$(cygpath -w "${package_source}")"
+          fi
+          work="$(mktemp -d)"
+          cd "${work}"
+
+          cat > NuGet.config <<EOF
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <packageSources>
+              <clear />
+              <add key="local" value="${package_source}" />
+              <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+            </packageSources>
+          </configuration>
+          EOF
+
+          mkdir WpfConsumer WinUIConsumer UnoConsumer
+
+          cat > WpfConsumer/WpfConsumer.csproj <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <TargetFramework>net10.0-windows</TargetFramework>
+              <UseWPF>true</UseWPF>
+              <EnableWindowsTargeting>true</EnableWindowsTargeting>
+              <Nullable>enable</Nullable>
+              <ImplicitUsings>enable</ImplicitUsings>
+              <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+            </PropertyGroup>
+            <ItemGroup>
+              <PackageReference Include="ProTranslate.Wpf" Version="${PACKAGE_VERSION}" />
+            </ItemGroup>
+          </Project>
+          EOF
+
+          cat > WpfConsumer/Class1.cs <<'EOF'
+          using System.Globalization;
+          using ProTranslate;
+          using ProTranslate.Wpf;
+
+          public static class WpfPackageSmoke
+          {
+              public static TranslateExtension CreateExtension()
+              {
+                  var provider = new InMemoryTranslationProvider()
+                      .Add(CultureInfo.GetCultureInfo("en-US"), "Shell.Title", "ProTranslate");
+                  var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
+                  var translations = new ProTranslate.TranslationService(provider, cultures);
+                  ProTranslate.Wpf.TranslationService.UseService(translations, cultures);
+                  return new TranslateExtension("Shell.Title");
+              }
+          }
+          EOF
+
+          cat > WinUIConsumer/WinUIConsumer.csproj <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+              <UseWinUI>true</UseWinUI>
+              <EnableWindowsTargeting>true</EnableWindowsTargeting>
+              <WindowsPackageType>None</WindowsPackageType>
+              <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+              <WindowsAppSdkBootstrapInitialize>false</WindowsAppSdkBootstrapInitialize>
+              <AppxGeneratePriEnabled>false</AppxGeneratePriEnabled>
+              <EnableCoreMrtTooling>false</EnableCoreMrtTooling>
+              <Nullable>enable</Nullable>
+              <ImplicitUsings>enable</ImplicitUsings>
+              <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+            </PropertyGroup>
+            <ItemGroup>
+              <PackageReference Include="ProTranslate.WinUI" Version="${PACKAGE_VERSION}" />
+            </ItemGroup>
+          </Project>
+          EOF
+
+          cat > WinUIConsumer/Class1.cs <<'EOF'
+          using System.Globalization;
+          using ProTranslate;
+          using ProTranslate.WinUI;
+
+          public static class WinUIPackageSmoke
+          {
+              public static TranslateExtension CreateExtension()
+              {
+                  var provider = new InMemoryTranslationProvider()
+                      .Add(CultureInfo.GetCultureInfo("en-US"), "Shell.Title", "ProTranslate");
+                  var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
+                  var translations = new ProTranslate.TranslationService(provider, cultures);
+                  ProTranslate.WinUI.TranslationService.UseService(translations, cultures);
+                  return new TranslateExtension("Shell.Title");
+              }
+          }
+          EOF
+
+          cat > UnoConsumer/UnoConsumer.csproj <<EOF
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <TargetFramework>net10.0</TargetFramework>
+              <Nullable>enable</Nullable>
+              <ImplicitUsings>enable</ImplicitUsings>
+              <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+            </PropertyGroup>
+            <ItemGroup>
+              <PackageReference Include="ProTranslate.Uno" Version="${PACKAGE_VERSION}" />
+            </ItemGroup>
+          </Project>
+          EOF
+
+          cat > UnoConsumer/Class1.cs <<'EOF'
+          using System.Globalization;
+          using ProTranslate;
+          using ProTranslate.Uno;
+
+          public static class UnoPackageSmoke
+          {
+              public static TranslateExtension CreateExtension()
+              {
+                  var provider = new InMemoryTranslationProvider()
+                      .Add(CultureInfo.GetCultureInfo("en-US"), "Shell.Title", "ProTranslate");
+                  var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
+                  var translations = new ProTranslate.TranslationService(provider, cultures);
+                  ProTranslate.Uno.TranslationService.UseService(translations, cultures);
+                  return new TranslateExtension("Shell.Title");
+              }
+          }
+          EOF
+
+          dotnet build WpfConsumer/WpfConsumer.csproj -c Release
+          dotnet build WinUIConsumer/WinUIConsumer.csproj -c Release
+          dotnet build UnoConsumer/UnoConsumer.csproj -c Release
