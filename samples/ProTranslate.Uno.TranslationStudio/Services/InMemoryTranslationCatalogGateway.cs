@@ -95,6 +95,94 @@ public sealed class InMemoryTranslationCatalogGateway : ITranslationCatalogGatew
         return $"{readyEntries}/{snapshot.Entries.Count} approved entries ready for {exportFormat.Name} export ({previewBytes:N0} bytes).";
     }
 
+    public TranslationCatalogSnapshot ImportCatalog(string content, CatalogFormatChoice sourceFormat, CultureChoice targetCulture)
+    {
+        ArgumentNullException.ThrowIfNull(content);
+        ArgumentNullException.ThrowIfNull(sourceFormat);
+        ArgumentNullException.ThrowIfNull(targetCulture);
+
+        TranslationFormatResult imported = TranslationCatalogConverter.Import(
+            content,
+            sourceFormat.Format,
+            new TranslationFormatOptions
+            {
+                Culture = targetCulture.CultureName,
+                SourceCulture = "en-US",
+                Name = "ProductCatalog"
+            },
+            $"ProductCatalog.{targetCulture.CultureName}{sourceFormat.Extension}");
+
+        IReadOnlyList<TranslationCatalogEntry> entries = imported.Catalog.Entries
+            .GroupBy(static entry => entry.Key, StringComparer.Ordinal)
+            .Select(group =>
+            {
+                ProTranslate.Formats.TranslationCatalogEntry importedEntry = group.Last();
+                string source = importedEntry.Source ?? EnglishSource(importedEntry.Key);
+                string diagnostics = importedEntry.Comment ?? string.Empty;
+                TranslationReviewState state = string.IsNullOrWhiteSpace(importedEntry.Value)
+                    ? TranslationReviewState.Missing
+                    : diagnostics.Contains("review", StringComparison.OrdinalIgnoreCase)
+                        ? TranslationReviewState.Review
+                        : TranslationReviewState.Approved;
+
+                return new TranslationCatalogEntry(
+                    importedEntry.Key,
+                    source,
+                    importedEntry.Value,
+                    state,
+                    importedEntry.Comment ?? StateNote(state),
+                    string.Join("; ", imported.Diagnostics.Select(static diagnostic => diagnostic.Message).Concat([diagnostics]).Where(static value => !string.IsNullOrWhiteSpace(value))));
+            })
+            .OrderBy(static entry => entry.Key, StringComparer.Ordinal)
+            .ToArray();
+
+        IReadOnlyList<TranslationCoverageColumn> coverage =
+        [
+            new("en-US", "English", 1.0),
+            new("pl-PL", "Polish", targetCulture.CultureName == "pl-PL" ? 0.88 : 0.79),
+            new("de-DE", "German", targetCulture.CultureName == "de-DE" ? 0.91 : 0.72),
+            new("ja-JP", "Japanese", targetCulture.CultureName == "ja-JP" ? 0.84 : 0.68)
+        ];
+
+        return new TranslationCatalogSnapshot(
+            $"ProductCatalog.{targetCulture.CultureName}{sourceFormat.Extension}",
+            "en-US",
+            targetCulture.CultureName,
+            sourceFormat.Name,
+            entries,
+            coverage);
+    }
+
+    public string ExportCatalog(TranslationCatalogSnapshot snapshot, CatalogFormatChoice exportFormat)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        ArgumentNullException.ThrowIfNull(exportFormat);
+
+        var catalog = new ProTranslate.Formats.TranslationCatalog
+        {
+            Name = Path.GetFileNameWithoutExtension(snapshot.FileName) ?? "ProductCatalog",
+            SourceCulture = snapshot.SourceCulture
+        };
+
+        foreach (TranslationCatalogEntry entry in snapshot.Entries)
+        {
+            ProTranslate.Formats.TranslationCatalogEntry catalogEntry = catalog.Add(entry.Key, snapshot.TargetCulture, entry.TargetText);
+            catalogEntry.Source = entry.SourceText;
+            catalogEntry.Comment = entry.Notes;
+            catalogEntry.State = entry.State.ToString();
+        }
+
+        return TranslationCatalogConverter.Export(
+            catalog,
+            exportFormat.Format,
+            new TranslationFormatOptions
+            {
+                Culture = snapshot.TargetCulture,
+                SourceCulture = snapshot.SourceCulture,
+                Name = catalog.Name
+            });
+    }
+
     private static string CreateDemoCatalog(CatalogFormatChoice sourceFormat, CultureChoice targetCulture)
     {
         var catalog = new ProTranslate.Formats.TranslationCatalog
@@ -192,16 +280,50 @@ public sealed class InMemoryTranslationCatalogGateway : ITranslationCatalogGatew
             },
             "ja-JP" => sourceText switch
             {
-                "File" => "File",
-                "Import catalog" => "Import catalog",
-                "Export catalog" => "Export catalog",
-                "Total: {0}" => "Total: {0}",
-                "Due by {0:D}" => "Due by {0:D}",
-                "Measurement system: {0}" => "Measurement system: {0}",
-                "Provider {0} failed: {1}" => "Provider {0} failed: {1}",
+                "File" => "ファイル",
+                "Import catalog" => "カタログのインポート",
+                "Export catalog" => "カタログのエクスポート",
+                "Total: {0}" => "合計: {0}",
+                "Due by {0:D}" => "期限: {0:D}",
+                "Measurement system: {0}" => "計測システム: {0}",
+                "Provider {0} failed: {1}" => "プロバイダー {0} が失敗しました: {1}",
                 _ => sourceText
             },
             _ => sourceText
         };
+    }
+
+    /// <inheritdoc />
+    public async Task<TranslationCatalogSnapshot> ImportFromFileAsync(
+        string filePath,
+        CatalogFormatChoice sourceFormat,
+        CultureChoice targetCulture)
+    {
+        ArgumentNullException.ThrowIfNull(filePath);
+        ArgumentNullException.ThrowIfNull(sourceFormat);
+        ArgumentNullException.ThrowIfNull(targetCulture);
+
+        string content = await File.ReadAllTextAsync(filePath).ConfigureAwait(false);
+        return ImportCatalog(content, sourceFormat, targetCulture);
+    }
+
+    /// <inheritdoc />
+    public async Task ExportToFileAsync(
+        TranslationCatalogSnapshot snapshot,
+        string filePath,
+        CatalogFormatChoice exportFormat)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        ArgumentNullException.ThrowIfNull(filePath);
+        ArgumentNullException.ThrowIfNull(exportFormat);
+
+        string content = ExportCatalog(snapshot, exportFormat);
+        string? directory = Path.GetDirectoryName(filePath);
+        if (!string.IsNullOrEmpty(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        await File.WriteAllTextAsync(filePath, content).ConfigureAwait(false);
     }
 }
