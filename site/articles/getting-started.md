@@ -5,7 +5,7 @@ description: Build the first ProTranslate-enabled XAML screen.
 
 # Getting Started
 
-This guide takes a new application from package references to a translated XAML view. It uses the current preview surface: synchronous providers, service-driven culture switching, XAML markup extensions, and framework-specific adapter registration.
+This guide takes a new application from package references to a translated XAML view. It uses the current surface: synchronous providers, service-driven culture switching, XAML markup extensions, and framework-specific adapter registration.
 
 ## Choose The Packages
 

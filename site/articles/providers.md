@@ -7,7 +7,7 @@ description: Configure ProTranslate provider lookup, culture fallback, ResourceM
 
 ProTranslate keeps provider policy in the framework-neutral core. XAML adapters ask `ITranslationService` for a key; they do not own fallback, provider ordering, missing-key policy, or diagnostics.
 
-The current preview ships these provider paths:
+The current release ships these provider paths:
 
 - `InMemoryTranslationProvider` for dictionaries loaded by the host.
 - `CompositeTranslationProvider` for deterministic provider priority.
@@ -157,6 +157,6 @@ Provider failures are reported as structured diagnostics by `TranslationService`
 
 `TranslationCacheOptions` controls translation lookup caching in `TranslationService`, and `ITranslationCacheInvalidator` lets hosts clear or remove cached values when a provider reloads. `ProTranslate.SourceGenerator` emits `ProTranslateProviderManifest` for catalog metadata discovered at build time and `ProTranslateGeneratedTranslationProvider` when JSON catalog values should be compiled into provider code.
 
-The preview provider pipeline is synchronous. Rich provider traces, cache hit/miss diagnostics, and logging/debug-overlay integrations remain extension points.
+The provider pipeline is synchronous. Rich provider traces, cache hit/miss diagnostics, and logging/debug-overlay integrations remain extension points.
 
 For professional localization handoff, prefer XLIFF for CAT/TMS exchange and source-generated ProTranslate catalogs for runtime lookup. Format conversion should report loss-aware diagnostics for unsupported constructs.

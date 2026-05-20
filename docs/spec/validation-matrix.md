@@ -15,8 +15,9 @@
 | WinUI sample | `samples/ProTranslate.WinUI.Sample` build | Windows CI | Implemented |
 | Uno sample | `samples/ProTranslate.Uno.Sample` build with `Uno.Sdk`, `net10.0-desktop`, Skia desktop hosting, `x:Bind`, and attached `Translation.Key` | local macOS validation and Windows CI | Implemented |
 | Package artifacts | `./pack.sh <version>` | release workflow and local validation | Implemented for portable packages; MAUI package requires MAUI workload |
+| NuGet package integration | `.github/workflows/package-integration.yml` package-consumer builds for portable, Avalonia, MAUI, WPF, WinUI, and Uno packages plus analyzer diagnostic verification | Ubuntu, macOS, and Windows CI | Implemented |
 | Translation format tooling | Parser/writer, round-trip, loss diagnostics, placeholder/plural mapping, and source-generator compile tests | Future tooling CI | Initial surface exists; validation hardening planned |
-| Uno Translation Studio | `samples/ProTranslate.Uno.TranslationStudio` build with `Uno.Sdk` desktop head plus planned UI smoke tests for import preview, editing, diagnostics, and export preview | local macOS validation and Windows CI | Build implemented; deeper UI smoke validation planned |
+| Uno Translation Studio | `samples/ProTranslate.Uno.TranslationStudio` build with `Uno.Sdk` desktop head plus planned UI smoke tests for import review, editing, diagnostics, and export review | local macOS validation and Windows CI | Build implemented; deeper UI smoke validation planned |
 
 Not yet validated by automated tests:
 - full round-trip validation for XLIFF, PO/POT, RESX, Android, Apple, ARB, i18next JSON, and CSV/TSV
@@ -221,7 +222,7 @@ Edge cases:
 
 Validate before claiming support:
 - Uno app build for documented target heads
-- UI smoke tests for import preview, grid editing, diagnostics filtering, placeholder validation, save, and export preview
+- UI smoke tests for import review, grid editing, diagnostics filtering, placeholder validation, save, and export review
 - memory and responsiveness checks for large catalogs
 - source-generator compile check after saving catalogs
 
@@ -237,7 +238,7 @@ Outputs:
 - implemented region profile
 - current measurement system enum and profile mapping
 - localized unit-formatted string
-- current preview exposes `RegionProfile`, `IsMetric`, `IGlobalizationService.MeasurementSystem`, `MeasurementSystemProfile`, explicit region/measurement overrides, unit conversion, and localized unit formatting; sample view models use the core conversion services
+- current implementation exposes `RegionProfile`, `IsMetric`, `IGlobalizationService.MeasurementSystem`, `MeasurementSystemProfile`, explicit region/measurement overrides, unit conversion, and localized unit formatting; sample view models use the core conversion services
 
 Constraints:
 - user preference wins over region default

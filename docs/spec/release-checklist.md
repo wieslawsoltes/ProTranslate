@@ -1,10 +1,10 @@
 # ProTranslate Release Checklist
 
-Use this checklist for preview package releases. Keep it aligned with the implemented API surface and keep remaining hardening work separate from shipped behavior.
+Use this checklist for ProTranslate package releases. Keep it aligned with the implemented API surface and keep remaining hardening work separate from shipped behavior.
 
 ## Inputs
 
-- release version, usually `0.1.0-preview.<number>` until the API stabilizes
+- release version, for example `0.1.0`
 - current `main` branch or a tagged release commit
 - package artifacts from `./pack.sh`
 - current README, specs, site pages, and sample validation notes
@@ -51,11 +51,12 @@ Use this checklist for preview package releases. Keep it aligned with the implem
    - docs build
    - Avalonia sample build plus MAUI adapter build and sample restore on macOS
    - WPF, WinUI, and Uno sample builds on Windows
+   - NuGet package integration workflow package-consumer builds
 
 4. Pack with an explicit version:
 
    ```bash
-   ./pack.sh 0.1.0-preview.<number>
+   ./pack.sh 0.1.0
    ```
 
 5. Inspect package contents:
@@ -82,5 +83,6 @@ Use this checklist for preview package releases. Keep it aligned with the implem
 - `./build.sh`
 - `./build-docs.sh`
 - sample build matrix in `.github/workflows/ci.yml`
+- package-consumer matrix in `.github/workflows/package-integration.yml`
 - release workflow artifact upload
 - package metadata inspection

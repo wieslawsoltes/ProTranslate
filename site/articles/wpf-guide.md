@@ -92,6 +92,6 @@ On non-Windows systems the project is inspectable but real WPF app execution rem
 
 ## Gotchas
 
-- WPF design-time behavior is not exhaustively validated in the preview.
+- WPF design-time behavior is not exhaustively validated yet.
 - Dispatcher and detached-target retention tests remain planned.
 - Prefix-free namespace usage is convenient, but `xmlns:pt="https://github.com/protranslate/xaml"` is safer if the app has another type named `Translate`, `Format`, or `Translation`.

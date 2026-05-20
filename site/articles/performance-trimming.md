@@ -1,11 +1,11 @@
 ---
 title: Performance and Trimming
-description: Performance guidance, trimming considerations, culture-switch costs, and current preview caveats.
+description: Performance guidance, trimming considerations, culture-switch costs, and current caveats.
 ---
 
 # Performance and Trimming
 
-ProTranslate's preview implementation favors deterministic synchronous lookup, explicit services, and generated key paths. That makes it straightforward to reason about in desktop and mobile XAML applications, but teams should still design for culture-switch cost, retained UI targets, and trimmed builds.
+ProTranslate favors deterministic synchronous lookup, explicit services, and generated key paths. That makes it straightforward to reason about in desktop and mobile XAML applications, but teams should still design for culture-switch cost, retained UI targets, and trimmed builds.
 
 This page documents implemented behavior and the current caveats. Cache policy APIs, Avalonia leak coverage, and thread-culture opt-out are implemented; lookup benchmarks and broader non-Avalonia runtime automation remain hardening work.
 
@@ -148,7 +148,7 @@ Diagnostics are structured values and are part of normal reliability behavior:
 - Invalid localized format strings report `FormatFailure`.
 - Region profile failures are represented in the abstraction model.
 
-Diagnostic sinks should be fast and isolated. Avoid blocking I/O in `IProTranslateDiagnosticSink.Report`; queue to logging infrastructure when necessary. If a diagnostic sink is part of a production path, test sink failure behavior in the host application because the preview sink call is direct.
+Diagnostic sinks should be fast and isolated. Avoid blocking I/O in `IProTranslateDiagnosticSink.Report`; queue to logging infrastructure when necessary. If a diagnostic sink is part of a production path, test sink failure behavior in the host application because the current sink call is direct.
 
 ## Validation Checklist
 

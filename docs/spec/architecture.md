@@ -8,7 +8,7 @@ The design follows spec-driven development: every feature starts with explicit i
 
 ## Implementation Status
 
-The current repository contains a preview implementation of the core product architecture. Remaining work is hardening and platform-depth rather than missing core feature pillars.
+The current repository contains the first stable implementation of the core product architecture. Remaining work is hardening and platform-depth rather than missing core feature pillars.
 
 Implemented:
 - framework-neutral abstractions and core services for culture events, translation lookup, fallback, cache policy, formatting, observable localized strings, structured diagnostics, `RegionProfile`, measurement-system mapping, unit conversion, localized unit formatting, region and measurement overrides, thread-culture opt-out, and text-flow direction
@@ -207,7 +207,7 @@ Validation:
 
 ### Measurement System Mapping
 
-The preview implementation exposes measurement-system mapping through `IGlobalizationService.MeasurementSystem` and `MeasurementSystemProfile`, plus built-in conversion and localized unit formatting services.
+The current implementation exposes measurement-system mapping through `IGlobalizationService.MeasurementSystem` and `MeasurementSystemProfile`, plus built-in conversion and localized unit formatting services.
 
 Inputs:
 - culture snapshot
@@ -362,7 +362,7 @@ Planned diagnostics include:
 - retained target warning in test builds
 
 Diagnostics outputs:
-- current preview: `LocalizedString.ResourceNotFound`, `LocalizedString.ProviderName`, `LocalizedString.Diagnostics`, `ITranslationService.DiagnosticReported`, optional diagnostic sinks, and analyzer reports for build-time checks
+- current implementation: `LocalizedString.ResourceNotFound`, `LocalizedString.ProviderName`, `LocalizedString.Diagnostics`, `ITranslationService.DiagnosticReported`, optional diagnostic sinks, and analyzer reports for build-time checks
 - planned: richer provider traces, optional logging integration, and optional debug overlay hooks
 
 ## Security And Reliability

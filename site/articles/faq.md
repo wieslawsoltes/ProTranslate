@@ -1,17 +1,17 @@
 ---
 title: FAQ
-description: Common questions about ProTranslate packages, validation, XAML usage, providers, source generation, and preview limitations.
+description: Common questions about ProTranslate packages, validation, XAML usage, providers, source generation, and current limitations.
 ---
 
 # FAQ
 
 ## What is ProTranslate?
 
-ProTranslate is a preview XAML translation and globalization framework with a framework-neutral core and thin adapters for Avalonia, WPF, .NET MAUI, WinUI, and Uno Platform. The core owns culture state, provider fallback, formatting, diagnostics, region profile metadata, measurement-system mapping, and flow-direction decisions.
+ProTranslate is a translation and globalization framework for XAML applications with a framework-neutral core and thin adapters for Avalonia, WPF, .NET MAUI, WinUI, and Uno Platform. The core owns culture state, provider fallback, formatting, diagnostics, region profile metadata, measurement-system mapping, and flow-direction decisions.
 
 ## Which packages are available?
 
-The preview package set is `ProTranslate.Abstractions`, `ProTranslate.Core`, `ProTranslate.ResourceManager`, `ProTranslate.MicrosoftExtensions`, `ProTranslate.SourceGenerator`, `ProTranslate.Analyzers`, `ProTranslate.Avalonia`, `ProTranslate.Wpf`, `ProTranslate.Maui`, `ProTranslate.WinUI`, and `ProTranslate.Uno`.
+The package set is `ProTranslate.Abstractions`, `ProTranslate.Core`, `ProTranslate.ResourceManager`, `ProTranslate.MicrosoftExtensions`, `ProTranslate.SourceGenerator`, `ProTranslate.Analyzers`, `ProTranslate.Avalonia`, `ProTranslate.Wpf`, `ProTranslate.Maui`, `ProTranslate.WinUI`, and `ProTranslate.Uno`.
 
 ## Is the core tied to a UI framework?
 
@@ -37,7 +37,7 @@ Portable projects and tests run on Linux, macOS, and Windows CI. Avalonia adapte
 Use:
 
 ```bash
-./pack.sh 0.1.0-preview.local
+./pack.sh 0.1.0
 ```
 
 The output goes to `artifacts/packages`. `pack.sh` discovers packable projects under `src`, requires `.nupkg` outputs and runtime `.snupkg` outputs, and validates analyzer/source-generator package layout.
@@ -66,7 +66,7 @@ because that keeps the sample WinUI-compatible even though the adapter also emit
 
 ## Does runtime culture switching update UI?
 
-Yes for the implemented preview paths. Culture switching updates translated values, formatted values through the translation service, binding-source refresh paths, attached translation properties, and automatic flow direction where the adapter supports it. Avalonia has runtime UI and release-only leak coverage; broader dispatcher automation for WPF, MAUI, WinUI, and Uno remains platform hardening work.
+Yes for the implemented paths. Culture switching updates translated values, formatted values through the translation service, binding-source refresh paths, attached translation properties, and automatic flow direction where the adapter supports it. Avalonia has runtime UI and release-only leak coverage; broader dispatcher automation for WPF, MAUI, WinUI, and Uno remains platform hardening work.
 
 ## Does ProTranslate mutate thread cultures?
 
@@ -74,7 +74,7 @@ Yes for the implemented preview paths. Culture switching updates translated valu
 
 ## Which providers are supported?
 
-The preview supports in-memory providers, composite providers, `ResourceManager`, and `IStringLocalizer`. Custom providers can implement `ITranslationProvider`.
+ProTranslate supports in-memory providers, composite providers, `ResourceManager`, and `IStringLocalizer`. Custom providers can implement `ITranslationProvider`.
 
 ## What happens when a key is missing?
 
@@ -94,7 +94,7 @@ Yes. `ProTranslate.Analyzers` reports `PTA001` missing static keys, `PTA002` pla
 
 ## Are region and measurement services complete?
 
-The preview includes `RegionProfile`, `MeasurementSystem`, `MeasurementSystemProfile`, region overrides, measurement-system overrides, default measurement mapping, unit conversion, and localized unit formatting. Current samples use the core services for distance and temperature display.
+ProTranslate includes `RegionProfile`, `MeasurementSystem`, `MeasurementSystemProfile`, region overrides, measurement-system overrides, default measurement mapping, unit conversion, and localized unit formatting. Current samples use the core services for distance and temperature display.
 
 ## How do docs get published?
 

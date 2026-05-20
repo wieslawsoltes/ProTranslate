@@ -25,7 +25,7 @@ Run the documentation build whenever site or spec content changes:
 
 The docs script restores local .NET tools, removes `site/.lunet/build`, and runs Lunet from the `site` directory with stack traces enabled.
 
-To preview documentation locally:
+To view documentation locally:
 
 ```bash
 ./serve-docs.sh
@@ -62,13 +62,23 @@ WinUI remains a Windows-only sample path. Uno samples use `Uno.Sdk` desktop head
 
 ## Package Build
 
-Create local package artifacts with an explicit preview version:
+Create local package artifacts with an explicit version:
 
 ```bash
-./pack.sh 0.1.0-preview.local
+./pack.sh 0.1.0
 ```
 
 Packages are written to `artifacts/packages` by default. The script discovers packable projects under `src`, packs each package, requires `.nupkg` artifacts and runtime `.snupkg` artifacts, checks README inclusion, and validates Roslyn analyzer/source-generator package layout under `analyzers/dotnet/cs`.
+
+## Package Integration
+
+The NuGet package integration workflow validates package consumers from produced artifacts rather than project references:
+
+```bash
+.github/workflows/package-integration.yml
+```
+
+The workflow packs all packages, restores temporary consumers from the local package feed, runs the portable consumer, verifies analyzer diagnostics from the analyzer package, and builds Avalonia, MAUI, WPF, WinUI, and Uno consumers on the appropriate hosted operating systems.
 
 ## Platform Validation Split
 
@@ -85,7 +95,8 @@ Packages are written to `artifacts/packages` by default. The script discovers pa
 | WinUI sample | Windows only for real app path | Windows sample job |
 | Uno sample | `Uno.Sdk` desktop sample build | Windows sample job; local non-Windows build supported |
 | Uno Translation Studio sample | `Uno.Sdk` desktop sample build; UI smoke validation planned | Windows sample job |
-| Packages | `./pack.sh <version>`; MAUI requires workload | macOS preview and release jobs |
+| Packages | `./pack.sh <version>`; MAUI requires workload | macOS package and release jobs |
+| Package integration | package consumers restored from produced `.nupkg` files | package integration workflow across Ubuntu, macOS, and Windows |
 
 ## What To Validate For Feature Work
 
@@ -101,4 +112,4 @@ For docs changes, validate `./build-docs.sh` and keep site articles aligned with
 
 ## Current Gaps
 
-The preview still treats logging/debug overlay integrations, WPF/MAUI/WinUI/Uno runtime UI automation, analyzer code fixes, and deeper dispatcher-marshalling stress tests as hardening work. Do not treat sample builds as a substitute for runtime host validation on platform-specific UI stacks.
+The current roadmap still treats logging/debug overlay integrations, WPF/MAUI/WinUI/Uno runtime UI automation, analyzer code fixes, and deeper dispatcher-marshalling stress tests as hardening work. Do not treat sample builds as a substitute for runtime host validation on platform-specific UI stacks.

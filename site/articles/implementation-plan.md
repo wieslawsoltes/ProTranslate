@@ -70,7 +70,7 @@ dotnet test tests/ProTranslate.Tests/ProTranslate.Tests.csproj -c Release
 
 ## Phase 3: Provider Integrations
 
-Status: implemented for preview providers.
+Status: implemented for the current providers.
 
 Deliverables:
 
@@ -212,7 +212,7 @@ Planned deliverables:
 - CSV/TSV spreadsheet exchange
 - normalized ProTranslate catalog records
 - source-generator-ready catalog output
-- professional Uno Translation Studio app for import preview, editing, diagnostics, and export preview
+- professional Uno Translation Studio app for import review, editing, diagnostics, and export review
 
 Guidance:
 
@@ -232,14 +232,14 @@ Required validation before claiming support:
 
 ## Phase 9: CI, Packaging, And Release
 
-Status: implemented for preview package production.
+Status: implemented for package production.
 
 Deliverables:
 
 - Cross-platform CI.
 - Docs build workflow.
 - Sample build workflow.
-- Preview pack workflow.
+- Package workflow.
 - Release workflow.
 - NuGet push behind `NUGET_API_KEY`.
 - GitHub release generation for tags.
@@ -248,7 +248,7 @@ Validation:
 
 ```bash
 ./build.sh
-./pack.sh 0.1.0-preview.local
+./pack.sh 0.1.0
 ```
 
 ## Remaining Work Backlog

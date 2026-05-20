@@ -98,7 +98,7 @@ public sealed class LoggingDiagnosticSink : IProTranslateDiagnosticSink
 var translations = new TranslationService(provider, cultures, options, new LoggingDiagnosticSink());
 ```
 
-The current core calls the sink synchronously before raising `DiagnosticReported`. Sinks should avoid throwing; the preview implementation does not isolate sink exceptions.
+The current core calls the sink synchronously before raising `DiagnosticReported`. Sinks should avoid throwing; the implementation does not isolate sink exceptions.
 
 ## Missing Translation Policy
 
@@ -183,6 +183,6 @@ Use `.editorconfig` to promote high-confidence diagnostics to errors once catalo
 
 Custom providers decide what is a normal miss and what is a provider failure. Use misses for absent keys and exceptions for broken provider state.
 
-## Preview Boundaries
+## Current Boundaries
 
 Diagnostics currently cover runtime missing translations, provider failures, format failures, and build-time analyzer checks. Rich provider trace events, cache hit/miss diagnostics, logging bridges, and debug overlays remain extension points.

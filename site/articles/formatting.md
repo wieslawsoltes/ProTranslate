@@ -155,6 +155,6 @@ Attached translation properties also support a view-owned wrapper format:
 
 The attached property path resolves the key first. If a fallback value is configured and the key is missing, it uses the fallback value. Then it applies `string.Format(CurrentCulture, stringFormat, value)` to the resolved display value.
 
-## Preview Boundaries
+## Current Boundaries
 
-The preview includes composite string formatting and built-in unit conversion/localized unit formatting. Custom formatter services, pluralization rules, named format profiles, and list formatting remain application extension points.
+The current implementation includes composite string formatting and built-in unit conversion/localized unit formatting. Custom formatter services, pluralization rules, named format profiles, and list formatting remain application extension points.

@@ -5,7 +5,7 @@ description: Current ProTranslate public API, XAML API, source generator output,
 
 # API Surface
 
-ProTranslate is service-first. The framework-neutral API lives in the `ProTranslate` namespace, and framework adapters expose native XAML integration in package-specific namespaces. The preview API is intentionally synchronous and deterministic so it works well in desktop and mobile XAML binding paths.
+ProTranslate is service-first. The framework-neutral API lives in the `ProTranslate` namespace, and framework adapters expose native XAML integration in package-specific namespaces. The API is intentionally synchronous and deterministic so it works well in desktop and mobile XAML binding paths.
 
 ## Core Contracts
 

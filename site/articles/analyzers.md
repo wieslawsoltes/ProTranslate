@@ -11,7 +11,7 @@ description: Build-time ProTranslate diagnostics for catalog and static key corr
 
 ```xml
 <PackageReference Include="ProTranslate.Analyzers"
-                  Version="0.1.0-preview"
+                  Version="0.1.0"
                   PrivateAssets="all"
                   OutputItemType="Analyzer"
                   ReferenceOutputAssembly="false" />
