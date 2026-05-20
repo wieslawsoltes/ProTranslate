@@ -28,26 +28,26 @@ Keep the current resource store at first. ProTranslate can sit in front of it th
 Shared project:
 
 ```xml
-<PackageReference Include="ProTranslate.Abstractions" Version="0.1.0-preview.1" />
-<PackageReference Include="ProTranslate.Core" Version="0.1.0-preview.1" />
+<PackageReference Include="ProTranslate.Abstractions" Version="0.1.0" />
+<PackageReference Include="ProTranslate.Core" Version="0.1.0" />
 ```
 
 ResourceManager workflow:
 
 ```xml
-<PackageReference Include="ProTranslate.ResourceManager" Version="0.1.0-preview.1" />
+<PackageReference Include="ProTranslate.ResourceManager" Version="0.1.0" />
 ```
 
 Microsoft.Extensions workflow:
 
 ```xml
-<PackageReference Include="ProTranslate.MicrosoftExtensions" Version="0.1.0-preview.1" />
+<PackageReference Include="ProTranslate.MicrosoftExtensions" Version="0.1.0" />
 ```
 
 Application project:
 
 ```xml
-<PackageReference Include="ProTranslate.Avalonia" Version="0.1.0-preview.1" />
+<PackageReference Include="ProTranslate.Avalonia" Version="0.1.0" />
 ```
 
 Use the matching adapter package for WPF, MAUI, WinUI, or Uno.

@@ -17,15 +17,15 @@ This keeps implementation work auditable before code is written and gives review
 | Phase | Status | Notes |
 | --- | --- | --- |
 | 0 Repository Foundation | Done | Solution, package metadata, docs site, CI, and ownership guidance exist. |
-| 1 Core Domain | Preview done | Culture service, translation service, fallback options, observable strings, structured diagnostics, cache policy, thread-culture opt-out, flow direction, region profiles, and measurement mapping exist. Logging/debug integrations remain planned. |
-| 2 Provider Implementations | Preview done | In-memory, composite, `ResourceManager`, and `IStringLocalizer` providers exist. Provider/format failure diagnostics, throw/continue policies, cache policy options, and explicit cache invalidation exist. Richer provider traces remain planned. |
-| 3 Formatting, Region, And Units | Preview done | Formatting uses `string.Format`; reusable region profile, measurement resolver, unit conversion, and localized unit formatter services exist with region and measurement overrides. Custom formatter extension points remain planned. |
-| 4 Source Generation And Analyzers | Preview done | Source generator emits key constants, get/value/format/observe accessors, bindable strings, generated JSON provider code, and provider manifests from text and JSON catalogs. Analyzer package reports missing keys, placeholder mismatches, coverage gaps, dynamic keys, and invalid catalogs. |
-| 5 Avalonia Adapter | Preview done | `T`/`Translate`, `F`/`Format`, attached key/fallback/string-format/culture/flow-direction properties, binding-source refresh, sample, smoke/runtime tests, and release-only leak tests exist. |
-| 6 WPF Adapter | Preview done | Adapter, default XML namespace mapping, and sample exist; Windows CI validates the sample build. UI automation and leak tests remain planned. |
-| 7 MAUI Adapter | Preview done | Adapter, shared ProTranslate XAML URI, and sample exist; macOS CI/local validation covers the Mac Catalyst path when workloads are installed. Broader platform lifecycle tests remain planned. |
-| 8 WinUI And Uno Adapters | Preview done | Adapters and samples exist; Uno emits a shared URI mapping, WinUI uses `using:` because assembly `XmlnsDefinition` is unsupported, and Windows CI validates real XAML sample builds. Platform-specific runtime testing remains planned. |
-| 9 Documentation, Samples, And Release | Preview done | README/spec/site/sample validation docs, release checklist, package release notes, migration guide, docs workflow, analyzer test CI, sample CI, and pack workflow are present. |
+| 1 Core Domain | Implemented | Culture service, translation service, fallback options, observable strings, structured diagnostics, cache policy, thread-culture opt-out, flow direction, region profiles, and measurement mapping exist. Logging/debug integrations remain planned. |
+| 2 Provider Implementations | Implemented | In-memory, composite, `ResourceManager`, and `IStringLocalizer` providers exist. Provider/format failure diagnostics, throw/continue policies, cache policy options, and explicit cache invalidation exist. Richer provider traces remain planned. |
+| 3 Formatting, Region, And Units | Implemented | Formatting uses `string.Format`; reusable region profile, measurement resolver, unit conversion, and localized unit formatter services exist with region and measurement overrides. Custom formatter extension points remain planned. |
+| 4 Source Generation And Analyzers | Implemented | Source generator emits key constants, get/value/format/observe accessors, bindable strings, generated JSON provider code, and provider manifests from text and JSON catalogs. Analyzer package reports missing keys, placeholder mismatches, coverage gaps, dynamic keys, and invalid catalogs. |
+| 5 Avalonia Adapter | Implemented | `T`/`Translate`, `F`/`Format`, attached key/fallback/string-format/culture/flow-direction properties, binding-source refresh, sample, smoke/runtime tests, and release-only leak tests exist. |
+| 6 WPF Adapter | Implemented | Adapter, default XML namespace mapping, and sample exist; Windows CI validates the sample build. UI automation and leak tests remain planned. |
+| 7 MAUI Adapter | Implemented | Adapter, shared ProTranslate XAML URI, and sample exist; macOS CI/local validation covers the Mac Catalyst path when workloads are installed. Broader platform lifecycle tests remain planned. |
+| 8 WinUI And Uno Adapters | Implemented | Adapters and samples exist; Uno emits a shared URI mapping, WinUI uses `using:` because assembly `XmlnsDefinition` is unsupported, and Windows CI validates real XAML sample builds. Platform-specific runtime testing remains planned. |
+| 9 Documentation, Samples, And Release | Implemented | README/spec/site/sample validation docs, release checklist, package release notes, migration guide, docs workflow, analyzer test CI, sample CI, and pack workflow are present. |
 | 10 Translation Format Tooling And Uno Authoring | Initial implementation | `ProTranslate.Formats` and Uno Translation Studio surfaces exist for loss-aware import/export and authoring. Broader round-trip, diagnostics, and UI validation remain hardening work. |
 
 ## Phase 0: Repository Foundation
@@ -216,7 +216,7 @@ Edge cases:
 - target disposed during culture switch
 - key binding changes independently of culture
 - attached property inherited through visual/logical tree
-- design preview without application services
+- design-time rendering without application services
 
 Validate:
 - headless Avalonia tests for markup extension refresh
@@ -375,7 +375,7 @@ Outputs:
 - source-generator-ready JSON catalogs
 - key-only catalog files where no localized value exists
 - export files in the selected industry format
-- professional Uno Translation Studio app for import preview, translation editing, diagnostics review, and export preview
+- professional Uno Translation Studio app for import review, translation editing, diagnostics review, and export review
 
 Constraints:
 - XLIFF is the preferred CAT/TMS exchange format

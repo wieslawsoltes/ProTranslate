@@ -5,12 +5,12 @@ description: Step-by-step release preparation for ProTranslate packages, docs, s
 
 # Release Checklist
 
-Use this checklist before publishing preview or stable ProTranslate packages. Keep release artifacts tied to actual shipped behavior and keep remaining hardening work separate from shipped notes.
+Use this checklist before publishing ProTranslate packages. Keep release artifacts tied to actual shipped behavior and keep remaining hardening work separate from shipped notes.
 
 ## 1. Confirm Scope
 
 - Confirm the release version.
-- Confirm whether the release is preview, release candidate, or stable.
+- Confirm the intended publish scope.
 - Review merged changes since the last tag.
 - Verify public API changes are intentional.
 - Verify sample changes match the documented API.
@@ -113,17 +113,19 @@ The `ci.yml` workflow must pass:
 - Docs build.
 - macOS Avalonia sample build plus MAUI adapter build and sample restore.
 - Windows WPF, WinUI, and Uno sample builds.
-- Preview package creation.
+- Package creation.
+- NuGet package integration consumers.
 
 The `docs.yml` workflow must pass for documentation updates.
+The `package-integration.yml` workflow must pass for package, project, or public dependency changes.
 
 ## 7. Publish
 
 For a tagged release:
 
 ```bash
-git tag v0.1.0-preview.1
-git push origin v0.1.0-preview.1
+git tag v0.1.0
+git push origin v0.1.0
 ```
 
 The release workflow resolves the package version from the tag. Manual workflow dispatch can also publish when `publish_nuget` is set and `NUGET_API_KEY` is configured.
@@ -139,7 +141,7 @@ After publish:
 - Confirm installation snippets use the released version.
 - Open follow-up issues for known limitations that remain.
 
-## Known Preview Limitations To Keep Visible
+## Known Limitations To Keep Visible
 
 - Analyzer code fixes are not included.
 - Rich provider traces and cache hit/miss diagnostics are not included.

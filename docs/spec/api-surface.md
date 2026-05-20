@@ -2,7 +2,7 @@
 
 ## Status
 
-This document describes the current preview API surface and separates it from remaining hardening work. Public C# APIs use the `ProTranslate` namespace for framework-neutral services and package-specific namespaces for adapters. XAML APIs use framework-appropriate XML namespace mappings, including the shared `https://github.com/protranslate/xaml` URI where the target XAML stack supports `XmlnsDefinition`.
+This document describes the current API surface and separates it from remaining hardening work. Public C# APIs use the `ProTranslate` namespace for framework-neutral services and package-specific namespaces for adapters. XAML APIs use framework-appropriate XML namespace mappings, including the shared `https://github.com/protranslate/xaml` URI where the target XAML stack supports `XmlnsDefinition`.
 
 ## Implemented Core Contracts
 
@@ -112,7 +112,7 @@ Outputs:
 Constraints:
 - fallback is controlled by `TranslationFallbackOptions`
 - provider and format failure behavior is controlled by `TranslationProviderFailureBehavior` and `TranslationFormatFailureBehavior`
-- async lookup is not part of the preview API
+- async lookup is not part of the current API
 
 Edge cases:
 - missing key returns the key by default
@@ -181,7 +181,7 @@ Planned:
 
 ## Implemented Adapter APIs
 
-Each adapter exposes the same preview concepts using native framework types:
+Each adapter exposes the same concepts using native framework types:
 
 - `TranslateExtension`
 - `TExtension`

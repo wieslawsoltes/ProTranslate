@@ -106,8 +106,8 @@ jobs:
         shell: bash
         run: ${{ matrix.script }}
 
-  pack-preview:
-    name: Pack Preview
+  pack-packages:
+    name: Pack Packages
     runs-on: macos-latest
     needs: [build-test, sample-builds]
     steps:
@@ -126,7 +126,7 @@ jobs:
       - name: Upload packages
         uses: actions/upload-artifact@v4
         with:
-          name: nuget-preview-packages
+          name: nuget-packages
           path: artifacts/packages/
           if-no-files-found: error
           retention-days: 7

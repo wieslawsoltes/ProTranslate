@@ -5,7 +5,7 @@
 ![XAML](https://img.shields.io/badge/XAML-Avalonia%20%7C%20WPF%20%7C%20MAUI%20%7C%20WinUI%20%7C%20Uno-0F172A)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Preview translation and globalization infrastructure for XAML applications.
+Translation and globalization infrastructure for XAML applications.
 
 ProTranslate is organized around a framework-neutral core plus thin adapters for Avalonia, WPF, .NET MAUI, WinUI, and Uno. The core owns culture state, translation provider composition, formatting, `RegionProfile`-driven measurement-system defaults, fallback behavior, diagnostics, and flow-direction decisions. UI packages adapt those services into each framework's XAML property system through markup extensions, attached properties, bindable/dependency properties, and binding refresh paths.
 
@@ -15,7 +15,7 @@ Documentation site: [wieslawsoltes.github.io/ProTranslate](https://wieslawsoltes
 
 ## Current Status
 
-This repository is a preview implementation. The implemented surface is intentionally small and service-first:
+This repository contains the first stable ProTranslate package set. The implemented surface is intentionally service-first:
 
 - `ProTranslate.Abstractions` and `ProTranslate.Core` provide `ICultureService`, `ITranslationService`, `IGlobalizationService`, culture-change events, parent/default fallback, cache policy options, simple formatting through `string.Format`, observable localized strings, structured diagnostics, `RegionProfile`, region and measurement-system overrides, measurement-system mapping, built-in unit conversion, localized unit formatting, and RTL/LTR resolution from `CultureInfo.TextInfo`.
 - `ProTranslate.ResourceManager` and `ProTranslate.MicrosoftExtensions` provide `ResourceManager` and `IStringLocalizer` provider bridges.
@@ -30,20 +30,20 @@ Translation format tooling targets XLIFF 1.2/2.1 workflows, gettext PO/POT, .NET
 
 ## Packages
 
-| Package | Purpose |
-| --- | --- |
-| `ProTranslate.Abstractions` | Framework-neutral interfaces, result types, culture events, measurement and flow-direction enums. |
-| `ProTranslate.Core` | Framework-neutral culture manager, translation provider pipeline, formatting, cache policy, unit conversion, measurement system resolution, and flow-direction resolution. |
-| `ProTranslate.ResourceManager` | `ResourceManager` provider for `.resx` and satellite assembly workflows. |
-| `ProTranslate.MicrosoftExtensions` | Optional Microsoft.Extensions integration for dependency injection and `IStringLocalizer` provider registration. |
-| `ProTranslate.Avalonia` | Avalonia `T`/`Translate` markup extensions, attached culture and flow-direction properties, binding refresh, XML namespace mappings, and DI helper. |
-| `ProTranslate.Wpf` | WPF markup extensions, dependency properties, binding refresh, `XmlLanguage`, `FlowDirection`, and XML namespace mappings. |
-| `ProTranslate.Maui` | .NET MAUI markup extensions, bindable attached properties, binding refresh, flow-direction integration, and the shared ProTranslate XAML URI. |
-| `ProTranslate.WinUI` | WinUI markup extensions, dependency properties, `x:Bind`-friendly sample usage, and flow-direction integration. |
-| `ProTranslate.Uno` | Uno adapter aligned with WinUI XAML binding, attached-property conventions, and the shared ProTranslate XAML URI where supported by Uno tooling. |
-| `ProTranslate.SourceGenerator` | Strongly typed key constants, translation accessor generation, compiled-binding-friendly `ProTranslateStrings`, generated JSON catalog provider code, and provider manifest generation from text and JSON catalog inputs. |
-| `ProTranslate.Analyzers` | Roslyn diagnostics for translation keys, placeholder consistency, and catalog coverage. |
-| `ProTranslate.Formats` | Optional translation file import/export for XLIFF, PO/POT, RESX, Android, Apple, ARB, i18next JSON, CSV/TSV, and normalized ProTranslate catalogs. |
+| Package | NuGet | Purpose |
+| --- | --- | --- |
+| `ProTranslate.Abstractions` | [![NuGet](https://img.shields.io/nuget/v/ProTranslate.Abstractions.svg)](https://www.nuget.org/packages/ProTranslate.Abstractions) | Framework-neutral interfaces, result types, culture events, measurement and flow-direction enums. |
+| `ProTranslate.Core` | [![NuGet](https://img.shields.io/nuget/v/ProTranslate.Core.svg)](https://www.nuget.org/packages/ProTranslate.Core) | Framework-neutral culture manager, translation provider pipeline, formatting, cache policy, unit conversion, measurement system resolution, and flow-direction resolution. |
+| `ProTranslate.ResourceManager` | [![NuGet](https://img.shields.io/nuget/v/ProTranslate.ResourceManager.svg)](https://www.nuget.org/packages/ProTranslate.ResourceManager) | `ResourceManager` provider for `.resx` and satellite assembly workflows. |
+| `ProTranslate.MicrosoftExtensions` | [![NuGet](https://img.shields.io/nuget/v/ProTranslate.MicrosoftExtensions.svg)](https://www.nuget.org/packages/ProTranslate.MicrosoftExtensions) | Optional Microsoft.Extensions integration for dependency injection and `IStringLocalizer` provider registration. |
+| `ProTranslate.Avalonia` | [![NuGet](https://img.shields.io/nuget/v/ProTranslate.Avalonia.svg)](https://www.nuget.org/packages/ProTranslate.Avalonia) | Avalonia `T`/`Translate` markup extensions, attached culture and flow-direction properties, binding refresh, XML namespace mappings, and DI helper. |
+| `ProTranslate.Wpf` | [![NuGet](https://img.shields.io/nuget/v/ProTranslate.Wpf.svg)](https://www.nuget.org/packages/ProTranslate.Wpf) | WPF markup extensions, dependency properties, binding refresh, `XmlLanguage`, `FlowDirection`, and XML namespace mappings. |
+| `ProTranslate.Maui` | [![NuGet](https://img.shields.io/nuget/v/ProTranslate.Maui.svg)](https://www.nuget.org/packages/ProTranslate.Maui) | .NET MAUI markup extensions, bindable attached properties, binding refresh, flow-direction integration, and the shared ProTranslate XAML URI. |
+| `ProTranslate.WinUI` | [![NuGet](https://img.shields.io/nuget/v/ProTranslate.WinUI.svg)](https://www.nuget.org/packages/ProTranslate.WinUI) | WinUI markup extensions, dependency properties, `x:Bind`-friendly sample usage, and flow-direction integration. |
+| `ProTranslate.Uno` | [![NuGet](https://img.shields.io/nuget/v/ProTranslate.Uno.svg)](https://www.nuget.org/packages/ProTranslate.Uno) | Uno adapter aligned with WinUI XAML binding, attached-property conventions, and the shared ProTranslate XAML URI where supported by Uno tooling. |
+| `ProTranslate.SourceGenerator` | [![NuGet](https://img.shields.io/nuget/v/ProTranslate.SourceGenerator.svg)](https://www.nuget.org/packages/ProTranslate.SourceGenerator) | Strongly typed key constants, translation accessor generation, compiled-binding-friendly `ProTranslateStrings`, generated JSON catalog provider code, and provider manifest generation from text and JSON catalog inputs. |
+| `ProTranslate.Analyzers` | [![NuGet](https://img.shields.io/nuget/v/ProTranslate.Analyzers.svg)](https://www.nuget.org/packages/ProTranslate.Analyzers) | Roslyn diagnostics for translation keys, placeholder consistency, and catalog coverage. |
+| `ProTranslate.Formats` | [![NuGet](https://img.shields.io/nuget/v/ProTranslate.Formats.svg)](https://www.nuget.org/packages/ProTranslate.Formats) | Optional translation file import/export for XLIFF, PO/POT, RESX, Android, Apple, ARB, i18next JSON, CSV/TSV, and normalized ProTranslate catalogs. |
 
 ## Features
 

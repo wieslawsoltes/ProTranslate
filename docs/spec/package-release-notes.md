@@ -1,8 +1,8 @@
 # Package Release Notes
 
-These notes describe the current preview package contents. They are intentionally factual and exclude planned features until they are implemented.
+These notes describe the current package contents. They are intentionally factual and exclude planned features until they are implemented.
 
-## Preview Scope
+## Release Scope
 
 Implemented packages:
 - `ProTranslate.Abstractions`
@@ -95,7 +95,7 @@ Avalonia, WPF, MAUI, WinUI, and Uno packages provide:
 ### Uno Translation Studio Sample
 
 - Provides a professional Uno authoring sample under `samples/ProTranslate.Uno.TranslationStudio`.
-- Demonstrates a compact review UI, source/target editing, review-state commands, import/export previews, generated `ProTranslateStrings` for `x:Bind`, and normalized ProTranslate catalog output for the runtime/source-generator path.
+- Demonstrates a compact review UI, source/target editing, review-state commands, import/export review summaries, generated `ProTranslateStrings` for `x:Bind`, and normalized ProTranslate catalog output for the runtime/source-generator path.
 - Remains a sample and validation target, not part of the `ProTranslate.Uno` runtime adapter package.
 
 ## Known Limitations
@@ -110,7 +110,7 @@ Avalonia, WPF, MAUI, WinUI, and Uno packages provide:
 - WinUI runtime paths are Windows-oriented in CI; Uno samples use `Uno.Sdk` desktop heads, with Windows CI validation and non-Windows developer builds supported.
 - WinUI does not support assembly-level `XmlnsDefinitionAttribute`; WinUI examples use `using:ProTranslate.WinUI`.
 
-## Validation For This Preview
+## Validation For This Release
 
 - Portable solution build and tests run in CI across Linux, macOS, and Windows.
 - Core and source-generator tests run in `tests/ProTranslate.Tests`.

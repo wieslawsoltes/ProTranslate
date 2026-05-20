@@ -5,7 +5,7 @@ description: ProTranslate product, integration, framework, and operations docume
 
 # Documentation
 
-These pages cover the preview framework from first install through framework integration, extension points, validation, and release operations. The repository specs remain available for spec-driven development, but application teams should start with the task-oriented guides.
+These pages cover ProTranslate from first install through framework integration, extension points, validation, and release operations. The repository specs remain available for spec-driven development, but application teams should start with the task-oriented guides.
 
 ## Start Here
 

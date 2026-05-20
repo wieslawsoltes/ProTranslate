@@ -82,6 +82,6 @@ CI validates the Mac Catalyst path on macOS. Other platform heads require the re
 ## Gotchas
 
 - Do not map ProTranslate into MAUI's default XML namespace.
-- The preview builds a Mac Catalyst sample locally when workloads are installed.
+- The current validation path builds a Mac Catalyst sample locally when workloads are installed.
 - Mobile lifecycle reactivation tests are planned.
 - Keep complex formatted text in view models when it depends on multiple fields or user unit preferences.

@@ -1,6 +1,6 @@
 # ProTranslate Samples
 
-The samples demonstrate the implemented preview surface across XAML frameworks. They are validation samples, not exhaustive UI test suites.
+The samples demonstrate the implemented ProTranslate surface across XAML frameworks. They are validation samples, not exhaustive UI test suites.
 
 ## Shared Scenario
 

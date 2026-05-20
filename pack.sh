@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION="${1:-0.1.0-preview.local}"
+VERSION="${1:-0.1.0}"
 OUTPUT="${2:-artifacts/packages}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

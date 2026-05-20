@@ -1,15 +1,15 @@
 ---
 title: Package Release Notes
-description: Preview package contents, package-by-package notes, known limitations, and upgrade guidance.
+description: Package contents, package-by-package notes, known limitations, and upgrade guidance.
 ---
 
 # Package Release Notes
 
-These notes describe the current preview package set. They are written for package consumers and release reviewers, so they separate shipped behavior from planned work.
+These notes describe the current package set. They are written for package consumers and release reviewers, so they separate shipped behavior from planned work.
 
-## Preview Summary
+## Release Summary
 
-The current preview ships:
+The current release ships:
 
 - Framework-neutral abstractions and core services.
 - Runtime culture switching.
@@ -145,7 +145,7 @@ Use this package for tooling and authoring workflows. Runtime application lookup
 
 ### Uno Translation Studio Sample
 
-The `samples/ProTranslate.Uno.TranslationStudio` project is a professional authoring sample over the format tooling surface. It demonstrates a compact Uno review UI, source/target editing, review-state actions, format import/export previews, generated `ProTranslateStrings` for `x:Bind`, and normalized ProTranslate catalogs as the runtime output path.
+The `samples/ProTranslate.Uno.TranslationStudio` project is a professional authoring sample over the format tooling surface. It demonstrates a compact Uno review UI, source/target editing, review-state actions, format import/export review summaries, generated `ProTranslateStrings` for `x:Bind`, and normalized ProTranslate catalogs as the runtime output path.
 
 Release notes should keep this separate from `ProTranslate.Uno`, which is the runtime XAML adapter. Full authoring workflow support still requires documented Windows build validation and UI smoke coverage.
 
@@ -155,7 +155,7 @@ Avalonia and WPF support prefix-free sample syntax through default namespace map
 
 See [XAML Namespaces](xaml-namespaces.md).
 
-## Known Preview Limitations
+## Known Limitations
 
 Remaining hardening work:
 
@@ -173,7 +173,7 @@ Package notes should list only the formats that are implemented and validated. X
 
 ## Upgrade Guidance
 
-For applications moving between preview builds:
+For applications moving between ProTranslate releases:
 
 - Keep package versions aligned across core, adapters, source generator, and analyzers.
 - Rebuild generated source after changing catalog files.

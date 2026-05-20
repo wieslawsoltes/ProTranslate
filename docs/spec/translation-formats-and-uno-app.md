@@ -165,8 +165,8 @@ Professional workflow requirements:
 - missing, stale, fuzzy, reviewed, and needs-review states
 - placeholder validation before save/export
 - plural and context inspection
-- import preview with conflict resolution
-- export preview with loss diagnostics
+- import review with conflict resolution
+- export review with loss diagnostics
 - integration guidance for Uno `x:Bind` and generated `ProTranslateStrings`
 
 Constraints:
@@ -200,7 +200,7 @@ Required validation before claiming implementation:
 - analyzer tests for imported catalogs
 - command-line or service tests for fail/continue policies
 - Uno app build validation on the documented target head
-- Uno app UI smoke tests for import preview, translation editing, diagnostics, and export preview
+- Uno app UI smoke tests for import review, translation editing, diagnostics, and export review
 - docs build after user-facing documentation changes
 
 Documentation validation:

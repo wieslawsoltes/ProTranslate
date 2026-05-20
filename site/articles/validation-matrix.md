@@ -37,9 +37,10 @@ Run package validation when public API, metadata, or project files change:
 | Uno adapter | Windows sample build | Implemented CI build coverage. |
 | Docs site | `./build-docs.sh` | Implemented. |
 | Packages | `./pack.sh <version>` | Implemented. |
+| NuGet package integration | `.github/workflows/package-integration.yml` package-consumer builds and analyzer diagnostic check | Implemented. |
 | Release | `.github/workflows/release.yml` | Implemented. |
 | Translation format tooling | Parser/writer, round-trip, loss diagnostics, placeholder/plural mapping, and source-generator compile tests | Initial surface exists; validation hardening planned. |
-| Uno Translation Studio | Build and UI smoke tests for import preview, editing, diagnostics, and export preview | Initial sample exists; validation hardening planned. |
+| Uno Translation Studio | Build and UI smoke tests for import review, editing, diagnostics, and export review | Initial sample exists; validation hardening planned. |
 
 ## Core Runtime Scenarios
 
@@ -145,11 +146,11 @@ XLIFF is the preferred CAT/TMS exchange format. Source-generated ProTranslate ca
 Before claiming app support, validate:
 
 - Uno app build for each documented target head.
-- Import preview.
+- Import review.
 - Dense translation-grid editing.
 - Culture, state, key, and diagnostics filters.
 - Placeholder validation before save and export.
-- Export preview with loss diagnostics.
+- Export review with loss diagnostics.
 - Source-generator compile check after saving catalogs.
 
 ## Analyzer Validation
@@ -201,8 +202,9 @@ Before release:
 - Docs workflow builds.
 - Sample builds pass on the appropriate OS.
 - Package artifacts include expected `.nupkg` files and runtime `.snupkg` files.
+- Package integration consumers restore from produced `.nupkg` files.
 - Package metadata is correct.
 - Release notes list only shipped behavior.
-- Known preview limitations are explicit.
+- Known limitations are explicit.
 
 The deeper working matrix remains in [docs/spec/validation-matrix.md](https://github.com/wieslawsoltes/ProTranslate/blob/main/docs/spec/validation-matrix.md).

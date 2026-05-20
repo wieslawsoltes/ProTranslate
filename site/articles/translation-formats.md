@@ -12,7 +12,7 @@ ProTranslate is designed to fit professional localization workflows without maki
 3. Use source-generated ProTranslate catalogs for application runtime.
 4. Export back to exchange or platform-native formats when needed.
 
-This page describes optional import/export tooling and authoring guidance. The current preview source generator reads `*.protranslate.keys.txt`, `Strings.*.json`, and `*.protranslate.json`. Do not treat the broader format list below as runtime provider behavior; exchange files should be imported into normalized ProTranslate catalogs first.
+This page describes optional import/export tooling and authoring guidance. The current source generator reads `*.protranslate.keys.txt`, `Strings.*.json`, and `*.protranslate.json`. Do not treat the broader format list below as runtime provider behavior; exchange files should be imported into normalized ProTranslate catalogs first.
 
 ## Recommended Formats
 
@@ -88,7 +88,7 @@ The Uno Translation Studio app is an authoring and review tool over the same for
 Expected workflow:
 
 - import XLIFF, PO/POT, RESX, Android, Apple, ARB, i18next JSON, CSV, or TSV files
-- preview normalized records and import diagnostics
+- review normalized records and import diagnostics
 - edit source and target strings in a dense translation grid
 - filter by culture, missing keys, fuzzy state, review state, diagnostics, and placeholder issues
 - validate placeholders and plural metadata before save or export

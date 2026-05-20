@@ -1,6 +1,6 @@
 # Migration Guide
 
-This guide covers adopting the current ProTranslate preview. There is no stable previous ProTranslate API to migrate from yet, so the focus is moving existing XAML localization paths onto the implemented preview services.
+This guide covers adopting ProTranslate in existing XAML applications. There is no previous stable ProTranslate API to migrate from yet, so the focus is moving existing localization paths onto the implemented services.
 
 ## Inputs
 

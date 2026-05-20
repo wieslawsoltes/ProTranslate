@@ -77,13 +77,13 @@ Uno sample builds use `Uno.Sdk` desktop heads and are validated by the Windows s
 dotnet build samples/ProTranslate.Uno.Sample/ProTranslate.Uno.Sample.csproj -c Release
 ```
 
-The desktop build path is intentionally cross-platform. WebAssembly, mobile, and deeper runtime UI automation are planned beyond the current preview sample build.
+The desktop build path is intentionally cross-platform. WebAssembly, mobile, and deeper runtime UI automation are planned beyond the current sample build.
 
 ## Translation Studio
 
 Uno Translation Studio should use shared format tooling to import and export XLIFF 1.2/2.1 workflows, gettext PO/POT, RESX, Android `strings.xml`, Apple `.strings`/`.stringsdict`/`.xcstrings`, Flutter ARB, i18next JSON, and CSV/TSV. XLIFF should be the preferred CAT/TMS exchange path, while source-generated ProTranslate catalogs remain the preferred runtime output for applications.
 
-Expected app workflows include import preview, a dense translation grid, source/target editing, culture and diagnostics filters, placeholder validation, plural/context review, and export preview with loss-aware diagnostics. These workflows are separate from the current Uno adapter runtime sample and need their own validation coverage.
+Expected app workflows include import review, a dense translation grid, source/target editing, culture and diagnostics filters, placeholder validation, plural/context review, and export review with loss-aware diagnostics. These workflows are separate from the current Uno adapter runtime sample and need their own validation coverage.
 
 ## Gotchas
 

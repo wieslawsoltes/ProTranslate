@@ -72,7 +72,7 @@ using ServiceProvider serviceProvider = services.BuildServiceProvider();
 serviceProvider.UseProTranslateAvalonia();
 ```
 
-The current preview does not provide a fluent options builder for provider packages. Construct providers and `TranslationFallbackOptions` directly.
+The current implementation does not provide a fluent options builder for provider packages. Construct providers and `TranslationFallbackOptions` directly.
 
 ## Direct Construction
 
