@@ -1,0 +1,31 @@
+docs:
+  - {path: readme.md, title: Overview}
+  - {path: getting-started.md, title: Getting Started}
+  - {path: installation.md, title: Installation}
+  - {path: xaml-namespaces.md, title: XAML Namespaces}
+  - {path: providers.md, title: Providers}
+  - {path: translation-formats.md, title: Translation Formats}
+  - {path: formatting.md, title: Formatting}
+  - {path: globalization.md, title: Globalization}
+  - {path: diagnostics.md, title: Diagnostics}
+  - {path: source-generator.md, title: Source Generator}
+  - {path: analyzers.md, title: Analyzers}
+  - {path: mvvm.md, title: MVVM Guide}
+  - {path: extensibility.md, title: Extensibility}
+  - {path: performance-trimming.md, title: Performance and Trimming}
+  - {path: avalonia-guide.md, title: Avalonia}
+  - {path: wpf-guide.md, title: WPF}
+  - {path: maui-guide.md, title: .NET MAUI}
+  - {path: winui-guide.md, title: WinUI}
+  - {path: uno-guide.md, title: Uno Platform}
+  - {path: testing.md, title: Testing}
+  - {path: ci-release.md, title: CI and Release}
+  - {path: troubleshooting.md, title: Troubleshooting}
+  - {path: faq.md, title: FAQ}
+  - {path: architecture.md, title: Architecture}
+  - {path: api-surface.md, title: API Surface}
+  - {path: implementation-plan.md, title: Implementation Plan}
+  - {path: validation-matrix.md, title: Validation Matrix}
+  - {path: release-checklist.md, title: Release Checklist}
+  - {path: package-release-notes.md, title: Package Release Notes}
+  - {path: migration-guide.md, title: Migration Guide}

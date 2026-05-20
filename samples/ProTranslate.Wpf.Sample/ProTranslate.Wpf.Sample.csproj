@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/ProTranslate.Wpf/ProTranslate.Wpf.csproj" />
+    <ProjectReference Include="../../src/ProTranslate.SourceGenerator/ProTranslate.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="../ProTranslate.Samples.Shared/*.cs" Link="Shared/%(Filename)%(Extension)" />
+    <AdditionalFiles Include="../ProTranslate.Samples.Shared/Resources/Strings.*.json" Link="Resources/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

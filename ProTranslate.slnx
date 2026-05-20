@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ProTranslate.Abstractions/ProTranslate.Abstractions.csproj" />
+    <Project Path="src/ProTranslate.Core/ProTranslate.Core.csproj" />
+    <Project Path="src/ProTranslate.Formats/ProTranslate.Formats.csproj" />
+    <Project Path="src/ProTranslate.MicrosoftExtensions/ProTranslate.MicrosoftExtensions.csproj" />
+    <Project Path="src/ProTranslate.ResourceManager/ProTranslate.ResourceManager.csproj" />
+    <Project Path="src/ProTranslate.SourceGenerator/ProTranslate.SourceGenerator.csproj" />
+    <Project Path="src/ProTranslate.Analyzers/ProTranslate.Analyzers.csproj" />
+    <Project Path="src/ProTranslate.Avalonia/ProTranslate.Avalonia.csproj" />
+    <Project Path="src/ProTranslate.Wpf/ProTranslate.Wpf.csproj" />
+    <Project Path="src/ProTranslate.Maui/ProTranslate.Maui.csproj" />
+    <Project Path="src/ProTranslate.WinUI/ProTranslate.WinUI.csproj" />
+    <Project Path="src/ProTranslate.Uno/ProTranslate.Uno.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/ProTranslate.Avalonia.Sample/ProTranslate.Avalonia.Sample.csproj" />
+    <Project Path="samples/ProTranslate.Wpf.Sample/ProTranslate.Wpf.Sample.csproj" />
+    <Project Path="samples/ProTranslate.Maui.Sample/ProTranslate.Maui.Sample.csproj" />
+    <Project Path="samples/ProTranslate.WinUI.Sample/ProTranslate.WinUI.Sample.csproj" />
+    <Project Path="samples/ProTranslate.Uno.Sample/ProTranslate.Uno.Sample.csproj" />
+    <Project Path="samples/ProTranslate.Uno.TranslationStudio/ProTranslate.Uno.TranslationStudio.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ProTranslate.Tests/ProTranslate.Tests.csproj" />
+    <Project Path="tests/ProTranslate.Avalonia.Tests/ProTranslate.Avalonia.Tests.csproj" />
+    <Project Path="tests/ProTranslate.Analyzers.Tests/ProTranslate.Analyzers.Tests.csproj" />
+  </Folder>
+</Solution>

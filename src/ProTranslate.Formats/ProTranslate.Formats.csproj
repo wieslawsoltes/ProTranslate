@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <PackageId>ProTranslate.Formats</PackageId>
+    <Title>ProTranslate.Formats</Title>
+    <Description>Import and export industry-standard translation file formats for ProTranslate catalogs.</Description>
+    <PackageTags>Localization;Translation;XLIFF;Gettext;RESX;Android;Apple;Flutter;i18next</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../ProTranslate.Abstractions/ProTranslate.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

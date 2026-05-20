@@ -1,0 +1,13 @@
+<Application x:Class="ProTranslate.Uno.TranslationStudio.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Application.Resources>
+    <SolidColorBrush x:Key="StudioPageBackgroundBrush" Color="#F4F6F8" />
+    <SolidColorBrush x:Key="StudioSurfaceBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="StudioBorderBrush" Color="#D6DCE3" />
+    <SolidColorBrush x:Key="StudioMutedTextBrush" Color="#5D6673" />
+    <SolidColorBrush x:Key="StudioAccentBrush" Color="#176B87" />
+    <SolidColorBrush x:Key="StudioGoodBrush" Color="#247A4D" />
+    <SolidColorBrush x:Key="StudioWarningBrush" Color="#A15C00" />
+  </Application.Resources>
+</Application>

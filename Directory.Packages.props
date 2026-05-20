@@ -1,0 +1,27 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="Avalonia" Version="12.0.2" />
+    <PackageVersion Include="Avalonia.Desktop" Version="12.0.2" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.0.2" />
+    <PackageVersion Include="Avalonia.Headless" Version="12.0.2" />
+    <PackageVersion Include="Avalonia.Headless.XUnit" Version="12.0.2" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.0.2" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Localization" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.Maui.Controls" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="2.0.1" />
+    <PackageVersion Include="Uno.WinUI" Version="6.5.229" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+</Project>

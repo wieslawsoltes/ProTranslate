@@ -1,0 +1,119 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shared="using:ProTranslate.Samples.Shared"
+        x:Class="ProTranslate.Avalonia.Sample.MainWindow"
+        x:DataType="shared:TranslationDemoViewModel"
+        Width="1080"
+        Height="760"
+        MinWidth="860"
+        MinHeight="620"
+        Title="{Binding Strings.AppTitle}"
+        Translation.Culture="{Binding Strings.Culture}"
+        Translation.AutoFlowDirection="True">
+  <Grid RowDefinitions="Auto,*" Background="#F4F7FB">
+    <Border Grid.Row="0" Background="#FFFFFF" BorderBrush="#D9E0EA" BorderThickness="0,0,0,1" Padding="24,18">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24">
+        <StackPanel Spacing="4">
+          <TextBlock Classes="title" Text="{Binding Strings.AppTitle}" />
+          <TextBlock Classes="caption" Text="{Binding Strings.FrameworkSubtitle}" TextWrapping="Wrap" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" HorizontalAlignment="Right" Spacing="3">
+          <TextBlock Classes="caption" Text="{Binding Strings.CurrentCultureDisplay}" />
+          <TextBlock Classes="caption" Text="{Binding Strings.CurrentRegionDisplay}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1" ColumnDefinitions="310,*">
+      <Border Grid.Column="0" Background="#FAFBFE" BorderBrush="#D9E0EA" BorderThickness="0,0,1,0" Padding="20">
+        <StackPanel Spacing="18">
+          <StackPanel Spacing="8">
+            <TextBlock Classes="section" Text="{Binding Strings.LiveSwitchLabel}" />
+            <ComboBox ItemsSource="{Binding CultureChoices}"
+                      SelectedItem="{Binding SelectedCultureChoice}"
+                      HorizontalAlignment="Stretch">
+              <ComboBox.ItemTemplate>
+                <DataTemplate DataType="shared:CultureChoice">
+                  <TextBlock Text="{Binding DisplayName}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+          </StackPanel>
+
+          <StackPanel Spacing="8">
+            <TextBlock Classes="section" Text="{Binding Strings.RegionOverrideLabel}" />
+            <ComboBox ItemsSource="{Binding RegionChoices}"
+                      SelectedItem="{Binding SelectedRegionChoice}"
+                      HorizontalAlignment="Stretch">
+              <ComboBox.ItemTemplate>
+                <DataTemplate DataType="shared:RegionChoice">
+                  <TextBlock Text="{Binding DisplayName}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+          </StackPanel>
+
+          <StackPanel Spacing="8">
+            <TextBlock Classes="section" Text="{Binding Strings.UnitsLabel}" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+              <Button Content="{Binding Strings.MetricUnits}" Command="{Binding SetMetricCommand}" />
+              <Button Grid.Column="1" Content="{Binding Strings.ImperialUnits}" Command="{Binding SetImperialCommand}" />
+            </Grid>
+            <TextBlock Classes="caption" Text="{Binding UnitsDisplay}" />
+          </StackPanel>
+
+          <StackPanel Spacing="8">
+            <TextBlock Classes="section" Text="{Binding Strings.FlowLabel}" />
+            <TextBlock Classes="caption" Text="{Binding Strings.FlowDirectionDisplay}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <ScrollViewer Grid.Column="1">
+        <StackPanel Margin="24" Spacing="18">
+          <Border Classes="panel">
+            <StackPanel Spacing="10">
+              <TextBlock Classes="section" Text="{Binding Strings.GeneratedProxyLabel}" />
+              <TextBlock Classes="caption" Text="{Binding Strings.SampleNote}" TextWrapping="Wrap" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="panel">
+            <StackPanel Spacing="10">
+              <TextBlock Classes="section" Text="{Binding Strings.MarkupExtensionLabel}" />
+              <TextBlock Classes="caption" Text="{Translate AppTitle}" TextWrapping="Wrap" />
+            </StackPanel>
+          </Border>
+
+          <Border Classes="panel">
+            <StackPanel Spacing="12">
+              <TextBlock Classes="section" Text="{Binding Strings.OrderTitle}" />
+              <TextBox Text="{Binding CustomerName}" PlaceholderText="Customer name" />
+              <TextBlock FontSize="20" FontWeight="SemiBold" Text="{Binding GreetingText}" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentName}" />
+              <TextBlock Text="{Binding InvoiceTotalText}" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentName}" />
+              <TextBlock Text="{Binding FulfillmentText}" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentName}" />
+            </StackPanel>
+          </Border>
+
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
+            <Border Classes="panel">
+              <StackPanel Spacing="10">
+                <TextBlock Classes="section" Text="{Binding Strings.FormattedStringsLabel}" />
+                <TextBlock Text="{Binding DistanceText}" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentName}" />
+                <TextBlock Text="{Binding TemperatureText}" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentName}" />
+              </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" Classes="panel">
+              <StackPanel Spacing="10">
+                <TextBlock Classes="section" Text="{Binding Strings.FlowLabel}" />
+                <TextBlock FontSize="28" Text="Hello / Cześć / مرحبا" TextWrapping="Wrap" TextAlignment="{Binding TextAlignmentName}" />
+                <TextBlock Classes="caption" Text="{Binding Strings.FlowDirectionDisplay}" />
+              </StackPanel>
+            </Border>
+          </Grid>
+        </StackPanel>
+      </ScrollViewer>
+    </Grid>
+  </Grid>
+</Window>

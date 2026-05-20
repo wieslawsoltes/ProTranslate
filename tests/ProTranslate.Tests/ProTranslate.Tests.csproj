@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ProTranslate.Abstractions\ProTranslate.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\ProTranslate.Core\ProTranslate.Core.csproj" />
+    <ProjectReference Include="..\..\src\ProTranslate.MicrosoftExtensions\ProTranslate.MicrosoftExtensions.csproj" />
+    <ProjectReference Include="..\..\src\ProTranslate.Formats\ProTranslate.Formats.csproj" />
+    <ProjectReference Include="..\..\src\ProTranslate.ResourceManager\ProTranslate.ResourceManager.csproj" />
+    <ProjectReference Include="..\..\src\ProTranslate.SourceGenerator\ProTranslate.SourceGenerator.csproj" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>
