@@ -8,6 +8,7 @@
 | Core tests | `tests/ProTranslate.Tests` | macOS, Linux, Windows CI | Implemented |
 | Analyzer tests | `tests/ProTranslate.Analyzers.Tests` | macOS, Linux, Windows CI | Implemented |
 | Avalonia adapter smoke/runtime/leak tests | `tests/ProTranslate.Avalonia.Tests` | macOS, Linux, Windows CI | Implemented |
+| Extended leak tests | `tools/run-leak-tests.ps1 -Configuration Release` covering core, source generator, Avalonia headless, Uno, MAUI reflection, and Windows-only WPF/WinUI suites | OS-specific CI matrix | Implemented |
 | Docs site | `./build-docs.sh` | docs workflow and local validation | Implemented |
 | Avalonia sample | `samples/ProTranslate.Avalonia.Sample` build | macOS local/CI path | Implemented |
 | MAUI adapter and sample restore | `src/ProTranslate.Maui` build and `samples/ProTranslate.Maui.Sample` restore | macOS CI with MAUI workload | Implemented; full sample app packaging remains local/platform validation |
@@ -22,7 +23,6 @@
 Not yet validated by automated tests:
 - full round-trip validation for XLIFF, PO/POT, RESX, Android, Apple, ARB, i18next JSON, and CSV/TSV
 - professional Uno Translation Studio workflow UI smoke coverage
-- adapter memory retention and weak target behavior outside current Avalonia coverage
 - provider trace/cache diagnostics and logging/debug-overlay integrations
 - platform runtime UI automation for WPF, MAUI, WinUI, and Uno
 
@@ -82,11 +82,12 @@ Outputs:
 - refreshed formatted values
 - updated native `FlowDirection`
 - no retained detached targets for current Avalonia leak-test paths
+- no retained disposable service, generated string facade, adapter source, or attached target in the supported leak-test harnesses
 
 Constraints:
-- current validation covers binding-source refresh and Avalonia runtime/leak paths; broader dispatcher guarantees are planned
+- current validation covers binding-source refresh, Avalonia runtime/leak paths, Uno non-visual adapter lifetime paths, MAUI reflection-based binding/target lifetime paths, and Windows-only WPF/WinUI source lifetime paths
 - culture changes are observable through service events
-- adapter target tracking and leak assertions remain planned outside current Avalonia coverage
+- broader platform UI automation for WPF, MAUI app-host lifecycle, WinUI app-host lifecycle, and Uno platform heads remains planned
 
 Edge cases:
 - culture switch during page navigation
@@ -97,18 +98,19 @@ Edge cases:
 Validate:
 - Avalonia repeated culture switch and formatted refresh tests
 - Avalonia detached target garbage collection tests
-- planned dispatcher marshalling tests for non-Avalonia adapters
+- release-only leak tests for core disposables, generated string facades, adapter binding-source swaps, static source replacement, and available attached-target paths
+- planned dispatcher marshalling tests for non-Avalonia app-host adapters
 - same-culture idempotence test
 
 ## XAML Adapter Validation
 
 | Adapter | Required Checks |
 | --- | --- |
-| Avalonia | `T`/`Translate` and `F`/`Format` binding creation, prefix-free default namespace sample syntax, binding-source refresh, attached key/fallback/string-format behavior, sample build, culture and flow-direction runtime tests, release-only leak tests |
-| WPF | sample build on Windows CI, prefix-free default namespace sample syntax, dependency-property key/culture/flow-direction path in sample; UI automation planned |
-| MAUI | adapter build and sample restore on macOS CI, local Mac Catalyst sample build, shared ProTranslate URI syntax, bindable key/culture/flow-direction path in sample; mobile lifecycle tests planned |
-| WinUI | sample build on Windows CI, `x:Bind` view-model path and attached `Translation.Key` sample path; UI automation planned |
-| Uno | sample build with `Uno.Sdk` desktop head on local macOS and Windows CI, WinUI-compatible `x:Bind`, attached `Translation.Key`, explicit namespace syntax, and generated XAML partials; WebAssembly/mobile runtime validation planned |
+| Avalonia | `T`/`Translate` and `F`/`Format` binding creation, prefix-free default namespace sample syntax, binding-source refresh, attached key/fallback/string-format behavior, sample build, culture and flow-direction runtime tests, release-only headless leak tests |
+| WPF | sample build on Windows CI, prefix-free default namespace sample syntax, dependency-property key/culture/flow-direction path in sample, Windows-only binding-source/static-source leak tests; UI automation planned |
+| MAUI | adapter build and sample restore on macOS CI, local Mac Catalyst sample build, shared ProTranslate URI syntax, bindable key/culture/flow-direction path in sample, reflection-based Mac Catalyst adapter leak tests; mobile lifecycle tests planned |
+| WinUI | sample build on Windows CI, `x:Bind` view-model path and attached `Translation.Key` sample path, Windows-only binding-source/static-source leak tests; UI automation planned |
+| Uno | sample build with `Uno.Sdk` desktop head on local macOS and Windows CI, WinUI-compatible `x:Bind`, attached `Translation.Key`, explicit namespace syntax, generated XAML partials, and non-visual adapter lifetime leak tests; WebAssembly/mobile runtime validation planned |
 
 ## Compiled Binding And `x:Bind`
 
