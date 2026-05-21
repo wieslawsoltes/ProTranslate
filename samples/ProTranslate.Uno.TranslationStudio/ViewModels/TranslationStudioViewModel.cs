@@ -1616,7 +1616,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
             else if (fmt.Contains("i18next"))
             {
                 string text = SelectedTargetText;
-                string replaced = Regex.Replace(text, @"\{\{([^}]+)\\}\}", match =>
+                string replaced = Regex.Replace(text, @"\{\{([^}]+)\}\}", match =>
                 {
                     string inner = match.Groups[1].Value.ToLowerInvariant();
                     if (inner.Contains("number") || inner.Contains("currency")) return 1234.56.ToString("C", culture);
@@ -1785,14 +1785,33 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
     {
         get
         {
-            string pName = SelectedBuilderPlaceholder;
-            if (string.IsNullOrEmpty(pName))
+            string rawPlaceholder = SelectedBuilderPlaceholder;
+            if (string.IsNullOrEmpty(rawPlaceholder))
             {
-                pName = SourcePlaceholders.FirstOrDefault() ?? "0";
+                rawPlaceholder = SourcePlaceholders.FirstOrDefault() ?? "0";
             }
-            pName = pName.Trim('{', '}', '%');
+            string pName = rawPlaceholder.Trim('{', '}', '%');
 
             string fmt = SourceFormat?.ToLowerInvariant() ?? "";
+
+            string index = "";
+            char specifierChar = 's';
+            if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || fmt.Contains("strings"))
+            {
+                var match = Regex.Match(rawPlaceholder, @"^%?([0-9]+)\$");
+                if (match.Success)
+                {
+                    index = match.Groups[1].Value + "$";
+                }
+                if (rawPlaceholder.EndsWith("@", StringComparison.Ordinal))
+                {
+                    specifierChar = '@';
+                }
+                else if (rawPlaceholder.EndsWith("d", StringComparison.Ordinal) || rawPlaceholder.EndsWith("i", StringComparison.Ordinal))
+                {
+                    specifierChar = 'd';
+                }
+            }
 
             if (BuilderFormatType == "Number")
             {
@@ -1808,7 +1827,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
                 }
                 else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || fmt.Contains("strings"))
                 {
-                    return $"%{pName}$.{BuilderDecimalPlaces}f";
+                    return $"%{index}.{BuilderDecimalPlaces}f";
                 }
                 else
                 {
@@ -1828,7 +1847,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
                 }
                 else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || fmt.Contains("strings"))
                 {
-                    return $"%{pName}$s";
+                    return $"%{index}{specifierChar}";
                 }
                 else
                 {
@@ -1867,7 +1886,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
             }
             else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || fmt.Contains("strings"))
             {
-                return $"%{pName}$s";
+                return $"%{index}{specifierChar}";
             }
             else
             {

@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ProTranslate.Uno.TranslationStudio;
 
