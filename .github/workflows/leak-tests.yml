@@ -1,0 +1,54 @@
+name: Leak Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: leak-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  leak-tests:
+    name: Leak Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-26, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install MAUI workload
+        if: runner.os == 'macOS'
+        run: dotnet workload install maui
+
+      - name: Run leak tests
+        shell: pwsh
+        run: ./tools/run-leak-tests.ps1 -Configuration Release
+
+      - name: Upload leak test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: leak-test-results-${{ matrix.os }}
+          path: artifacts/test-results/leak/
+          if-no-files-found: ignore
+          retention-days: 7
+
