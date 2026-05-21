@@ -47,14 +47,11 @@ public sealed class AvaloniaAdapterLeakTests
     [ReleaseFact]
     public void ReplacedStaticBindingSourceIsReleased()
     {
-        var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
-        var service = CreateTranslationService(cultures);
+        WeakReference weak = InstallTemporaryStaticBindingSource();
 
-        WeakReference weak = CreateReplacedStaticBindingSource(service, cultures);
+        ReplaceStaticBindingSource();
 
         LeakTestHelpers.AssertCollected(weak);
-        GC.KeepAlive(service);
-        GC.KeepAlive(cultures);
     }
 
     [ReleaseFact]
@@ -124,17 +121,22 @@ public sealed class AvaloniaAdapterLeakTests
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static WeakReference CreateReplacedStaticBindingSource(
-        global::ProTranslate.ITranslationService service,
-        global::ProTranslate.ICultureService cultures)
+    private static WeakReference InstallTemporaryStaticBindingSource()
     {
+        var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
+        var service = CreateTranslationService(cultures);
         var source = new TranslationBindingSource(service, cultures);
         var weak = new WeakReference(source);
 
         ProTranslate.Avalonia.TranslationService.UseSource(source);
-        ProTranslate.Avalonia.TranslationService.UseSource(CreateFreshSource());
 
         return weak;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void ReplaceStaticBindingSource()
+    {
+        ProTranslate.Avalonia.TranslationService.UseSource(CreateFreshSource());
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
