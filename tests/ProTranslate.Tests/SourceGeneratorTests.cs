@@ -1,5 +1,7 @@
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -109,6 +111,48 @@ public sealed class SourceGeneratorTests
 
         Assert.Empty(generatorDiagnostics.Where(static diagnostic => diagnostic.Severity == DiagnosticSeverity.Error));
         Assert.Empty(outputCompilation.GetDiagnostics().Where(static diagnostic => diagnostic.Severity == DiagnosticSeverity.Error));
+    }
+
+    [ReleaseFact]
+    public void GeneratedStringsDisposeReleasesCultureSubscriptionLeakTest()
+    {
+        CSharpCompilation compilation = CreateCompilation(SourceText.From("namespace Demo { public sealed class App { } }", Encoding.UTF8));
+        GeneratorDriver driver = CreateDriver(
+            new InMemoryAdditionalText(
+                "/translations/App.protranslate.json",
+                """
+                {
+                  "Shell.Title": "ProTranslate",
+                  "Orders.Total": "Total: {0:C}"
+                }
+                """));
+
+        driver.RunGeneratorsAndUpdateCompilation(
+            compilation,
+            out Compilation outputCompilation,
+            out ImmutableArray<Diagnostic> generatorDiagnostics);
+
+        Assert.Empty(generatorDiagnostics.Where(static diagnostic => diagnostic.Severity == DiagnosticSeverity.Error));
+        using var peStream = new MemoryStream();
+        var emitResult = outputCompilation.Emit(peStream);
+        Assert.True(
+            emitResult.Success,
+            string.Join(Environment.NewLine, emitResult.Diagnostics.Where(static diagnostic => diagnostic.Severity == DiagnosticSeverity.Error)));
+
+        Assembly assembly = Assembly.Load(peStream.ToArray());
+        Type stringsType = assembly.GetType("ProTranslate.Generated.ProTranslateStrings", throwOnError: true)!;
+        var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
+        var translations = new TranslationService(
+            new InMemoryTranslationProvider()
+                .Add(CultureInfo.GetCultureInfo("en-US"), "Shell.Title", "ProTranslate")
+                .Add(CultureInfo.GetCultureInfo("pl-PL"), "Shell.Title", "ProTranslate PL"),
+            cultures);
+
+        WeakReference weak = CreateDisposedGeneratedStrings(stringsType, translations, cultures);
+
+        LeakTestHelpers.AssertCollected(weak);
+        GC.KeepAlive(translations);
+        GC.KeepAlive(cultures);
     }
 
     [Fact]
@@ -612,6 +656,22 @@ public sealed class SourceGeneratorTests
             [CSharpSyntaxTree.ParseText(source, CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest))],
             references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static WeakReference CreateDisposedGeneratedStrings(
+        Type stringsType,
+        ITranslationService translations,
+        CultureService cultures)
+    {
+        var strings = (IDisposable)Activator.CreateInstance(stringsType, translations)!;
+        var weak = new WeakReference(strings);
+
+        _ = stringsType.GetProperty("ShellTitle")?.GetValue(strings);
+        cultures.SetCulture(CultureInfo.GetCultureInfo("pl-PL"));
+        strings.Dispose();
+
+        return weak;
     }
 
     private sealed class InMemoryAdditionalText : AdditionalText
