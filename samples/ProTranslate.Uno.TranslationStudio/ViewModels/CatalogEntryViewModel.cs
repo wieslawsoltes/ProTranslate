@@ -1,15 +1,15 @@
 using System.Text.RegularExpressions;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ProTranslate.Uno.TranslationStudio;
 
 public sealed class CatalogEntryViewModel : ObservableObject
 {
-    private static readonly Regex PlaceholderRegex = new(@"\{([0-9]+)(:[^}]+)?\}", RegexOptions.Compiled);
-
     private string _targetText;
     private TranslationReviewState _state;
     private string _notes;
     private string _diagnostics = string.Empty;
+    private string _formatName = "ProTranslate JSON";
     private readonly string _baseDiagnostics;
 
     public CatalogEntryViewModel(TranslationCatalogEntry entry)
@@ -76,6 +76,18 @@ public sealed class CatalogEntryViewModel : ObservableObject
         }
     }
 
+    public string FormatName
+    {
+        get => _formatName;
+        set
+        {
+            if (SetProperty(ref _formatName, value))
+            {
+                RunDiagnosticCheck();
+            }
+        }
+    }
+
     public string StateLabel => State switch
     {
         TranslationReviewState.Approved => "Approved",
@@ -118,6 +130,74 @@ public sealed class CatalogEntryViewModel : ObservableObject
         RunDiagnosticCheck();
     }
 
+    public static List<string> GetNormalizedPlaceholders(string text, string formatName)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return [];
+        }
+
+        string fmt = formatName?.ToLowerInvariant() ?? "";
+        
+        if (fmt.Contains("i18next"))
+        {
+            MatchCollection matches = Regex.Matches(text, @"\{\{([a-zA-Z0-9_]+)(?:,\s*[^}]+)?\}\}");
+            return matches.Cast<Match>().Select(static m => "{{" + m.Groups[1].Value + "}}").Distinct().ToList();
+        }
+        else if (fmt.Contains("flutter") || fmt.Contains("arb") || fmt.Contains("stringsdict") || fmt.Contains("xcstrings"))
+        {
+            MatchCollection matches = Regex.Matches(text, @"\{([a-zA-Z_][a-zA-Z0-9_]*)");
+            return matches.Cast<Match>().Select(static m => "{" + m.Groups[1].Value + "}").Distinct().ToList();
+        }
+        else if (fmt.Contains("resx") || fmt.Contains("protranslate") || fmt.Contains("csv") || fmt.Contains("tsv") || fmt.Contains("xliff"))
+        {
+            MatchCollection matches = Regex.Matches(text, @"\{([0-9]+)(?::[^}]+)?\}");
+            return matches.Cast<Match>().Select(static m => "{" + m.Groups[1].Value + "}").Distinct().ToList();
+        }
+        else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || fmt.Contains("strings"))
+        {
+            MatchCollection matches = Regex.Matches(text, @"%(?:([0-9]+)\$)?([-+ #0]*[0-9]*(?:\.[0-9]+)?[lhjztL]*[diouxXeEfFgGaAcsp@%])");
+            return matches.Cast<Match>().Select(static m => m.Groups[1].Success ? "%" + m.Groups[1].Value + "$" : m.Value).Distinct().ToList();
+        }
+        
+        MatchCollection fallbackMatches = Regex.Matches(text, @"\{([^:},]+)");
+        return fallbackMatches.Cast<Match>().Select(static m => "{" + m.Groups[1].Value.Trim() + "}").Distinct().ToList();
+    }
+
+    public static List<string> GetPlaceholdersForFormat(string text, string formatName)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return [];
+        }
+
+        string fmt = formatName?.ToLowerInvariant() ?? "";
+        
+        if (fmt.Contains("i18next"))
+        {
+            MatchCollection matches = Regex.Matches(text, @"\{\{([^}]+)\}\}");
+            return matches.Cast<Match>().Select(static m => m.Value).Distinct().ToList();
+        }
+        else if (fmt.Contains("flutter") || fmt.Contains("arb") || fmt.Contains("stringsdict") || fmt.Contains("xcstrings"))
+        {
+            MatchCollection matches = Regex.Matches(text, @"\{([a-zA-Z_][a-zA-Z0-9_]*(?:\s*,\s*[a-zA-Z]+(?:\s*,\s*[^}]+)?)?)\}");
+            return matches.Cast<Match>().Select(static m => m.Value).Distinct().ToList();
+        }
+        else if (fmt.Contains("resx") || fmt.Contains("protranslate") || fmt.Contains("csv") || fmt.Contains("tsv") || fmt.Contains("xliff"))
+        {
+            MatchCollection matches = Regex.Matches(text, @"\{([0-9]+)(?::[^}]+)?\}");
+            return matches.Cast<Match>().Select(static m => m.Value).Distinct().ToList();
+        }
+        else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || fmt.Contains("strings"))
+        {
+            MatchCollection matches = Regex.Matches(text, @"%(?:([0-9]+)\$)?([-+ #0]*[0-9]*(?:\.[0-9]+)?[lhjztL]*[diouxXeEfFgGaAcsp@%])");
+            return matches.Cast<Match>().Select(static m => m.Value).Distinct().ToList();
+        }
+        
+        MatchCollection fallbackMatches = Regex.Matches(text, @"\{([^}]+)\}");
+        return fallbackMatches.Cast<Match>().Select(static m => m.Value).Distinct().ToList();
+    }
+
     private void RunDiagnosticCheck()
     {
         var errors = new List<string>();
@@ -132,13 +212,18 @@ public sealed class CatalogEntryViewModel : ObservableObject
         }
         else
         {
-            var sourceMatches = PlaceholderRegex.Matches(SourceText);
-            var targetMatches = PlaceholderRegex.Matches(TargetText);
+            List<string> sourcePlaceholders = GetNormalizedPlaceholders(SourceText, FormatName);
+            List<string> targetPlaceholders = GetNormalizedPlaceholders(TargetText, FormatName);
 
-            var sourcePlaceholders = sourceMatches.Select(m => m.Value).Distinct().ToList();
-            var targetPlaceholders = targetMatches.Select(m => m.Value).Distinct().ToList();
+            // Unbalanced braces check
+            int openBraces = TargetText.Count(c => c == '{');
+            int closeBraces = TargetText.Count(c => c == '}');
+            if (openBraces != closeBraces)
+            {
+                errors.Add("Unbalanced brace brackets '{' and '}'");
+            }
 
-            foreach (var sp in sourcePlaceholders)
+            foreach (string sp in sourcePlaceholders)
             {
                 if (!targetPlaceholders.Contains(sp))
                 {
@@ -146,7 +231,7 @@ public sealed class CatalogEntryViewModel : ObservableObject
                 }
             }
 
-            foreach (var tp in targetPlaceholders)
+            foreach (string tp in targetPlaceholders)
             {
                 if (!sourcePlaceholders.Contains(tp))
                 {
@@ -158,3 +243,4 @@ public sealed class CatalogEntryViewModel : ObservableObject
         Diagnostics = errors.Count > 0 ? string.Join("; ", errors) : "No diagnostics";
     }
 }
+
