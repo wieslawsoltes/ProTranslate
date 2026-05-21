@@ -112,8 +112,16 @@ if ($IsMacOS -and -not $SkipMaui) {
 
 if ($IsWindows -and -not $SkipWindowsAdapters) {
     Invoke-LeakTestProject "tests/ProTranslate.Wpf.Tests/ProTranslate.Wpf.Tests.csproj" "protranslate-wpf-leak-tests"
-    Invoke-LeakTestProject "tests/ProTranslate.WinUI.Tests/ProTranslate.WinUI.Tests.csproj" "protranslate-winui-leak-tests"
+    Invoke-DotNet @(
+        "build",
+        (Join-Path $repoRoot "src/ProTranslate.WinUI/ProTranslate.WinUI.csproj"),
+        "-c",
+        $Configuration
+    )
+    Invoke-LeakTestProject `
+        "tests/ProTranslate.WinUI.Tests/ProTranslate.WinUI.Tests.csproj" `
+        "protranslate-winui-leak-tests" `
+        @{ "PROTRANSLATE_REQUIRE_WINUI_LEAKS" = "1" }
 } else {
     Write-Host "Skipping Windows-only WPF/WinUI leak tests on this OS."
 }
-
