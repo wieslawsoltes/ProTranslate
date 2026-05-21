@@ -13,9 +13,111 @@ public sealed partial class MainPage : Page
         InitializeComponent();
         Loaded += OnPageLoaded;
         KeyDown += OnPageKeyDown;
+        ViewModel.InsertTextRequested += (s, text) => InsertTextAtCaret(text);
     }
 
     public TranslationStudioViewModel ViewModel { get; }
+
+    private void InsertTextAtCaret(string text)
+    {
+        if (TargetTextBox == null) return;
+        
+        int selectionStart = TargetTextBox.SelectionStart;
+        string currentText = TargetTextBox.Text ?? string.Empty;
+        
+        string newText = currentText.Substring(0, selectionStart) + text + currentText.Substring(selectionStart + TargetTextBox.SelectionLength);
+        TargetTextBox.Text = newText;
+        TargetTextBox.SelectionStart = selectionStart + text.Length;
+        TargetTextBox.SelectionLength = 0;
+        
+        ViewModel.SelectedTargetText = newText;
+        TargetTextBox.Focus(FocusState.Programmatic);
+    }
+
+    private void OnPlaceholderChipClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.DataContext is string placeholder)
+        {
+            InsertTextAtCaret(placeholder);
+        }
+    }
+
+    private void OnTargetTextBoxTextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (TargetTextBox == null) return;
+        
+        int caretIndex = TargetTextBox.SelectionStart;
+        string text = TargetTextBox.Text ?? string.Empty;
+        
+        if (caretIndex > 0)
+        {
+            int searchIndex = caretIndex - 1;
+            string triggerText = string.Empty;
+            
+            if (searchIndex > 0 && text[searchIndex] == '{' && text[searchIndex - 1] == '{')
+            {
+                triggerText = "{{";
+            }
+            else if (text[searchIndex] == '{')
+            {
+                triggerText = "{";
+            }
+            else if (text[searchIndex] == '%')
+            {
+                triggerText = "%";
+            }
+            
+            if (!string.IsNullOrEmpty(triggerText))
+            {
+                ViewModel.TriggerSuggestions(triggerText);
+                return;
+            }
+        }
+        
+        ViewModel.ShowAutoComplete = false;
+    }
+
+    private void OnAutoCompleteListDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+    {
+        if (sender is ListView listView && listView.SelectedItem is string selection)
+        {
+            string cleanSelection = selection;
+            int parenIndex = selection.IndexOf('(');
+            if (parenIndex > 0)
+            {
+                cleanSelection = selection.Substring(0, parenIndex).Trim();
+            }
+            
+            InsertTextAtCaret(cleanSelection);
+            ViewModel.ShowAutoComplete = false;
+        }
+    }
+
+    private void OnAutoCompleteListKeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key == Windows.System.VirtualKey.Enter)
+        {
+            if (sender is ListView listView && listView.SelectedItem is string selection)
+            {
+                string cleanSelection = selection;
+                int parenIndex = selection.IndexOf('(');
+                if (parenIndex > 0)
+                {
+                    cleanSelection = selection.Substring(0, parenIndex).Trim();
+                }
+                
+                InsertTextAtCaret(cleanSelection);
+                ViewModel.ShowAutoComplete = false;
+                e.Handled = true;
+            }
+        }
+        else if (e.Key == Windows.System.VirtualKey.Escape)
+        {
+            ViewModel.ShowAutoComplete = false;
+            e.Handled = true;
+            TargetTextBox.Focus(FocusState.Programmatic);
+        }
+    }
 
     public static Brush GetStateBrush(TranslationReviewState state)
     {
@@ -52,6 +154,43 @@ public sealed partial class MainPage : Page
     public static Visibility VisibleIfNotEmpty(string text)
     {
         return string.IsNullOrWhiteSpace(text) ? Visibility.Collapsed : Visibility.Visible;
+    }
+
+    public static Visibility VisibleIfType(string current, string expected)
+    {
+        return string.Equals(current, expected, StringComparison.OrdinalIgnoreCase) ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public static Brush GetSeverityBgBrush(string severity)
+    {
+        string key = severity?.ToLowerInvariant() switch
+        {
+            "success" => "StudioGoodBgBrush",
+            "warning" => "StudioWarningBgBrush",
+            _ => "StudioErrorBgBrush"
+        };
+        return (Brush)Application.Current.Resources[key];
+    }
+
+    public static Brush GetSeverityBorderBrush(string severity)
+    {
+        string key = severity?.ToLowerInvariant() switch
+        {
+            "success" => "StudioGoodBrush",
+            "warning" => "StudioWarningBrush",
+            _ => "StudioErrorBrush"
+        };
+        return (Brush)Application.Current.Resources[key];
+    }
+
+    public static string GetSeverityIcon(string severity)
+    {
+        return severity?.ToLowerInvariant() switch
+        {
+            "success" => "\xE930",
+            "warning" => "\xE946",
+            _ => "\xE7BA"
+        };
     }
 
     public static Brush GetDirtyBrush(bool isDirty)
