@@ -116,7 +116,8 @@ if ($IsWindows -and -not $SkipWindowsAdapters) {
         "build",
         (Join-Path $repoRoot "src/ProTranslate.WinUI/ProTranslate.WinUI.csproj"),
         "-c",
-        $Configuration
+        $Configuration,
+        "-p:CopyLocalLockFileAssemblies=true"
     )
     Invoke-LeakTestProject `
         "tests/ProTranslate.WinUI.Tests/ProTranslate.WinUI.Tests.csproj" `
