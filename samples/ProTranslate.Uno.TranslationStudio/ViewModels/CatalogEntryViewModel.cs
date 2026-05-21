@@ -153,7 +153,7 @@ public sealed class CatalogEntryViewModel : ObservableObject
             MatchCollection matches = Regex.Matches(text, @"\{([0-9]+)(?::[^}]+)?\}");
             return matches.Cast<Match>().Select(static m => "{" + m.Groups[1].Value + "}").Distinct().ToList();
         }
-        else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || fmt.Contains("strings"))
+        else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || (fmt.Contains("strings") && !fmt.Contains("stringsdict") && !fmt.Contains("xcstrings")))
         {
             MatchCollection matches = Regex.Matches(text, @"%(?:([0-9]+)\$)?([-+ #0]*[0-9]*(?:\.[0-9]+)?[lhjztL]*[diouxXeEfFgGaAcsp@%])");
             return matches.Cast<Match>().Select(static m => m.Groups[1].Success ? "%" + m.Groups[1].Value + "$" : m.Value).Distinct().ToList();
@@ -187,7 +187,7 @@ public sealed class CatalogEntryViewModel : ObservableObject
             MatchCollection matches = Regex.Matches(text, @"\{([0-9]+)(?::[^}]+)?\}");
             return matches.Cast<Match>().Select(static m => m.Value).Distinct().ToList();
         }
-        else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || fmt.Contains("strings"))
+        else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || (fmt.Contains("strings") && !fmt.Contains("stringsdict") && !fmt.Contains("xcstrings")))
         {
             MatchCollection matches = Regex.Matches(text, @"%(?:([0-9]+)\$)?([-+ #0]*[0-9]*(?:\.[0-9]+)?[lhjztL]*[diouxXeEfFgGaAcsp@%])");
             return matches.Cast<Match>().Select(static m => m.Value).Distinct().ToList();

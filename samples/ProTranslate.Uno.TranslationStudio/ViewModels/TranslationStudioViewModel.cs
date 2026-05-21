@@ -1599,7 +1599,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
                 SimulatedOutputText = $"Simulated output: \"{result}\"";
                 SimulatedOutputSeverity = "Success";
             }
-            else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || fmt.Contains("strings"))
+            else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || (fmt.Contains("strings") && !fmt.Contains("stringsdict") && !fmt.Contains("xcstrings")))
             {
                 string text = SelectedTargetText;
                 string replaced = Regex.Replace(text, @"%(?:([0-9]+)\$)?([-+ #0]*[0-9]*(?:\.[0-9]+)?[lhjztL]*[diouxXeEfFgGaAcsp@%])", match =>
@@ -1626,7 +1626,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
                 SimulatedOutputText = $"Simulated output: \"{replaced}\"";
                 SimulatedOutputSeverity = "Success";
             }
-            else if (fmt.Contains("flutter") || fmt.Contains("arb"))
+            else if (fmt.Contains("flutter") || fmt.Contains("arb") || fmt.Contains("stringsdict") || fmt.Contains("xcstrings"))
             {
                 string text = SelectedTargetText;
                 if (text.Contains("plural"))
@@ -1791,12 +1791,17 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
                 rawPlaceholder = SourcePlaceholders.FirstOrDefault() ?? "0";
             }
             string pName = rawPlaceholder.Trim('{', '}', '%');
+            int colonIdx = pName.IndexOf(':');
+            if (colonIdx >= 0) pName = pName.Substring(0, colonIdx);
+            int commaIdx = pName.IndexOf(',');
+            if (commaIdx >= 0) pName = pName.Substring(0, commaIdx);
+            pName = pName.Trim();
 
             string fmt = SourceFormat?.ToLowerInvariant() ?? "";
 
             string index = "";
             char specifierChar = 's';
-            if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || fmt.Contains("strings"))
+            if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || (fmt.Contains("strings") && !fmt.Contains("stringsdict") && !fmt.Contains("xcstrings")))
             {
                 var match = Regex.Match(rawPlaceholder, @"^%?([0-9]+)\$");
                 if (match.Success)
@@ -1825,7 +1830,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
                     if (BuilderPercentage) return $"{{{{{pName}, percent}}}}";
                     return $"{{{{{pName}, number}}}}";
                 }
-                else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || fmt.Contains("strings"))
+                else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || (fmt.Contains("strings") && !fmt.Contains("stringsdict") && !fmt.Contains("xcstrings")))
                 {
                     return $"%{index}.{BuilderDecimalPlaces}f";
                 }
@@ -1845,7 +1850,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
                 {
                     return $"{{{{{pName}, date}}}}";
                 }
-                else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || fmt.Contains("strings"))
+                else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || (fmt.Contains("strings") && !fmt.Contains("stringsdict") && !fmt.Contains("xcstrings")))
                 {
                     return $"%{index}{specifierChar}";
                 }
@@ -1884,7 +1889,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
             {
                 return $"{{{{{pName}}}}}";
             }
-            else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || fmt.Contains("strings"))
+            else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || (fmt.Contains("strings") && !fmt.Contains("stringsdict") && !fmt.Contains("xcstrings")))
             {
                 return $"%{index}{specifierChar}";
             }
@@ -1916,11 +1921,16 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
             {
                 foreach (string p in placeholders)
                 {
+                    string cleanP = p.Trim('{', '}');
+                    int ci = cleanP.IndexOf(':');
+                    if (ci >= 0) cleanP = cleanP.Substring(0, ci);
+                    cleanP = cleanP.Trim();
+
                     AutoCompleteSuggestions.Add(p);
-                    AutoCompleteSuggestions.Add($"{p.Replace("}", ":C}", StringComparison.Ordinal)} (Currency)");
-                    AutoCompleteSuggestions.Add($"{p.Replace("}", ":D}", StringComparison.Ordinal)} (Long Date)");
-                    AutoCompleteSuggestions.Add($"{p.Replace("}", ":d}", StringComparison.Ordinal)} (Short Date)");
-                    AutoCompleteSuggestions.Add($"{p.Replace("}", ":N2}", StringComparison.Ordinal)} (Decimal)");
+                    AutoCompleteSuggestions.Add($"{{{cleanP}:C}} (Currency)");
+                    AutoCompleteSuggestions.Add($"{{{cleanP}:D}} (Long Date)");
+                    AutoCompleteSuggestions.Add($"{{{cleanP}:d}} (Short Date)");
+                    AutoCompleteSuggestions.Add($"{{{cleanP}:N2}} (Decimal)");
                 }
             }
             else
@@ -1928,6 +1938,10 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
                 foreach (string p in placeholders)
                 {
                     string cleanP = p.Trim('{', '}');
+                    int ci = cleanP.IndexOf(',');
+                    if (ci >= 0) cleanP = cleanP.Substring(0, ci);
+                    cleanP = cleanP.Trim();
+
                     AutoCompleteSuggestions.Add(p);
                     AutoCompleteSuggestions.Add($"{{{cleanP}, number, currency}}");
                     AutoCompleteSuggestions.Add($"{{{cleanP}, date, short}}");
@@ -1939,14 +1953,20 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
         {
             foreach (string p in placeholders)
             {
-                string cleanP = p.Trim('%', '$', 's', 'd', '@');
+                string pidx = "";
+                var pidxMatch = Regex.Match(p, @"^%?([0-9]+)\$");
+                if (pidxMatch.Success)
+                {
+                    pidx = pidxMatch.Groups[1].Value + "$";
+                }
+
                 AutoCompleteSuggestions.Add(p);
-                AutoCompleteSuggestions.Add($"%{cleanP}s (String)");
-                AutoCompleteSuggestions.Add($"%{cleanP}d (Integer)");
-                AutoCompleteSuggestions.Add($"%{cleanP}.2f (Decimal)");
+                AutoCompleteSuggestions.Add($"%{pidx}s (String)");
+                AutoCompleteSuggestions.Add($"%{pidx}d (Integer)");
+                AutoCompleteSuggestions.Add($"%{pidx}.2f (Decimal)");
                 if (fmt.Contains("apple"))
                 {
-                    AutoCompleteSuggestions.Add($"%{cleanP}@ (Object/String)");
+                    AutoCompleteSuggestions.Add($"%{pidx}@ (Object/String)");
                 }
             }
         }
