@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Windows.Input;
 using ProTranslate;
 using ProTranslate.Formats;
@@ -222,6 +223,12 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
         ImportFromFileCommand = _importFromFileCommand;
         ExportToFileCommand = _exportToFileCommand;
 
+        ToggleFormatHelperCommand = new RelayCommand(_ => IsFormatHelperVisible = !IsFormatHelperVisible);
+        InsertFormatCommand = new RelayCommand(_ => {
+            RequestInsertText(GeneratedFormatPreview);
+            IsFormatHelperVisible = false;
+        });
+
         // Initialize session
         _currentSession = new TranslationSession
         {
@@ -279,6 +286,8 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
     public ICommand RejectAiSuggestionCommand { get; }
     public ICommand ImportFromFileCommand { get; }
     public ICommand ExportToFileCommand { get; }
+    public ICommand ToggleFormatHelperCommand { get; }
+    public ICommand InsertFormatCommand { get; }
 
     // ==================== Search & Filtering ====================
 
@@ -464,6 +473,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
                 SelectedEntry.TargetText = value;
                 MarkDirty();
                 RaiseMetrics();
+                UpdateSimulation();
             }
         }
     }
@@ -686,6 +696,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
                 entry.Notes,
                 entry.Diagnostics);
             var vm = new CatalogEntryViewModel(catalogEntry);
+            vm.FormatName = session.FormatName;
             vm.PropertyChanged += OnEntryChanged;
             Entries.Add(vm);
         }
@@ -1225,6 +1236,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
         foreach (TranslationCatalogEntry entry in snapshot.Entries)
         {
             var viewModel = new CatalogEntryViewModel(entry);
+            viewModel.FormatName = snapshot.SourceFormat;
             viewModel.PropertyChanged += OnEntryChanged;
             Entries.Add(viewModel);
         }
@@ -1307,6 +1319,7 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
             "Missing target translation value.");
 
         var viewModel = new CatalogEntryViewModel(newEntry);
+        viewModel.FormatName = SourceFormat;
         viewModel.PropertyChanged += OnEntryChanged;
         Entries.Add(viewModel);
 
@@ -1501,6 +1514,8 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(SelectedDiagnostics));
         OnPropertyChanged(nameof(SelectedEntryHasDiagnostics));
         OnPropertyChanged(nameof(SelectedEntryState));
+        UpdateSourcePlaceholders();
+        UpdateSimulation();
     }
 
     private void RaiseLocalizedText()
@@ -1511,5 +1526,461 @@ public sealed class TranslationStudioViewModel : ObservableObject, IDisposable
         {
             LastExportSummary = Strings.ReadyStatus;
         }
+    }
+
+    // ==================== Formatting Syntax Builder, Autocomplete, Simulated Output Preview ====================
+
+    public event EventHandler<string>? InsertTextRequested;
+
+    public void RequestInsertText(string text)
+    {
+        InsertTextRequested?.Invoke(this, text);
+    }
+
+    private readonly ObservableCollection<string> _sourcePlaceholders = new();
+    public ObservableCollection<string> SourcePlaceholders => _sourcePlaceholders;
+
+    private void UpdateSourcePlaceholders()
+    {
+        _sourcePlaceholders.Clear();
+        if (SelectedEntry is not null)
+        {
+            List<string> list = CatalogEntryViewModel.GetPlaceholdersForFormat(SelectedEntry.SourceText, SourceFormat);
+            foreach (string item in list)
+            {
+                _sourcePlaceholders.Add(item);
+            }
+        }
+    }
+
+    private string _simulatedOutputText = string.Empty;
+    public string SimulatedOutputText
+    {
+        get => _simulatedOutputText;
+        private set => SetProperty(ref _simulatedOutputText, value);
+    }
+
+    private string _simulatedOutputSeverity = "Success";
+    public string SimulatedOutputSeverity
+    {
+        get => _simulatedOutputSeverity;
+        private set => SetProperty(ref _simulatedOutputSeverity, value);
+    }
+
+#pragma warning disable CA1031
+    private void UpdateSimulation()
+    {
+        if (SelectedEntry is null || string.IsNullOrWhiteSpace(SelectedTargetText))
+        {
+            SimulatedOutputText = "Enter translation to see live validation and simulated output.";
+            SimulatedOutputSeverity = "Warning";
+            return;
+        }
+
+        string fmt = SourceFormat?.ToLowerInvariant() ?? "";
+        string cultureName = SelectedTargetCulture?.CultureName ?? "en-US";
+
+        CultureInfo culture;
+        try
+        {
+            culture = CultureInfo.GetCultureInfo(cultureName);
+        }
+        catch
+        {
+            culture = CultureInfo.InvariantCulture;
+        }
+
+        try
+        {
+            if (fmt.Contains("resx") || fmt.Contains("protranslate") || fmt.Contains("csv") || fmt.Contains("tsv") || fmt.Contains("xliff"))
+            {
+                var dummyArgs = new object[] { 1234.56, DateTime.Now, "Demo", 42 };
+                string result = string.Format(culture, SelectedTargetText, dummyArgs);
+                SimulatedOutputText = $"Simulated output: \"{result}\"";
+                SimulatedOutputSeverity = "Success";
+            }
+            else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || (fmt.Contains("strings") && !fmt.Contains("stringsdict") && !fmt.Contains("xcstrings")))
+            {
+                string text = SelectedTargetText;
+                string replaced = Regex.Replace(text, @"%(?:([0-9]+)\$)?([-+ #0]*[0-9]*(?:\.[0-9]+)?[lhjztL]*[diouxXeEfFgGaAcsp@%])", match =>
+                {
+                    string specifier = match.Value;
+                    if (specifier.Contains('d') || specifier.Contains('i')) return "123";
+                    if (specifier.Contains('f') || specifier.Contains('g')) return 12.34.ToString("N2", culture);
+                    if (specifier.Contains('s') || specifier.Contains('@')) return "Demo";
+                    return "Value";
+                });
+                SimulatedOutputText = $"Simulated output: \"{replaced}\"";
+                SimulatedOutputSeverity = "Success";
+            }
+            else if (fmt.Contains("i18next"))
+            {
+                string text = SelectedTargetText;
+                string replaced = Regex.Replace(text, @"\{\{([^}]+)\}\}", match =>
+                {
+                    string inner = match.Groups[1].Value.ToLowerInvariant();
+                    if (inner.Contains("number") || inner.Contains("currency")) return 1234.56.ToString("C", culture);
+                    if (inner.Contains("date")) return DateTime.Now.ToString("d", culture);
+                    return "Demo";
+                });
+                SimulatedOutputText = $"Simulated output: \"{replaced}\"";
+                SimulatedOutputSeverity = "Success";
+            }
+            else if (fmt.Contains("flutter") || fmt.Contains("arb") || fmt.Contains("stringsdict") || fmt.Contains("xcstrings"))
+            {
+                string text = SelectedTargetText;
+                if (text.Contains("plural"))
+                {
+                    Match oneMatch = Regex.Match(text, @"one\s*\{([^}]+)\}");
+                    Match otherMatch = Regex.Match(text, @"other\s*\{([^}]+)\}");
+                    
+                    string oneVal = oneMatch.Success ? oneMatch.Groups[1].Value : "1";
+                    string otherVal = otherMatch.Success ? otherMatch.Groups[1].Value : "5";
+                    
+                    oneVal = oneVal.Replace("#", "1", StringComparison.Ordinal);
+                    otherVal = otherVal.Replace("#", "5", StringComparison.Ordinal);
+
+                    SimulatedOutputText = $"Simulated plural: [count=1] → \"{oneVal}\" | [count=5] → \"{otherVal}\"";
+                    SimulatedOutputSeverity = "Success";
+                }
+                else
+                {
+                    string replaced = Regex.Replace(text, @"\{([a-zA-Z_][a-zA-Z0-9_]*)(?:,\s*[a-zA-Z_]+(?:,\s*[^}]+)?)?\}", match =>
+                    {
+                        string inner = match.Value.ToLowerInvariant();
+                        if (inner.Contains("number")) return 1234.56.ToString("N", culture);
+                        if (inner.Contains("date")) return DateTime.Now.ToString("d", culture);
+                        return "Demo";
+                    });
+                    SimulatedOutputText = $"Simulated output: \"{replaced}\"";
+                    SimulatedOutputSeverity = "Success";
+                }
+            }
+            else
+            {
+                SimulatedOutputText = $"Translation: \"{SelectedTargetText}\"";
+                SimulatedOutputSeverity = "Success";
+            }
+        }
+        catch (Exception ex)
+        {
+            SimulatedOutputText = $"Syntax Warning: {ex.Message}";
+            SimulatedOutputSeverity = "Error";
+        }
+    }
+#pragma warning restore CA1031
+
+    private bool _isFormatHelperVisible;
+    public bool IsFormatHelperVisible
+    {
+        get => _isFormatHelperVisible;
+        set => SetProperty(ref _isFormatHelperVisible, value);
+    }
+
+    private string _selectedBuilderPlaceholder = string.Empty;
+    public string SelectedBuilderPlaceholder
+    {
+        get => _selectedBuilderPlaceholder;
+        set
+        {
+            if (SetProperty(ref _selectedBuilderPlaceholder, value))
+            {
+                OnPropertyChanged(nameof(GeneratedFormatPreview));
+            }
+        }
+    }
+
+    private string _builderFormatType = "Text"; // Text, Number, Date, Plural, Select
+    public string BuilderFormatType
+    {
+        get => _builderFormatType;
+        set
+        {
+            if (SetProperty(ref _builderFormatType, value))
+            {
+                OnPropertyChanged(nameof(GeneratedFormatPreview));
+            }
+        }
+    }
+
+    private int _builderDecimalPlaces = 2;
+    public int BuilderDecimalPlaces
+    {
+        get => _builderDecimalPlaces;
+        set
+        {
+            if (SetProperty(ref _builderDecimalPlaces, value))
+            {
+                OnPropertyChanged(nameof(GeneratedFormatPreview));
+            }
+        }
+    }
+
+    private string _builderCurrencySymbol = "$";
+    public string BuilderCurrencySymbol
+    {
+        get => _builderCurrencySymbol;
+        set
+        {
+            if (SetProperty(ref _builderCurrencySymbol, value))
+            {
+                OnPropertyChanged(nameof(GeneratedFormatPreview));
+            }
+        }
+    }
+
+    private bool _builderPercentage;
+    public bool BuilderPercentage
+    {
+        get => _builderPercentage;
+        set
+        {
+            if (SetProperty(ref _builderPercentage, value))
+            {
+                OnPropertyChanged(nameof(GeneratedFormatPreview));
+            }
+        }
+    }
+
+    private string _builderDatePattern = "yyyy-MM-dd";
+    public string BuilderDatePattern
+    {
+        get => _builderDatePattern;
+        set
+        {
+            if (SetProperty(ref _builderDatePattern, value))
+            {
+                OnPropertyChanged(nameof(GeneratedFormatPreview));
+            }
+        }
+    }
+
+    private string _builderPluralZero = string.Empty;
+    private string _builderPluralOne = string.Empty;
+    private string _builderPluralTwo = string.Empty;
+    private string _builderPluralFew = string.Empty;
+    private string _builderPluralMany = string.Empty;
+    private string _builderPluralOther = string.Empty;
+
+    public string BuilderPluralZero { get => _builderPluralZero; set { if (SetProperty(ref _builderPluralZero, value)) OnPropertyChanged(nameof(GeneratedFormatPreview)); } }
+    public string BuilderPluralOne { get => _builderPluralOne; set { if (SetProperty(ref _builderPluralOne, value)) OnPropertyChanged(nameof(GeneratedFormatPreview)); } }
+    public string BuilderPluralTwo { get => _builderPluralTwo; set { if (SetProperty(ref _builderPluralTwo, value)) OnPropertyChanged(nameof(GeneratedFormatPreview)); } }
+    public string BuilderPluralFew { get => _builderPluralFew; set { if (SetProperty(ref _builderPluralFew, value)) OnPropertyChanged(nameof(GeneratedFormatPreview)); } }
+    public string BuilderPluralMany { get => _builderPluralMany; set { if (SetProperty(ref _builderPluralMany, value)) OnPropertyChanged(nameof(GeneratedFormatPreview)); } }
+    public string BuilderPluralOther { get => _builderPluralOther; set { if (SetProperty(ref _builderPluralOther, value)) OnPropertyChanged(nameof(GeneratedFormatPreview)); } }
+
+    private string _builderSelectKey1 = "male";
+    private string _builderSelectVal1 = string.Empty;
+    private string _builderSelectKey2 = "female";
+    private string _builderSelectVal2 = string.Empty;
+    private string _builderSelectOther = string.Empty;
+
+    public string BuilderSelectKey1 { get => _builderSelectKey1; set { if (SetProperty(ref _builderSelectKey1, value)) OnPropertyChanged(nameof(GeneratedFormatPreview)); } }
+    public string BuilderSelectVal1 { get => _builderSelectVal1; set { if (SetProperty(ref _builderSelectVal1, value)) OnPropertyChanged(nameof(GeneratedFormatPreview)); } }
+    public string BuilderSelectKey2 { get => _builderSelectKey2; set { if (SetProperty(ref _builderSelectKey2, value)) OnPropertyChanged(nameof(GeneratedFormatPreview)); } }
+    public string BuilderSelectVal2 { get => _builderSelectVal2; set { if (SetProperty(ref _builderSelectVal2, value)) OnPropertyChanged(nameof(GeneratedFormatPreview)); } }
+    public string BuilderSelectOther { get => _builderSelectOther; set { if (SetProperty(ref _builderSelectOther, value)) OnPropertyChanged(nameof(GeneratedFormatPreview)); } }
+
+    public string GeneratedFormatPreview
+    {
+        get
+        {
+            string rawPlaceholder = SelectedBuilderPlaceholder;
+            if (string.IsNullOrEmpty(rawPlaceholder))
+            {
+                rawPlaceholder = SourcePlaceholders.FirstOrDefault() ?? "0";
+            }
+            string pName = rawPlaceholder.Trim('{', '}', '%');
+            int colonIdx = pName.IndexOf(':');
+            if (colonIdx >= 0) pName = pName.Substring(0, colonIdx);
+            int commaIdx = pName.IndexOf(',');
+            if (commaIdx >= 0) pName = pName.Substring(0, commaIdx);
+            pName = pName.Trim();
+
+            string fmt = SourceFormat?.ToLowerInvariant() ?? "";
+
+            string index = "";
+            char specifierChar = 's';
+            if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || (fmt.Contains("strings") && !fmt.Contains("stringsdict") && !fmt.Contains("xcstrings")))
+            {
+                var match = Regex.Match(rawPlaceholder, @"^%?([0-9]+)\$");
+                if (match.Success)
+                {
+                    index = match.Groups[1].Value + "$";
+                }
+                if (rawPlaceholder.EndsWith("@", StringComparison.Ordinal))
+                {
+                    specifierChar = '@';
+                }
+                else if (rawPlaceholder.EndsWith("d", StringComparison.Ordinal) || rawPlaceholder.EndsWith("i", StringComparison.Ordinal))
+                {
+                    specifierChar = 'd';
+                }
+            }
+
+            if (BuilderFormatType == "Number")
+            {
+                if (fmt.Contains("resx") || fmt.Contains("protranslate") || fmt.Contains("csv") || fmt.Contains("tsv") || fmt.Contains("xliff"))
+                {
+                    if (BuilderPercentage) return $"{{{pName}:P{BuilderDecimalPlaces}}}";
+                    return $"{{{pName}:C{BuilderDecimalPlaces}}}";
+                }
+                else if (fmt.Contains("i18next"))
+                {
+                    if (BuilderPercentage) return $"{{{{{pName}, percent}}}}";
+                    return $"{{{{{pName}, number}}}}";
+                }
+                else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || (fmt.Contains("strings") && !fmt.Contains("stringsdict") && !fmt.Contains("xcstrings")))
+                {
+                    return $"%{index}.{BuilderDecimalPlaces}f";
+                }
+                else
+                {
+                    if (BuilderPercentage) return $"{{{pName}, number, percent}}";
+                    return $"{{{pName}, number, currency}}";
+                }
+            }
+            else if (BuilderFormatType == "Date")
+            {
+                if (fmt.Contains("resx") || fmt.Contains("protranslate") || fmt.Contains("csv") || fmt.Contains("tsv") || fmt.Contains("xliff"))
+                {
+                    return $"{{{pName}:{BuilderDatePattern}}}";
+                }
+                else if (fmt.Contains("i18next"))
+                {
+                    return $"{{{{{pName}, date}}}}";
+                }
+                else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || (fmt.Contains("strings") && !fmt.Contains("stringsdict") && !fmt.Contains("xcstrings")))
+                {
+                    return $"%{index}{specifierChar}";
+                }
+                else
+                {
+                    return $"{{{pName}, date, {BuilderDatePattern}}}";
+                }
+            }
+            else if (BuilderFormatType == "Plural")
+            {
+                var builder = new System.Text.StringBuilder();
+                builder.Append('{').Append(pName).Append(", plural,");
+                if (!string.IsNullOrEmpty(BuilderPluralZero)) builder.Append(" zero {").Append(BuilderPluralZero).Append('}');
+                if (!string.IsNullOrEmpty(BuilderPluralOne)) builder.Append(" one {").Append(BuilderPluralOne).Append('}');
+                if (!string.IsNullOrEmpty(BuilderPluralTwo)) builder.Append(" two {").Append(BuilderPluralTwo).Append('}');
+                if (!string.IsNullOrEmpty(BuilderPluralFew)) builder.Append(" few {").Append(BuilderPluralFew).Append('}');
+                if (!string.IsNullOrEmpty(BuilderPluralMany)) builder.Append(" many {").Append(BuilderPluralMany).Append('}');
+                builder.Append(" other {").Append(string.IsNullOrEmpty(BuilderPluralOther) ? "Value" : BuilderPluralOther).Append('}');
+                builder.Append('}');
+                return builder.ToString();
+            }
+            else if (BuilderFormatType == "Select")
+            {
+                var builder = new System.Text.StringBuilder();
+                builder.Append('{').Append(pName).Append(", select,");
+                if (!string.IsNullOrEmpty(BuilderSelectKey1) && !string.IsNullOrEmpty(BuilderSelectVal1))
+                    builder.Append(' ').Append(BuilderSelectKey1).Append(" {").Append(BuilderSelectVal1).Append('}');
+                if (!string.IsNullOrEmpty(BuilderSelectKey2) && !string.IsNullOrEmpty(BuilderSelectVal2))
+                    builder.Append(' ').Append(BuilderSelectKey2).Append(" {").Append(BuilderSelectVal2).Append('}');
+                builder.Append(" other {").Append(string.IsNullOrEmpty(BuilderSelectOther) ? "Value" : BuilderSelectOther).Append('}');
+                builder.Append('}');
+                return builder.ToString();
+            }
+
+            if (fmt.Contains("i18next"))
+            {
+                return $"{{{{{pName}}}}}";
+            }
+            else if (fmt.Contains("po") || fmt.Contains("pot") || fmt.Contains("android") || fmt.Contains("apple") || (fmt.Contains("strings") && !fmt.Contains("stringsdict") && !fmt.Contains("xcstrings")))
+            {
+                return $"%{index}{specifierChar}";
+            }
+            else
+            {
+                return $"{{{pName}}}";
+            }
+        }
+    }
+
+    private bool _showAutoComplete;
+    public bool ShowAutoComplete
+    {
+        get => _showAutoComplete;
+        set => SetProperty(ref _showAutoComplete, value);
+    }
+
+    public ObservableCollection<string> AutoCompleteSuggestions { get; } = new();
+
+    public void TriggerSuggestions(string triggerText)
+    {
+        AutoCompleteSuggestions.Clear();
+        string fmt = SourceFormat?.ToLowerInvariant() ?? "";
+        List<string> placeholders = SourcePlaceholders.ToList();
+
+        if (triggerText == "{")
+        {
+            if (fmt.Contains("resx") || fmt.Contains("protranslate") || fmt.Contains("csv") || fmt.Contains("tsv") || fmt.Contains("xliff"))
+            {
+                foreach (string p in placeholders)
+                {
+                    string cleanP = p.Trim('{', '}');
+                    int ci = cleanP.IndexOf(':');
+                    if (ci >= 0) cleanP = cleanP.Substring(0, ci);
+                    cleanP = cleanP.Trim();
+
+                    AutoCompleteSuggestions.Add(p);
+                    AutoCompleteSuggestions.Add($"{{{cleanP}:C}} (Currency)");
+                    AutoCompleteSuggestions.Add($"{{{cleanP}:D}} (Long Date)");
+                    AutoCompleteSuggestions.Add($"{{{cleanP}:d}} (Short Date)");
+                    AutoCompleteSuggestions.Add($"{{{cleanP}:N2}} (Decimal)");
+                }
+            }
+            else
+            {
+                foreach (string p in placeholders)
+                {
+                    string cleanP = p.Trim('{', '}');
+                    int ci = cleanP.IndexOf(',');
+                    if (ci >= 0) cleanP = cleanP.Substring(0, ci);
+                    cleanP = cleanP.Trim();
+
+                    AutoCompleteSuggestions.Add(p);
+                    AutoCompleteSuggestions.Add($"{{{cleanP}, number, currency}}");
+                    AutoCompleteSuggestions.Add($"{{{cleanP}, date, short}}");
+                    AutoCompleteSuggestions.Add($"{{{cleanP}, plural, one {{1 item}} other {{# items}}}}");
+                }
+            }
+        }
+        else if (triggerText == "%")
+        {
+            foreach (string p in placeholders)
+            {
+                string pidx = "";
+                var pidxMatch = Regex.Match(p, @"^%?([0-9]+)\$");
+                if (pidxMatch.Success)
+                {
+                    pidx = pidxMatch.Groups[1].Value + "$";
+                }
+
+                AutoCompleteSuggestions.Add(p);
+                AutoCompleteSuggestions.Add($"%{pidx}s (String)");
+                AutoCompleteSuggestions.Add($"%{pidx}d (Integer)");
+                AutoCompleteSuggestions.Add($"%{pidx}.2f (Decimal)");
+                if (fmt.Contains("apple"))
+                {
+                    AutoCompleteSuggestions.Add($"%{pidx}@ (Object/String)");
+                }
+            }
+        }
+        else if (triggerText == "{{")
+        {
+            foreach (string p in placeholders)
+            {
+                string cleanP = p.Trim('{', '}');
+                AutoCompleteSuggestions.Add(p);
+                AutoCompleteSuggestions.Add($"{{{{{cleanP}, number}}}}");
+                AutoCompleteSuggestions.Add($"{{{{{cleanP}, date}}}}");
+            }
+        }
+
+        ShowAutoComplete = AutoCompleteSuggestions.Count > 0;
     }
 }

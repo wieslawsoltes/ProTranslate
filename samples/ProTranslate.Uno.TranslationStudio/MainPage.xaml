@@ -483,7 +483,7 @@
 
       <!-- ==================== RIGHT PANEL ==================== -->
       <Border Grid.Column="2" Style="{StaticResource StudioCardStyle}">
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,8,0">
           <StackPanel Spacing="10">
 
             <!-- Key header -->
@@ -514,15 +514,288 @@
                            FontSize="12" Foreground="#334155" TextWrapping="Wrap" />
               </Border>
             </StackPanel>
-
+            
             <!-- Target edit -->
             <StackPanel Spacing="3">
+              
+              <!-- Source Placeholders Wrap Panel & Format Helper Button -->
+              <Grid Margin="0,4,0,2">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <!-- Placeholders -->
+                <ItemsControl ItemsSource="{x:Bind ViewModel.SourcePlaceholders, Mode=OneWay}" Margin="0,0,8,0">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <ItemsStackPanel Orientation="Horizontal" VerticalAlignment="Center" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                      <Button Click="OnPlaceholderChipClick" Margin="0,2,6,2" Height="26" CornerRadius="6"
+                              Background="#F5F3FF" BorderBrush="#DDD6FE" BorderThickness="1" Padding="6,2">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                          <FontIcon Glyph="&#xE946;" FontSize="9" Foreground="#7C3AED" />
+                          <TextBlock Text="{x:Bind}" FontSize="10" FontWeight="Bold" Foreground="#6D28D9" />
+                        </StackPanel>
+                      </Button>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                
+                <!-- Format Helper Toggle Button -->
+                <Button Grid.Column="1" Command="{x:Bind ViewModel.ToggleFormatHelperCommand, Mode=OneWay}"
+                        Height="26" CornerRadius="6" Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" Padding="8,2">
+                  <StackPanel Orientation="Horizontal" Spacing="4">
+                    <FontIcon Glyph="&#xE945;" FontSize="10" Foreground="#7C3AED" />
+                    <TextBlock Text="Format Helper" FontSize="10" FontWeight="Bold" Foreground="#475569" />
+                  </StackPanel>
+                </Button>
+              </Grid>
+
+              <!-- Collapsable Format Syntax Builder Panel -->
+              <Border Visibility="{x:Bind local:MainPage.VisibleIf(ViewModel.IsFormatHelperVisible), Mode=OneWay}"
+                      Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Padding="12" Margin="0,4">
+                <StackPanel Spacing="10">
+                  <!-- Header -->
+                  <Grid>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="*" />
+                      <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <FontIcon Glyph="&#xE945;" FontSize="14" Foreground="#7C3AED" />
+                      <TextBlock Text="Format Syntax Builder" FontSize="12" FontWeight="ExtraBold" Foreground="#0F172A" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Command="{x:Bind ViewModel.ToggleFormatHelperCommand, Mode=OneWay}"
+                            Height="24" Width="24" Padding="0" CornerRadius="6" Background="Transparent" BorderThickness="0" HorizontalAlignment="Right">
+                      <FontIcon Glyph="&#xE711;" FontSize="11" Foreground="#64748B" />
+                    </Button>
+                  </Grid>
+                  
+                  <StackPanel Spacing="8">
+                    <!-- Step 1: Select Placeholder -->
+                    <StackPanel Spacing="3">
+                      <TextBlock Text="1. PLACEHOLDER VARIABLE" FontSize="9" FontWeight="ExtraBold" Foreground="#64748B" />
+                      <ComboBox HorizontalAlignment="Stretch" CornerRadius="4" Height="32"
+                                ItemsSource="{x:Bind ViewModel.SourcePlaceholders, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedBuilderPlaceholder, Mode=TwoWay}"
+                                PlaceholderText="Select variable..." />
+                    </StackPanel>
+                    
+                    <!-- Step 2: Select Format Type -->
+                    <StackPanel Spacing="3">
+                      <TextBlock Text="2. FORMAT TYPE" FontSize="9" FontWeight="ExtraBold" Foreground="#64748B" />
+                      <ComboBox HorizontalAlignment="Stretch" CornerRadius="4" Height="32"
+                                SelectedItem="{x:Bind ViewModel.BuilderFormatType, Mode=TwoWay}">
+                        <x:String>Text</x:String>
+                        <x:String>Number</x:String>
+                        <x:String>Date</x:String>
+                        <x:String>Plural</x:String>
+                        <x:String>Select</x:String>
+                      </ComboBox>
+                    </StackPanel>
+                  </StackPanel>
+
+                  <!-- Dynamic Builder Configuration Panels -->
+                  
+                  <!-- Number Panel -->
+                  <StackPanel Spacing="8" Visibility="{x:Bind local:MainPage.VisibleIfType(ViewModel.BuilderFormatType, 'Number'), Mode=OneWay}">
+                    <Border BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Padding="0,8,0,0" />
+                    <TextBlock Text="NUMBER CONFIGURATION" FontSize="9" FontWeight="ExtraBold" Foreground="#7C3AED" />
+                    <Grid RowSpacing="6">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                      </Grid.ColumnDefinitions>
+                      <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                      </Grid.RowDefinitions>
+                      
+                      <StackPanel Spacing="3" Margin="0,0,4,0">
+                        <TextBlock Text="Decimal Places" FontSize="9.5" FontWeight="SemiBold" Foreground="#334155" />
+                        <ComboBox SelectedItem="{x:Bind ViewModel.BuilderDecimalPlaces, Mode=TwoWay}" Height="32" HorizontalAlignment="Stretch" CornerRadius="4">
+                          <x:Int32>0</x:Int32>
+                          <x:Int32>1</x:Int32>
+                          <x:Int32>2</x:Int32>
+                          <x:Int32>3</x:Int32>
+                          <x:Int32>4</x:Int32>
+                        </ComboBox>
+                      </StackPanel>
+                      
+                      <StackPanel Grid.Column="1" Spacing="3" Margin="4,0,0,0">
+                        <TextBlock Text="Currency Symbol" FontSize="9.5" FontWeight="SemiBold" Foreground="#334155" />
+                        <TextBox Text="{x:Bind ViewModel.BuilderCurrencySymbol, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="32" CornerRadius="4" Padding="8,3" />
+                      </StackPanel>
+                      
+                      <CheckBox Grid.Row="1" Grid.ColumnSpan="2" Content="Percentage" IsChecked="{x:Bind ViewModel.BuilderPercentage, Mode=TwoWay}" VerticalAlignment="Center" Margin="0,4,0,0" />
+                    </Grid>
+                  </StackPanel>
+                  
+                  <!-- Date Panel -->
+                  <StackPanel Spacing="8" Visibility="{x:Bind local:MainPage.VisibleIfType(ViewModel.BuilderFormatType, 'Date'), Mode=OneWay}">
+                    <Border BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Padding="0,8,0,0" />
+                    <TextBlock Text="DATE CONFIGURATION" FontSize="9" FontWeight="ExtraBold" Foreground="#7C3AED" />
+                    <StackPanel Spacing="3">
+                      <TextBlock Text="Date Pattern / Format" FontSize="9.5" FontWeight="SemiBold" Foreground="#334155" />
+                      <ComboBox SelectedItem="{x:Bind ViewModel.BuilderDatePattern, Mode=TwoWay}" Height="32" HorizontalAlignment="Stretch" CornerRadius="4">
+                        <x:String>yyyy-MM-dd</x:String>
+                        <x:String>MM/dd/yyyy</x:String>
+                        <x:String>dd/MM/yyyy</x:String>
+                        <x:String>HH:mm:ss</x:String>
+                        <x:String>yyyy-MM-dd HH:mm:ss</x:String>
+                        <x:String>d</x:String>
+                        <x:String>D</x:String>
+                      </ComboBox>
+                    </StackPanel>
+                  </StackPanel>
+                  
+                  <!-- Plural Panel -->
+                  <StackPanel Spacing="8" Visibility="{x:Bind local:MainPage.VisibleIfType(ViewModel.BuilderFormatType, 'Plural'), Mode=OneWay}">
+                    <Border BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Padding="0,8,0,0" />
+                    <TextBlock Text="PLURAL CONFIGURATION (ICU/ARB ONLY)" FontSize="9" FontWeight="ExtraBold" Foreground="#7C3AED" />
+                    <Grid RowSpacing="6">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                      </Grid.ColumnDefinitions>
+                      <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                      </Grid.RowDefinitions>
+                      <StackPanel Spacing="2" Margin="0,0,4,0">
+                        <TextBlock Text="Zero" FontSize="9" Foreground="#475569" />
+                        <TextBox Text="{x:Bind ViewModel.BuilderPluralZero, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="32" CornerRadius="4" Padding="8,3" />
+                      </StackPanel>
+                      <StackPanel Grid.Column="1" Spacing="2" Margin="4,0,0,0">
+                        <TextBlock Text="One" FontSize="9" Foreground="#475569" />
+                        <TextBox Text="{x:Bind ViewModel.BuilderPluralOne, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="32" CornerRadius="4" Padding="8,3" />
+                      </StackPanel>
+                      <StackPanel Grid.Row="1" Spacing="2" Margin="0,0,4,0">
+                        <TextBlock Text="Two" FontSize="9" Foreground="#475569" />
+                        <TextBox Text="{x:Bind ViewModel.BuilderPluralTwo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="32" CornerRadius="4" Padding="8,3" />
+                      </StackPanel>
+                      <StackPanel Grid.Row="1" Grid.Column="1" Spacing="2" Margin="4,0,0,0">
+                        <TextBlock Text="Few" FontSize="9" Foreground="#475569" />
+                        <TextBox Text="{x:Bind ViewModel.BuilderPluralFew, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="32" CornerRadius="4" Padding="8,3" />
+                      </StackPanel>
+                      <StackPanel Grid.Row="2" Spacing="2" Margin="0,0,4,0">
+                        <TextBlock Text="Many" FontSize="9" Foreground="#475569" />
+                        <TextBox Text="{x:Bind ViewModel.BuilderPluralMany, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="32" CornerRadius="4" Padding="8,3" />
+                      </StackPanel>
+                      <StackPanel Grid.Row="2" Grid.Column="1" Spacing="2" Margin="4,0,0,0">
+                        <TextBlock Text="Other (Required)" FontSize="9" Foreground="#475569" />
+                        <TextBox Text="{x:Bind ViewModel.BuilderPluralOther, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="32" CornerRadius="4" Padding="8,3" />
+                      </StackPanel>
+                    </Grid>
+                  </StackPanel>
+                  
+                  <!-- Select Panel -->
+                  <StackPanel Spacing="8" Visibility="{x:Bind local:MainPage.VisibleIfType(ViewModel.BuilderFormatType, 'Select'), Mode=OneWay}">
+                    <Border BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Padding="0,8,0,0" />
+                    <TextBlock Text="SELECT/GENDER CONFIGURATION (ICU/ARB ONLY)" FontSize="9" FontWeight="ExtraBold" Foreground="#7C3AED" />
+                    <Grid RowSpacing="6">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="*" />
+                      </Grid.ColumnDefinitions>
+                      <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                      </Grid.RowDefinitions>
+                      
+                      <TextBox Text="{x:Bind ViewModel.BuilderSelectKey1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="32" CornerRadius="4" PlaceholderText="male" Padding="8,3" Margin="0,0,6,0" />
+                      <TextBox Grid.Column="1" Text="{x:Bind ViewModel.BuilderSelectVal1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="32" CornerRadius="4" PlaceholderText="Value if matches key 1..." Padding="8,3" Margin="6,0,0,0" />
+                      
+                      <TextBox Grid.Row="1" Text="{x:Bind ViewModel.BuilderSelectKey2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="32" CornerRadius="4" PlaceholderText="female" Padding="8,3" Margin="0,0,6,0" />
+                      <TextBox Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.BuilderSelectVal2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="32" CornerRadius="4" PlaceholderText="Value if matches key 2..." Padding="8,3" Margin="6,0,0,0" />
+                      
+                      <TextBlock Grid.Row="2" Text="other" FontSize="10" VerticalAlignment="Center" FontWeight="Bold" Foreground="#475569" HorizontalAlignment="Center" Margin="0,0,6,0" />
+                      <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.BuilderSelectOther, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="32" CornerRadius="4" PlaceholderText="Value if no other keys match..." Padding="8,3" Margin="6,0,0,0" />
+                    </Grid>
+                  </StackPanel>
+                  
+                  <!-- Live Preview & Insert Action -->
+                  <Border BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Padding="0,10,0,0">
+                    <Grid>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                      </Grid.ColumnDefinitions>
+                      <StackPanel Spacing="1" VerticalAlignment="Center" Margin="0,0,8,0">
+                        <TextBlock Text="GENERATED SYNTAX PREVIEW" FontSize="8.5" FontWeight="ExtraBold" Foreground="#64748B" />
+                        <TextBlock Text="{x:Bind ViewModel.GeneratedFormatPreview, Mode=OneWay}" FontSize="11.5" FontWeight="Bold" FontFamily="Consolas" Foreground="#7C3AED" TextWrapping="Wrap" />
+                      </StackPanel>
+                      <Button Grid.Column="1" Command="{x:Bind ViewModel.InsertFormatCommand, Mode=OneWay}"
+                              Height="32" CornerRadius="8" Background="#7C3AED" BorderThickness="0" Padding="12,0" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                          <FontIcon Glyph="&#xE73E;" FontSize="11" Foreground="White" />
+                          <TextBlock Text="Insert" FontSize="11" FontWeight="Bold" Foreground="White" />
+                        </StackPanel>
+                      </Button>
+                    </Grid>
+                  </Border>
+                </StackPanel>
+              </Border>
+
               <TextBlock Text="TRANSLATION" FontSize="9" FontWeight="ExtraBold" CharacterSpacing="80"
                          Foreground="{StaticResource StudioMutedTextBrush}" />
-              <TextBox Text="{x:Bind ViewModel.SelectedTargetText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                       AcceptsReturn="True" TextWrapping="Wrap"
-                       MinHeight="60" CornerRadius="8" FontSize="12" Padding="10,8" />
+              
+              <!-- TextBox & Floating Autocomplete Grid -->
+              <Grid>
+                <TextBox x:Name="TargetTextBox"
+                         Text="{x:Bind ViewModel.SelectedTargetText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         TextChanged="OnTargetTextBoxTextChanged"
+                         AcceptsReturn="True" TextWrapping="Wrap"
+                         MinHeight="70" CornerRadius="8" FontSize="12" Padding="10,8" />
+                         
+                <!-- Auto-Complete Popover / Suggestion Bar -->
+                <Border Visibility="{x:Bind local:MainPage.VisibleIf(ViewModel.ShowAutoComplete), Mode=OneWay}"
+                        Background="White" BorderBrush="#7C3AED" BorderThickness="1.5" CornerRadius="8"
+                        MaxHeight="140" Width="260" HorizontalAlignment="Left" VerticalAlignment="Top"
+                        Margin="10,66,0,0" Canvas.ZIndex="1000">
+                  <Grid RowSpacing="4" Padding="4">
+                    <Grid.RowDefinitions>
+                      <RowDefinition Height="Auto" />
+                      <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Suggestions (Press Enter or Double Click)" FontSize="8.5" FontWeight="Bold" Foreground="#7C3AED" Padding="4,2" />
+                    <ListView Grid.Row="1" ItemsSource="{x:Bind ViewModel.AutoCompleteSuggestions, Mode=OneWay}"
+                              SelectionMode="Single" Height="100" Padding="0"
+                              DoubleTapped="OnAutoCompleteListDoubleTapped"
+                              KeyDown="OnAutoCompleteListKeyDown">
+                      <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                          <TextBlock Text="{x:Bind}" FontSize="10.5" FontFamily="Consolas" Padding="4,2" Foreground="#334155" />
+                        </DataTemplate>
+                      </ListView.ItemTemplate>
+                    </ListView>
+                  </Grid>
+                </Border>
+              </Grid>
             </StackPanel>
+
+            <!-- Live Simulated Output Preview & Validation -->
+            <Border Background="{x:Bind local:MainPage.GetSeverityBgBrush(ViewModel.SimulatedOutputSeverity), Mode=OneWay}"
+                    BorderBrush="{x:Bind local:MainPage.GetSeverityBorderBrush(ViewModel.SimulatedOutputSeverity), Mode=OneWay}"
+                    BorderThickness="1" CornerRadius="8" Padding="10,8">
+              <StackPanel Spacing="4">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <FontIcon Glyph="{x:Bind local:MainPage.GetSeverityIcon(ViewModel.SimulatedOutputSeverity), Mode=OneWay}"
+                            Foreground="{x:Bind local:MainPage.GetSeverityBorderBrush(ViewModel.SimulatedOutputSeverity), Mode=OneWay}"
+                            FontSize="12" />
+                  <TextBlock Text="LIVE SIMULATED PREVIEW &amp; VALIDATION" FontSize="8.5" FontWeight="Bold"
+                             Foreground="{x:Bind local:MainPage.GetSeverityBorderBrush(ViewModel.SimulatedOutputSeverity), Mode=OneWay}" />
+                </StackPanel>
+                <TextBlock Text="{x:Bind ViewModel.SimulatedOutputText, Mode=OneWay}"
+                           FontSize="11.5" FontWeight="SemiBold" Foreground="#334155" TextWrapping="Wrap" />
+              </StackPanel>
+            </Border>
 
             <!-- Notes -->
             <StackPanel Spacing="3">
