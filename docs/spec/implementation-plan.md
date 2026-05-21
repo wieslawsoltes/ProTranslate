@@ -21,10 +21,10 @@ This keeps implementation work auditable before code is written and gives review
 | 2 Provider Implementations | Implemented | In-memory, composite, `ResourceManager`, and `IStringLocalizer` providers exist. Provider/format failure diagnostics, throw/continue policies, cache policy options, and explicit cache invalidation exist. Richer provider traces remain planned. |
 | 3 Formatting, Region, And Units | Implemented | Formatting uses `string.Format`; reusable region profile, measurement resolver, unit conversion, and localized unit formatter services exist with region and measurement overrides. Custom formatter extension points remain planned. |
 | 4 Source Generation And Analyzers | Implemented | Source generator emits key constants, get/value/format/observe accessors, bindable strings, generated JSON provider code, and provider manifests from text and JSON catalogs. Analyzer package reports missing keys, placeholder mismatches, coverage gaps, dynamic keys, and invalid catalogs. |
-| 5 Avalonia Adapter | Implemented | `T`/`Translate`, `F`/`Format`, attached key/fallback/string-format/culture/flow-direction properties, binding-source refresh, sample, smoke/runtime tests, and release-only leak tests exist. |
-| 6 WPF Adapter | Implemented | Adapter, default XML namespace mapping, and sample exist; Windows CI validates the sample build. UI automation and leak tests remain planned. |
-| 7 MAUI Adapter | Implemented | Adapter, shared ProTranslate XAML URI, and sample exist; macOS CI/local validation covers the Mac Catalyst path when workloads are installed. Broader platform lifecycle tests remain planned. |
-| 8 WinUI And Uno Adapters | Implemented | Adapters and samples exist; Uno emits a shared URI mapping, WinUI uses `using:` because assembly `XmlnsDefinition` is unsupported, and Windows CI validates real XAML sample builds. Platform-specific runtime testing remains planned. |
+| 5 Avalonia Adapter | Implemented | `T`/`Translate`, `F`/`Format`, attached key/fallback/string-format/culture/flow-direction properties, binding-source refresh, sample, smoke/runtime tests, and DataGrid-style release-only headless leak tests exist. |
+| 6 WPF Adapter | Implemented | Adapter, default XML namespace mapping, sample, and Windows-only binding-source/static-source leak tests exist; Windows CI validates the sample build. UI automation remains planned. |
+| 7 MAUI Adapter | Implemented | Adapter, shared ProTranslate XAML URI, sample, and reflection-based Mac Catalyst adapter leak tests exist; macOS CI/local validation covers the Mac Catalyst path when workloads are installed. Broader mobile lifecycle tests remain planned. |
+| 8 WinUI And Uno Adapters | Implemented | Adapters, samples, Windows-only WinUI lifetime leak tests, and cross-platform Uno non-visual lifetime leak tests exist; Uno emits a shared URI mapping, WinUI uses `using:` because assembly `XmlnsDefinition` is unsupported, and Windows CI validates real XAML sample builds. Platform-specific runtime UI testing remains planned. |
 | 9 Documentation, Samples, And Release | Implemented | README/spec/site/sample validation docs, release checklist, package release notes, migration guide, docs workflow, analyzer test CI, sample CI, and pack workflow are present. |
 | 10 Translation Format Tooling And Uno Authoring | Initial implementation | `ProTranslate.Formats` and Uno Translation Studio surfaces exist for loss-aware import/export and authoring. Broader round-trip, diagnostics, and UI validation remain hardening work. |
 
@@ -220,7 +220,7 @@ Edge cases:
 
 Validate:
 - headless Avalonia tests for markup extension refresh
-- release-only leak tests for detached targets
+- release-only DataGrid-style headless leak tests for detached targets, window lifecycle cleanup, source replacement, source subscription cleanup, and automatic flow-direction targets
 - compiled binding sample
 - `FlowDirection` switch sample
 
@@ -242,7 +242,7 @@ Outputs:
 Constraints:
 - stay WPF-only
 - use WPF binding refresh paths
-- broader dispatcher and memory-retention guarantees remain planned
+- run leak tests on Windows
 
 Edge cases:
 - resource lookup during design mode
@@ -252,9 +252,9 @@ Edge cases:
 
 Validate:
 - Windows CI sample build
+- Windows-only leak tests for binding-source disposal, service replacement, static source replacement, and attached target weak tracking
 - planned WPF UI tests or integration harness
 - culture switch sample
-- planned memory retention tests
 
 ## Phase 7: MAUI Adapter
 
@@ -283,6 +283,7 @@ Edge cases:
 
 Validate:
 - MAUI Mac Catalyst sample build on macOS when workloads are installed
+- reflection-based leak tests against the built Mac Catalyst adapter assembly for binding-source disposal, service replacement, static source replacement, and MAUI attached label target weak tracking
 - planned lifecycle refresh tests where practical
 - package validation
 
@@ -315,6 +316,8 @@ Edge cases:
 Validate:
 - WinUI sample build on Windows CI
 - Uno sample build on Windows CI
+- WinUI Windows-only binding-source/static-source leak tests
+- Uno cross-platform non-visual binding-source/static-source leak tests
 - planned Uno Skia or WebAssembly runtime validation
 - `x:Bind` sample compile check on Windows CI
 

@@ -1,0 +1,113 @@
+using System.Globalization;
+using System.Runtime.CompilerServices;
+
+namespace ProTranslate.Uno.Tests;
+
+public sealed class UnoAdapterLeakTests
+{
+    [ReleaseFact]
+    public void DisposedBindingSourceIsReleasedByTranslationService()
+    {
+        var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
+        var service = CreateTranslationService(cultures);
+
+        WeakReference weak = CreateDisposedBindingSource(service, cultures);
+
+        LeakTestHelpers.AssertCollected(weak);
+        GC.KeepAlive(service);
+        GC.KeepAlive(cultures);
+    }
+
+    [ReleaseFact]
+    public void BindingSourceServiceReplacementReleasesOldAndCurrentSubscriptions()
+    {
+        var firstCultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
+        var firstService = CreateTranslationService(firstCultures);
+        var secondCultures = new CultureService(CultureInfo.GetCultureInfo("pl-PL"));
+        var secondService = CreateTranslationService(secondCultures);
+
+        WeakReference weak = CreateSwappedAndDisposedBindingSource(
+            firstService,
+            firstCultures,
+            secondService,
+            secondCultures);
+
+        LeakTestHelpers.AssertCollected(weak);
+        GC.KeepAlive(firstService);
+        GC.KeepAlive(firstCultures);
+        GC.KeepAlive(secondService);
+        GC.KeepAlive(secondCultures);
+    }
+
+    [ReleaseFact]
+    public void ReplacedStaticBindingSourceIsReleased()
+    {
+        var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
+        var service = CreateTranslationService(cultures);
+
+        WeakReference weak = CreateReplacedStaticBindingSource(service, cultures);
+
+        LeakTestHelpers.AssertCollected(weak);
+        GC.KeepAlive(service);
+        GC.KeepAlive(cultures);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static WeakReference CreateDisposedBindingSource(
+        global::ProTranslate.ITranslationService service,
+        global::ProTranslate.ICultureService cultures)
+    {
+        var source = new TranslationBindingSource(service, cultures);
+        var weak = new WeakReference(source);
+
+        source.Dispose();
+
+        return weak;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static WeakReference CreateSwappedAndDisposedBindingSource(
+        global::ProTranslate.ITranslationService firstService,
+        global::ProTranslate.ICultureService firstCultures,
+        global::ProTranslate.ITranslationService secondService,
+        global::ProTranslate.ICultureService secondCultures)
+    {
+        var source = new TranslationBindingSource(firstService, firstCultures);
+        var weak = new WeakReference(source);
+
+        source.UseService(secondService, secondCultures);
+        source.Dispose();
+
+        return weak;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static WeakReference CreateReplacedStaticBindingSource(
+        global::ProTranslate.ITranslationService service,
+        global::ProTranslate.ICultureService cultures)
+    {
+        var source = new TranslationBindingSource(service, cultures);
+        var weak = new WeakReference(source);
+
+        TranslationService.UseSource(source);
+        TranslationService.UseSource(CreateFreshSource());
+
+        return weak;
+    }
+
+    private static TranslationBindingSource CreateFreshSource()
+    {
+        var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
+        return new TranslationBindingSource(CreateTranslationService(cultures), cultures);
+    }
+
+    private static global::ProTranslate.TranslationService CreateTranslationService(CultureService cultures)
+    {
+        var provider = new InMemoryTranslationProvider()
+            .Add(CultureInfo.GetCultureInfo("en-US"), "Shell.Title", "Title")
+            .Add(CultureInfo.GetCultureInfo("pl-PL"), "Shell.Title", "Tytul");
+
+        return new global::ProTranslate.TranslationService(provider, cultures);
+    }
+}
+

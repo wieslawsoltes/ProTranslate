@@ -1,14 +1,16 @@
 using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Avalonia;
-using Avalonia.Controls;
-using Xunit;
+using System.Runtime.ExceptionServices;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Threading;
+using ProTranslate.Wpf;
 
-namespace ProTranslate.Avalonia.Tests;
+namespace ProTranslate.Wpf.Tests;
 
-[Collection("AvaloniaHeadless")]
-public sealed class AvaloniaAdapterLeakTests
+public sealed class WpfAdapterLeakTests
 {
     [ReleaseFact]
     public void DisposedBindingSourceIsReleasedByTranslationService()
@@ -47,20 +49,10 @@ public sealed class AvaloniaAdapterLeakTests
     [ReleaseFact]
     public void ReplacedStaticBindingSourceIsReleased()
     {
-        WeakReference weak = InstallTemporaryStaticBindingSource();
-
-        ReplaceStaticBindingSource();
-
-        LeakTestHelpers.AssertCollected(weak);
-    }
-
-    [ReleaseFact]
-    public void DisposedObservableLocalizedStringIsReleasedByTranslationService()
-    {
         var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
         var service = CreateTranslationService(cultures);
 
-        WeakReference weak = CreateDisposedObservableLocalizedString(service, cultures);
+        WeakReference weak = CreateReplacedStaticBindingSource(service, cultures);
 
         LeakTestHelpers.AssertCollected(weak);
         GC.KeepAlive(service);
@@ -72,23 +64,15 @@ public sealed class AvaloniaAdapterLeakTests
     {
         var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
         var service = CreateTranslationService(cultures);
-        ProTranslate.Avalonia.TranslationService.UseSource(new TranslationBindingSource(service, cultures));
+        TranslationService.UseSource(new TranslationBindingSource(service, cultures));
 
-        (WeakReference Target, WeakReference Subscription) references = CreateAttachedTranslationTarget();
+        (WeakReference Target, WeakReference Subscription) references = RunOnStaThread(CreateAttachedTranslationTarget);
 
         LeakTestHelpers.AssertCollected(references.Target);
-        ProTranslate.Avalonia.TranslationService.UseSource(CreateFreshSource());
+        TranslationService.UseSource(CreateFreshSource());
         LeakTestHelpers.AssertCollected(references.Subscription);
         GC.KeepAlive(service);
         GC.KeepAlive(cultures);
-    }
-
-    [ReleaseFact]
-    public void AttachedTargetsFromClosedWindowAreReleased()
-    {
-        WeakReference[] references = LeakTestSession.RunInSession(CreateAttachedTargetsInsideWindow);
-
-        LeakTestHelpers.AssertCollected(references);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -121,34 +105,15 @@ public sealed class AvaloniaAdapterLeakTests
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static WeakReference InstallTemporaryStaticBindingSource()
+    private static WeakReference CreateReplacedStaticBindingSource(
+        global::ProTranslate.ITranslationService service,
+        global::ProTranslate.ICultureService cultures)
     {
-        var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
-        var service = CreateTranslationService(cultures);
         var source = new TranslationBindingSource(service, cultures);
         var weak = new WeakReference(source);
 
-        ProTranslate.Avalonia.TranslationService.UseSource(source);
-
-        return weak;
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void ReplaceStaticBindingSource()
-    {
-        ProTranslate.Avalonia.TranslationService.UseSource(CreateFreshSource());
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static WeakReference CreateDisposedObservableLocalizedString(
-        global::ProTranslate.ITranslationService service,
-        CultureService cultures)
-    {
-        IObservableLocalizedString observable = service.Observe("Shell.Title");
-        var weak = new WeakReference(observable);
-
-        cultures.SetCulture(CultureInfo.GetCultureInfo("pl-PL"));
-        observable.Dispose();
+        TranslationService.UseSource(source);
+        TranslationService.UseSource(CreateFreshSource());
 
         return weak;
     }
@@ -163,61 +128,7 @@ public sealed class AvaloniaAdapterLeakTests
         return (new WeakReference(textBlock), GetAttachedSubscriptionReference(textBlock));
     }
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static WeakReference[] CreateAttachedTargetsInsideWindow()
-    {
-        var cultures = new CultureService(CultureInfo.GetCultureInfo("en-US"));
-        var service = CreateTranslationService(cultures);
-        ProTranslate.Avalonia.TranslationService.UseSource(new TranslationBindingSource(service, cultures));
-
-        var textBlock = new TextBlock();
-        var textBox = new TextBox();
-        var contentControl = new ContentControl();
-        var grid = new Grid();
-        var panel = new StackPanel
-        {
-            Children =
-            {
-                textBlock,
-                textBox,
-                contentControl,
-                grid
-            }
-        };
-        var window = new Window
-        {
-            Width = 400,
-            Height = 240,
-            Content = panel
-        };
-
-        Translation.SetKey(textBlock, "Shell.Title");
-        Translation.SetStringFormat(textBlock, "{0}!");
-        Translation.SetKey(textBox, "Shell.Title");
-        Translation.SetKey(contentControl, "Shell.Title");
-        Translation.SetAutoFlowDirection(grid, true);
-
-        LeakTestHelpers.ShowWindow(window);
-        cultures.SetCulture(CultureInfo.GetCultureInfo("pl-PL"));
-        LeakTestHelpers.RunJobsAndRender();
-
-        WeakReference[] references =
-        [
-            new(window),
-            new(panel),
-            new(textBlock),
-            new(textBox),
-            new(contentControl),
-            new(grid)
-        ];
-
-        LeakTestHelpers.CleanupWindow(window);
-        ProTranslate.Avalonia.TranslationService.UseSource(CreateFreshSource());
-
-        return references;
-    }
-
-    private static WeakReference GetAttachedSubscriptionReference(AvaloniaObject target)
+    private static WeakReference GetAttachedSubscriptionReference(DependencyObject target)
     {
         FieldInfo tableField = typeof(Translation).GetField(
             "AttachedTargets",
@@ -232,6 +143,34 @@ public sealed class AvaloniaAdapterLeakTests
 
         Assert.True(found);
         return new WeakReference(arguments[1]!);
+    }
+
+    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "The helper captures and rethrows arbitrary assertion or dispatcher failures from the STA thread.")]
+    private static T RunOnStaThread<T>(Func<T> action)
+    {
+        T? result = default;
+        ExceptionDispatchInfo? exception = null;
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                result = action();
+            }
+            catch (Exception ex)
+            {
+                exception = ExceptionDispatchInfo.Capture(ex);
+            }
+            finally
+            {
+                Dispatcher.CurrentDispatcher.InvokeShutdown();
+            }
+        });
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        thread.Join();
+        exception?.Throw();
+
+        return result!;
     }
 
     private static TranslationBindingSource CreateFreshSource()

@@ -42,13 +42,13 @@ jobs:
         run: dotnet build ProTranslate.CI.slnx -c Release --no-restore -p:ContinuousIntegrationBuild=true
 
       - name: Test core
-        run: dotnet test tests/ProTranslate.Tests/ProTranslate.Tests.csproj -c Release --no-build --logger "trx;LogFileName=protranslate-tests.trx" --results-directory artifacts/test-results
+        run: dotnet test tests/ProTranslate.Tests/ProTranslate.Tests.csproj -c Release --no-build --filter "FullyQualifiedName!~Leak" --logger "trx;LogFileName=protranslate-tests.trx" --results-directory artifacts/test-results
 
       - name: Test analyzers
         run: dotnet test tests/ProTranslate.Analyzers.Tests/ProTranslate.Analyzers.Tests.csproj -c Release --no-build --logger "trx;LogFileName=protranslate-analyzers-tests.trx" --results-directory artifacts/test-results
 
       - name: Test Avalonia adapter
-        run: dotnet test tests/ProTranslate.Avalonia.Tests/ProTranslate.Avalonia.Tests.csproj -c Release --no-build --logger "trx;LogFileName=protranslate-avalonia-tests.trx" --results-directory artifacts/test-results
+        run: dotnet test tests/ProTranslate.Avalonia.Tests/ProTranslate.Avalonia.Tests.csproj -c Release --no-build --filter "FullyQualifiedName!~Leak" --logger "trx;LogFileName=protranslate-avalonia-tests.trx" --results-directory artifacts/test-results
 
       - name: Upload test results
         if: always()

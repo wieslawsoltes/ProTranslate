@@ -16,5 +16,9 @@
     <Project Path="tests/ProTranslate.Tests/ProTranslate.Tests.csproj" />
     <Project Path="tests/ProTranslate.Avalonia.Tests/ProTranslate.Avalonia.Tests.csproj" />
     <Project Path="tests/ProTranslate.Analyzers.Tests/ProTranslate.Analyzers.Tests.csproj" />
+    <Project Path="tests/ProTranslate.Uno.Tests/ProTranslate.Uno.Tests.csproj" />
+    <Project Path="tests/ProTranslate.Maui.Tests/ProTranslate.Maui.Tests.csproj" />
+    <Project Path="tests/ProTranslate.Wpf.Tests/ProTranslate.Wpf.Tests.csproj" />
+    <Project Path="tests/ProTranslate.WinUI.Tests/ProTranslate.WinUI.Tests.csproj" />
   </Folder>
 </Solution>
