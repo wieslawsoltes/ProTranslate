@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>ProTranslate.MewUI</RootNamespace>
+    <PackageId>ProTranslate.MewUI</PackageId>
+    <Title>ProTranslate.MewUI</Title>
+    <Description>MewUI adapter for ProTranslate — fluent C# markup translation binding and runtime culture switching for MewUI apps.</Description>
+    <PackageTags>MewUI;Localization;Globalization;Translation</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aprillz.MewUI.Core" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../ProTranslate.Abstractions/ProTranslate.Abstractions.csproj" />
+    <ProjectReference Include="../ProTranslate.Core/ProTranslate.Core.csproj" />
+  </ItemGroup>
+</Project>
