@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>ProTranslate.MewUI.Sample</RootNamespace>
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aprillz.MewUI.Backend.Gdi" />
+    <PackageReference Include="Aprillz.MewUI.MacOS" />
+    <PackageReference Include="Aprillz.MewUI.Platform.Win32" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/ProTranslate.MewUI/ProTranslate.MewUI.csproj" />
+    <ProjectReference Include="../../src/ProTranslate.SourceGenerator/ProTranslate.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="../ProTranslate.Samples.Shared/SampleTranslationHost.cs" Link="Shared/SampleTranslationHost.cs" />
+    <Compile Include="../ProTranslate.Samples.Shared/CultureChoice.cs" Link="Shared/CultureChoice.cs" />
+    <AdditionalFiles Include="../ProTranslate.Samples.Shared/Resources/Strings.*.json" Link="Resources/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

@@ -4,6 +4,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageVersion Include="Aprillz.MewUI.Core" Version="0.15.2" />
+    <PackageVersion Include="Aprillz.MewUI.Backend.Gdi" Version="0.15.2" />
+    <PackageVersion Include="Aprillz.MewUI.MacOS" Version="0.15.2" />
+    <PackageVersion Include="Aprillz.MewUI.Platform.Win32" Version="0.15.2" />
     <PackageVersion Include="Avalonia" Version="12.0.2" />
     <PackageVersion Include="Avalonia.Desktop" Version="12.0.2" />
     <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.0.2" />

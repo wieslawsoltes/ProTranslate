@@ -12,6 +12,7 @@
     <Project Path="src/ProTranslate.Maui/ProTranslate.Maui.csproj" />
     <Project Path="src/ProTranslate.WinUI/ProTranslate.WinUI.csproj" />
     <Project Path="src/ProTranslate.Uno/ProTranslate.Uno.csproj" />
+    <Project Path="src/ProTranslate.MewUI/ProTranslate.MewUI.csproj" />
   </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/ProTranslate.Avalonia.Sample/ProTranslate.Avalonia.Sample.csproj" />
@@ -20,6 +21,7 @@
     <Project Path="samples/ProTranslate.WinUI.Sample/ProTranslate.WinUI.Sample.csproj" />
     <Project Path="samples/ProTranslate.Uno.Sample/ProTranslate.Uno.Sample.csproj" />
     <Project Path="samples/ProTranslate.Uno.TranslationStudio/ProTranslate.Uno.TranslationStudio.csproj" />
+    <Project Path="samples/ProTranslate.MewUI.Sample/ProTranslate.MewUI.Sample.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/ProTranslate.Tests/ProTranslate.Tests.csproj" />
@@ -29,5 +31,6 @@
     <Project Path="tests/ProTranslate.Maui.Tests/ProTranslate.Maui.Tests.csproj" />
     <Project Path="tests/ProTranslate.Wpf.Tests/ProTranslate.Wpf.Tests.csproj" />
     <Project Path="tests/ProTranslate.WinUI.Tests/ProTranslate.WinUI.Tests.csproj" />
+    <Project Path="tests/ProTranslate.MewUI.Tests/ProTranslate.MewUI.Tests.csproj" />
   </Folder>
 </Solution>
